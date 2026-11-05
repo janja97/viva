@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
-import { STORE } from '~/config/store'
+import { shippingFor, STORE } from '~/config/store'
 
 // Svaka boja ima svoj URL, pa se stranica učitava iznova pri promjeni boje.
 definePageMeta({ key: (route) => route.fullPath })
@@ -82,6 +82,14 @@ useHead({
           priceCurrency: CURRENCY_CODE,
           availability: availability(),
           itemCondition: 'https://schema.org/NewCondition',
+          // Poštarina po istom pravilu kao u košarici. Proizvod samo za poslovnice se ne šalje.
+          ...(!product.store_only && {
+            shippingDetails: {
+              '@type': 'OfferShippingDetails',
+              shippingRate: { '@type': 'MonetaryAmount', value: shippingFor(currentPrice).toFixed(2), currency: CURRENCY_CODE },
+              shippingDestination: { '@type': 'DefinedRegion', addressCountry: STORE.countryCode },
+            },
+          }),
         },
       }),
     },
@@ -105,6 +113,7 @@ useHead({
       class="mb-4"
       :items="[
         { label: 'Početna', to: '/' },
+        { label: 'Kolekcija', to: '/proizvodi' },
         ...parents.map((item) => ({ label: item.name, to: `/kategorija/${item.slug}` })),
         { label: category.name, to: `/kategorija/${category.slug}` },
         { label: `${product.name} ${color.name}` },

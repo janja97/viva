@@ -46,8 +46,9 @@
 ## Javni stil: luksuzna svečana moda (uvijek ga se drži)
 - Trgovina se zove Viva: luksuzna svečana roba u Mepas Mallu u Mostaru. Glavna ciljana skupina su mature; ključni pojmovi su svečane, elegantne i maturalne haljine, odijela i cipele. Proizvodi nemaju marku, pa Product JSON-LD nema `brand`.
 - Sadržaj naslovne je u `config/home.ts`, a kategorije za naslovnu u migraciji `0006`.
-- Poslovne linije nema: kategorija `poslovno` je isključena (migracija `0014`), a njezino mjesto u izborniku, heroju i panelima zauzimaju Odijela (`odijela`).
-- Naslovna ima galeriju svečanih haljina (`HomeLookbook`, `HOME_LOOKBOOK`) i mjesto za video (`HomeVideo`, `HOME_VIDEO`). Dok se ne upiše putanja slike ili videa, prikazuje se obojena podloga.
+- Ponuda je samo za žene: svečane i lagane haljine, zimi kaputi, uz cipele, torbice i dodatke. Muških odijela nema, pa se nigdje ne spominju. Kategorija `poslovno` je isključena (migracija `0014`). Izbornik (`SHOP_NAV`): Haljine, Odjeća (sve ostalo, s podkategorijama), Obuća, Torbice, Dodaci, Novo i Popust (`/proizvodi?snizeno=1`); poveznice i aktivnu stavku daje `useShopNavLink`. Na mobitelu nema trake s gumbima, sve je u izborniku ☰. Na heroju su Kaputi (`kaputi`), a prva kartica u `HOME_PANELS` je sezonska (zimi kaputi, ljeti npr. lagane haljine ili sandale, primjer je u komentaru).
+- Naslovna ima galeriju svečanih haljina (`HomeLookbook`, `HOME_LOOKBOOK`, 15 fotografija, velike su indeksi u `LOOKBOOK_LARGE` kako bi 4 stupca bila puna) i mjesto za video (`HomeVideo`, `HOME_VIDEO`). Dok se ne upiše putanja slike ili videa, prikazuje se obojena podloga.
+- Fotografije za naslovnu: originali su u `public/homePage/`, a stranica koristi smanjene kopije u `public/images/home/` (kategorije 600 × 800, galerija 600 × 800 i 900 × 1200, JPG kvalitete 82, izrez 3 : 4 uz desni rub da logo VIVA ostane cijeli).
 - Boje su bež, siva i zlatna, bez roze i bordo: `ivory`, `sand` i `champagne` podloge, `photo` i `photo-dark` iza fotografija, `graphite` za tamne gumbe i traku, `ink` tekst, `gold` i `gold-light` kao detalji, `line` za crte, `muted` za sporedni tekst.
 - Dizajn prati PDF predložak VIVA Boutique: bez zaobljenih kutova, sjena i gradijenata (iznimka su okrugli uzorci boja). Naslovna je u `components/site/Home*.vue`, a sav njezin tekst i putanje fotografija u `config/home.ts`. Izbornik je `SHOP_NAV`; `useCategoryLink` vodi na `/proizvodi` dok kategorija ne postoji (migracija `0009`).
 - Newsletter ne sprema adrese. Online plaćanja nema: kupac iz košarice šalje upit. Ikona košarice i dodavanje u košaricu otvaraju brzi pregled s desne strane (`CartDrawer`, "Naruči" vodi na `/kosarica`, "Nastavi s kupnjom" samo zatvara). Na `/kosarica` gumb "Naruči" otvara prozor s podacima za dostavu (ime, telefon, adresa, poštanski broj, grad, e-mail, napomena), a zadnji gumb je "Pošalji upit".
@@ -58,7 +59,9 @@
 - Puno praznog prostora. Komponente su u `components/site/`.
 - Filtri i sortiranje: `ShopListing`, `ShopFilterPanel` (stalno sa strane i sticky na računalu, u modalu na mobitelu) i `ShopActiveFilters` na `/proizvodi` i `/kategorija/[slug]`, RPC `shop_cards` i `shop_filter_options` (migracije `0011` i `0012`). Stanje je u adresi (`useShopFilters`), a filtrirane stranice imaju noindex. Kategorija prikazuje proizvode iz svih razina ispod sebe.
 - Pretraga: `/pretraga?q=`, `useShop().searchCards` traži po slugu pa radi i bez naših slova. Stranica ima noindex.
-- Podaci o trgovini su u `config/store.ts`. Ne izmišljaj telefon, radno vrijeme ni tvrdnje o proizvodima.
+- Podaci o trgovini su u `config/store.ts`. Ne izmišljaj telefon, radno vrijeme ni tvrdnje o proizvodima. Radno vrijeme je i u `STORE.openingHours` (za ClothingStore JSON-LD), pa ga mijenjaj zajedno s `hours`.
+- Canonical (`usePageSeo`) je putanja bez parametara, osim `?stranica=N` na popisima. Product JSON-LD ima `shippingDetails` po pravilu `shippingFor`, osim za `store_only`. Putanja (breadcrumbs) na stranici proizvoda ista je kao u JSON-LD-u.
+- Sekcija "Posjetite nas" (`HomeVisit`) prikazuje Google kartu (`STORE.mapEmbedUrl`, bez API ključa, prigušene boje), na računalu lijevo od adrese, a na mobitelu ispod nje.
 
 ## Gdje je što
 - `nuxt.config.ts`: SSR pravila (`/admin/**` bez SSR-a i uz noindex).

@@ -3,7 +3,7 @@ import { PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
 import { STORE } from '~/config/store'
 
 const { siteName } = useRuntimeConfig().public
-const categoryLink = useCategoryLink()
+const { to: shopLink } = useShopNavLink()
 const year = new Date().getFullYear()
 
 const linkClass = 'inline-flex min-h-11 items-center text-sm text-muted hover:text-ink hover:underline'
@@ -27,7 +27,7 @@ const headingClass = 'mb-2 text-xs font-medium uppercase tracking-[0.2em]'
         <h2 id="podnozje-kupovina" :class="headingClass">Kupovina</h2>
         <ul>
           <li v-for="link in SHOP_NAV" :key="link.label">
-            <NuxtLink :to="categoryLink(link.slug)" :class="linkClass">{{ link.label }}</NuxtLink>
+            <NuxtLink :to="shopLink(link)" :class="linkClass">{{ link.label }}</NuxtLink>
           </li>
         </ul>
       </nav>

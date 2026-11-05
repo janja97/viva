@@ -4,7 +4,7 @@ import { PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
 
 const route = useRoute()
 const { siteName } = useRuntimeConfig().public
-const categoryLink = useCategoryLink()
+const { to: shopLink, isActive } = useShopNavLink()
 const isMenuOpen = ref(false)
 const isSearchOpen = ref(route.path === '/pretraga')
 
@@ -24,9 +24,6 @@ watch(() => route.fullPath, () => {
   isMenuOpen.value = false
   isSearchOpen.value = route.path === '/pretraga'
 })
-
-// Stavka bez postojeće kategorije također vodi na kolekciju, pa se aktivna ne prepoznaje po poveznici.
-const isActive = (slug?: string) => route.path === (slug ? `/kategorija/${slug}` : '/proizvodi')
 
 const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercase tracking-[0.2em] transition-colors hover:text-gold'
 </script>
@@ -50,9 +47,9 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
         <ul class="flex justify-center gap-5 xl:gap-9">
           <li v-for="link in SHOP_NAV" :key="link.label">
             <NuxtLink
-              :to="categoryLink(link.slug)"
-              :class="[linkClass, (link.highlight || isActive(link.slug)) && 'text-gold']"
-              :aria-current="isActive(link.slug) ? 'page' : undefined"
+              :to="shopLink(link)"
+              :class="[linkClass, (link.highlight || isActive(link)) && 'text-gold']"
+              :aria-current="isActive(link) ? 'page' : undefined"
             >
               {{ link.label }}
             </NuxtLink>
@@ -92,23 +89,27 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
       <SiteSearch class="mx-auto max-w-xl" />
     </div>
 
-    <nav aria-label="Kategorije" class="flex gap-2 overflow-x-auto border-t border-line px-4 py-3 [scrollbar-width:none] sm:px-6 lg:hidden">
-      <NuxtLink
-        v-for="link in SHOP_NAV"
-        :key="link.label"
-        :to="categoryLink(link.slug)"
-        class="inline-flex min-h-11 flex-none items-center border px-4 text-[11px] font-medium uppercase tracking-[0.16em]"
-        :class="isActive(link.slug) ? 'border-graphite bg-graphite text-white' : 'border-line bg-white'"
-        :aria-current="isActive(link.slug) ? 'page' : undefined"
-      >
-        {{ link.label }}
-      </NuxtLink>
-    </nav>
-
-    <nav v-if="isMenuOpen" aria-label="Mobilna navigacija" class="border-t border-line lg:hidden">
-      <ul class="px-4 py-2 sm:px-6">
+    <!-- Na mobitelu su kategorije i ostale stranice u izborniku, a ne u traci ispod logotipa. -->
+    <nav
+      v-if="isMenuOpen"
+      aria-label="Mobilna navigacija"
+      class="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-t border-line lg:hidden"
+    >
+      <ul class="px-4 py-3 sm:px-6">
+        <li v-for="link in SHOP_NAV" :key="link.label">
+          <NuxtLink
+            :to="shopLink(link)"
+            class="flex min-h-13 items-center font-display text-[26px] leading-none"
+            :class="(link.highlight || isActive(link)) && 'text-gold'"
+            :aria-current="isActive(link) ? 'page' : undefined"
+          >
+            {{ link.label }}
+          </NuxtLink>
+        </li>
+      </ul>
+      <ul class="border-t border-line px-4 py-3 sm:px-6">
         <li v-for="link in PUBLIC_NAV" :key="link.to">
-          <NuxtLink :to="link.to" class="flex min-h-12 items-center text-xs font-medium uppercase tracking-[0.2em]" exact-active-class="text-gold">
+          <NuxtLink :to="link.to" class="flex min-h-11 items-center text-xs font-medium uppercase tracking-[0.2em] text-muted" exact-active-class="text-gold!">
             {{ link.label }}
           </NuxtLink>
         </li>

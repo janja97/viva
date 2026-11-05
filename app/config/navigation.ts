@@ -19,15 +19,24 @@ export const PUBLIC_NAV: NavLink[] = [
   { label: 'Kontakt', to: '/kontakt' },
 ]
 
+export type ShopNavLink = {
+  label: string
+  slug?: string
+  // Filtar na popisu, npr. samo sniženi proizvodi.
+  query?: { snizeno?: '1' }
+  highlight?: boolean
+}
+
 // Glavni izbornik trgovine. Bez sluga vodi na cijelu kolekciju, a to je i rezerva dok kategorija ne postoji.
-export const SHOP_NAV: { label: string; slug?: string; highlight?: boolean }[] = [
+// Odjeća sadrži sve ostalo (kaputi, kompleti i sakoi...), jer kategorija prikazuje i svoje podkategorije.
+export const SHOP_NAV: ShopNavLink[] = [
   { label: 'Haljine', slug: 'haljine' },
-  { label: 'Odijela', slug: 'odijela' },
-  { label: 'Svečano', slug: 'svecano' },
+  { label: 'Odjeća', slug: 'odjeca' },
   { label: 'Obuća', slug: 'obuca' },
   { label: 'Torbice', slug: 'torbice' },
   { label: 'Dodaci', slug: 'dodaci' },
   { label: 'Novo', highlight: true },
+  { label: 'Popust', query: { snizeno: '1' }, highlight: true },
 ]
 
 // Svaka grupa je u izborniku odvojena crtom.

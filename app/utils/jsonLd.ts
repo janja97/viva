@@ -19,6 +19,12 @@ export function storeJsonLd(name: string, url: string) {
       addressCountry: STORE.countryCode,
     },
     hasMap: STORE.mapUrl,
+    openingHoursSpecification: STORE.openingHours.map(({ days, opens, closes }) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: days.map((day) => `https://schema.org/${day}`),
+      opens,
+      closes,
+    })),
     ...(STORE.phone && { telephone: STORE.phone }),
     ...(STORE.email && { email: STORE.email }),
   }

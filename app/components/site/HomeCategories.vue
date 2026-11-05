@@ -11,7 +11,7 @@ const categoryLink = useCategoryLink()
       <li v-for="(category, index) in HOME_CATEGORIES" :key="category.slug">
         <NuxtLink :to="categoryLink(category.slug)" class="group block">
           <div class="aspect-3/4 overflow-hidden" :class="index % 2 ? 'bg-photo-dark' : 'bg-photo'">
-            <img v-if="category.image" :src="category.image" :alt="category.title" loading="lazy" width="500" height="667" class="size-full object-cover">
+            <img v-if="category.image" :src="category.image" :alt="category.imageAlt ?? category.title" loading="lazy" width="600" height="800" class="size-full object-cover">
           </div>
           <h3 class="mt-3.5 font-display text-2xl font-normal group-hover:text-gold">{{ category.title }}</h3>
         </NuxtLink>

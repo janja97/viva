@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { HOME_VISIT_IMAGE } from '~/config/home'
 import { STORE } from '~/config/store'
 </script>
 
 <template>
-  <section aria-labelledby="naslov-posjet" class="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-14 sm:px-6 sm:py-20 md:grid-cols-2 lg:gap-24 lg:px-8 lg:py-28">
-    <div class="hidden aspect-4/5 overflow-hidden bg-photo-dark sm:block">
-      <img v-if="HOME_VISIT_IMAGE" :src="HOME_VISIT_IMAGE" alt="Interijer butika u Mepas Mallu" loading="lazy" width="800" height="1000" class="size-full object-cover">
+  <section aria-labelledby="naslov-posjet" class="mx-auto grid max-w-7xl items-center gap-6 px-4 pb-14 sm:gap-10 sm:px-6 sm:py-20 md:grid-cols-2 lg:gap-24 lg:px-8 lg:py-28">
+    <!-- Na mobitelu je karta ispod adrese, a na računalu lijevo od nje. Prigušene boje prate ton trgovine. -->
+    <div class="order-last aspect-4/3 overflow-hidden border border-line bg-photo md:order-first md:aspect-4/5">
+      <iframe
+        :src="STORE.mapEmbedUrl"
+        :title="`Karta: ${STORE.mall}, ${STORE.street}, ${STORE.city}`"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="size-full border-0 [filter:grayscale(0.6)_sepia(0.15)]"
+      />
     </div>
     <div class="bg-champagne px-6 py-8 sm:bg-transparent sm:p-0">
       <p class="text-xs font-medium uppercase tracking-[0.24em] text-ink sm:text-gold">Posjetite nas</p>

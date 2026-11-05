@@ -9,9 +9,16 @@ export const STORE = {
   phone: '',
   email: '',
   hours: 'Pon – Sub 09:00 – 21:00 · Ned 12:00 – 20:00',
+  // Isto radno vrijeme za Google. Mijenjaj ga zajedno s `hours`.
+  openingHours: [
+    { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '09:00', closes: '21:00' },
+    { days: ['Sunday'], opens: '12:00', closes: '20:00' },
+  ],
   // Upiši punu adresu profila, npr. { label: 'Instagram', url: 'https://...' }.
   social: [] as { label: string; url: string }[],
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mepas+Mall+Mostar',
+  // Karta u sekciji "Posjetite nas". Ne treba API ključ.
+  mapEmbedUrl: 'https://www.google.com/maps?q=Mepas+Mall,+Kneza+Branimira+2b,+88000+Mostar&z=16&output=embed',
 }
 
 // Poštarina u KM. Isto pravilo provodi baza u shop_submit_inquiry (migracija 0019), pa ga mijenjaj na oba mjesta.

@@ -10,7 +10,14 @@ interface PageSeo {
 export function usePageSeo({ title, description, image, noindex = false }: PageSeo) {
   const { siteName, siteUrl } = useRuntimeConfig().public
   const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
-  const url = `${origin}${useRoute().path}`
+  const route = useRoute()
+  // Ostali parametri (filtri, poredak) ne ulaze u canonical, ali stranica popisa ulazi,
+  // inače Google ne bi indeksirao proizvode s druge i daljnjih stranica.
+  // Računa se iznova jer popis mijenja stranicu bez novog učitavanja.
+  const url = computed(() => {
+    const pageNumber = Math.floor(Number(route.query.stranica))
+    return `${origin}${route.path}${pageNumber > 1 ? `?stranica=${pageNumber}` : ''}`
+  })
 
   useSeoMeta({
     title,

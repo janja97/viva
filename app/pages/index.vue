@@ -6,7 +6,7 @@ const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
 
 usePageSeo({
   title: 'Svečane i maturalne haljine u Mostaru',
-  description: 'Svečane, maturalne i elegantne haljine, odijela, cipele i dodaci u Mostaru. Pogledajte kolekciju online i posjetite Vivu u Mepas Mallu.',
+  description: 'Svečane, maturalne i elegantne ženske haljine, kaputi, cipele i dodaci u Mostaru. Pogledajte kolekciju online i posjetite Vivu u Mepas Mallu.',
 })
 
 const { fetchCards } = useShop()

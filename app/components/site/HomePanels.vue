@@ -9,16 +9,28 @@ const categoryLink = useCategoryLink()
     <article
       v-for="panel in HOME_PANELS"
       :key="panel.title"
-      class="flex min-h-96 flex-col justify-between gap-10 p-8 lg:min-h-[500px] lg:p-16"
-      :class="panel.tone === 'white' ? 'border border-line bg-white' : 'bg-champagne'"
+      class="relative isolate flex min-h-96 flex-col justify-between gap-10 overflow-hidden p-8 lg:min-h-[500px] lg:p-16"
+      :class="panel.image ? 'bg-photo-dark text-ivory' : panel.tone === 'white' ? 'border border-line bg-white' : 'bg-champagne'"
     >
+      <!-- Fotografija je pozadina, a tamni sloj preko nje čuva čitljivost svijetlog teksta. Lice je u gornjem dijelu kadra. -->
+      <template v-if="panel.image">
+        <img :src="panel.image" :alt="panel.imageAlt" loading="lazy" width="1080" height="1440" class="absolute inset-0 -z-10 size-full object-cover object-[50%_25%]">
+        <span class="absolute inset-0 -z-10 bg-graphite/55" aria-hidden="true" />
+      </template>
+
       <!-- Sitni zlatni tekst na šampanjcu nema dovoljan kontrast. -->
-      <p class="text-xs font-medium uppercase tracking-[0.24em]" :class="panel.tone === 'white' ? 'text-gold' : 'text-ink'">{{ panel.eyebrow }}</p>
+      <p
+        class="text-xs font-medium uppercase tracking-[0.24em]"
+        :class="panel.image ? 'text-gold-light' : panel.tone === 'white' ? 'text-gold' : 'text-ink'"
+      >
+        {{ panel.eyebrow }}
+      </p>
       <div>
         <h2 class="font-display text-4xl font-normal leading-tight lg:text-5xl">
-          {{ panel.title }} <em class="block" :class="panel.tone !== 'white' && 'text-gold'">{{ panel.accent }}</em>
+          {{ panel.title }}
+          <em class="block" :class="panel.image ? 'text-gold-light' : panel.tone !== 'white' && 'text-gold'">{{ panel.accent }}</em>
         </h2>
-        <p class="mb-5 mt-4 max-w-[44ch] leading-relaxed text-muted">{{ panel.text }}</p>
+        <p class="mb-5 mt-4 max-w-[44ch] leading-relaxed" :class="panel.image ? 'text-ivory/85' : 'text-muted'">{{ panel.text }}</p>
         <NuxtLink :to="categoryLink(panel.slug)" class="inline-flex min-h-11 items-center text-xs font-medium uppercase tracking-[0.16em] underline underline-offset-[6px]">
           {{ panel.link }}
         </NuxtLink>

@@ -2,6 +2,10 @@
 import { HOME_LOOKBOOK } from '~/config/home'
 
 const categoryLink = useCategoryLink()
+
+// Velike fotografije zauzimaju 2×2 polja na računalu i cijeli red na mobitelu.
+// Uz 15 fotografija ovaj raspored puni 6 redova po 4 polja bez praznina (lijevo, desno, lijevo).
+const LOOKBOOK_LARGE = new Set([0, 7, 10])
 </script>
 
 <template>
@@ -22,14 +26,13 @@ const categoryLink = useCategoryLink()
       </div>
     </div>
 
-    <!-- Prva fotografija je veća: preko cijele širine na mobitelu, 2×2 polja na računalu. -->
     <ul class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       <li
         v-for="(image, index) in HOME_LOOKBOOK.images"
         :key="index"
         class="overflow-hidden"
         :class="[
-          index === 0 ? 'col-span-2 aspect-4/5 sm:aspect-square lg:row-span-2 lg:aspect-auto' : 'aspect-3/4',
+          LOOKBOOK_LARGE.has(index) ? 'col-span-2 aspect-4/5 sm:aspect-square lg:row-span-2 lg:aspect-auto' : 'aspect-3/4',
           index % 2 ? 'bg-photo-dark' : 'bg-photo',
         ]"
       >
@@ -38,8 +41,8 @@ const categoryLink = useCategoryLink()
           :src="image.src"
           :alt="image.alt"
           loading="lazy"
-          :width="index === 0 ? 1000 : 500"
-          :height="index === 0 ? 1250 : 667"
+          :width="LOOKBOOK_LARGE.has(index) ? 900 : 600"
+          :height="LOOKBOOK_LARGE.has(index) ? 1200 : 800"
           class="size-full object-cover"
         >
       </li>
