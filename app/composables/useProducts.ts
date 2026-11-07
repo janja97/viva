@@ -1,5 +1,5 @@
 import { PRODUCT_IMAGES_BUCKET } from '~/config/products'
-import type { Database, Product, ProductColor, ProductPayload } from '~/types/database'
+import type { BulkProductChanges, Database, Product, ProductColor, ProductPayload } from '~/types/database'
 import type { ProductForm } from '~/types/productForm'
 
 const PAGE_SIZE = 25
@@ -21,7 +21,7 @@ export function emptyProductForm(): ProductForm {
     size_guide: '',
     size_type: 'clothing',
     price: '',
-    discount_percent: '',
+    campaign_id: '',
     dress_length: '',
     heel_height: '',
     weight_grams: '',
@@ -50,7 +50,7 @@ export function toProductPayload(form: ProductForm): ProductPayload {
     size_guide: form.size_guide.trim() || null,
     size_type: form.size_type,
     price: Number(form.price),
-    discount_percent: form.discount_percent === '' ? null : Number(form.discount_percent),
+    campaign_id: form.campaign_id || null,
     // Duljina vrijedi samo za odjeću, a peta samo za obuću.
     dress_length: form.size_type === 'clothing' ? form.dress_length || null : null,
     heel_height: form.size_type === 'footwear' ? form.heel_height || null : null,
@@ -115,7 +115,7 @@ export function useProducts() {
       size_guide: data.size_guide ?? '',
       size_type: data.size_type,
       price: String(data.price),
-      discount_percent: data.discount_percent === null || data.discount_percent === undefined ? '' : String(data.discount_percent),
+      campaign_id: data.campaign_id ?? '',
       dress_length: data.dress_length ?? '',
       heel_height: data.heel_height ?? '',
       weight_grams: data.weight_grams === null ? '' : String(data.weight_grams),
@@ -175,8 +175,8 @@ export function useProducts() {
     return data.length
   }
 
-  // Objava, skrivanje, "samo u trgovini" i sniženje za više proizvoda odjednom.
-  async function bulkUpdate(ids: string[], changes: { is_visible: boolean } | { store_only: boolean } | { discount_percent: number | null }) {
+  // Objava, skrivanje, "samo u trgovini" i kampanja (sniženje) za više proizvoda odjednom.
+  async function bulkUpdate(ids: string[], changes: BulkProductChanges) {
     const { data, error } = await supabase.rpc('bulk_update_products', { p_ids: ids, p_changes: changes })
     if (error) throw error
     return data
@@ -227,7 +227,7 @@ export type ProductListRow = {
   thumbnail: string | null
 }
 
-export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'discount' | 'archive' | 'restore' | 'delete'
+export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'campaign' | 'archive' | 'restore' | 'delete'
 
 export type ProductFilterOptions = Database['public']['Functions']['admin_product_filter_options']['Returns']
 

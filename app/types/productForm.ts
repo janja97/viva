@@ -31,7 +31,8 @@ export type ProductForm = {
   size_guide: string
   size_type: SizeType
   price: string
-  discount_percent: string
+  // Prazno znači bez kampanje.
+  campaign_id: string
   dress_length: string
   heel_height: string
   weight_grams: string

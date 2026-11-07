@@ -11,6 +11,7 @@ const { filters, page, activeCount, goToPage, showArchived, toRpcFilters } = use
 const { categories, load: loadCategories } = useCategories()
 const { rows, total, pageCount, options, isLoading, loadError, load, loadOptions, fetchAllIds } = useProductList()
 const { archive, restore, remove, bulkUpdate } = useProducts()
+const { campaigns, load: loadCampaigns } = useCampaigns()
 
 const canWrite = computed(() => can('write'))
 
@@ -64,7 +65,7 @@ async function selectAllMatching() {
 
 // RADNJE
 const pending = ref<{ action: 'archive' | 'delete'; ids: string[]; label: string } | null>(null)
-const discountIds = ref<string[] | null>(null)
+const campaignIds = ref<string[] | null>(null)
 const isWorking = ref(false)
 const actionError = ref('')
 const actionDone = ref('')
@@ -80,22 +81,22 @@ function startAction(action: BulkAction, ids = selected.value) {
   if (!ids.length) return
   actionError.value = ''
   if (action === 'archive' || action === 'delete') pending.value = { action, ids, label: labelFor(ids) }
-  else if (action === 'discount') discountIds.value = ids
+  else if (action === 'campaign') campaignIds.value = ids
   else execute(action, ids)
 }
 
-async function execute(action: BulkAction, ids: string[], percent: number | null = null) {
+async function execute(action: BulkAction, ids: string[], campaignId: string | null = null) {
   isWorking.value = true
   actionError.value = ''
   actionDone.value = ''
   try {
-    actionDone.value = await perform(action, ids, percent)
+    actionDone.value = await perform(action, ids, campaignId)
     // Arhivirani, vraćeni i obrisani proizvodi odlaze s ovog popisa, pa ih nema smisla držati odabranima.
     if (action === 'archive' || action === 'restore' || action === 'delete') {
       selected.value = selected.value.filter((id) => !ids.includes(id))
     }
     pending.value = null
-    discountIds.value = null
+    campaignIds.value = null
     await Promise.all([reload(), reloadOptions()])
   } catch (error) {
     actionError.value = productErrorMessage(error)
@@ -104,7 +105,7 @@ async function execute(action: BulkAction, ids: string[], percent: number | null
   }
 }
 
-async function perform(action: BulkAction, ids: string[], percent: number | null) {
+async function perform(action: BulkAction, ids: string[], campaignId: string | null) {
   switch (action) {
     case 'publish': {
       const { updated, skipped } = await bulkUpdate(ids, { is_visible: true })
@@ -116,9 +117,10 @@ async function perform(action: BulkAction, ids: string[], percent: number | null
       return `Označeno „samo u trgovini”: ${(await bulkUpdate(ids, { store_only: true })).updated}.`
     case 'store_off':
       return `Maknuto „samo u trgovini”: ${(await bulkUpdate(ids, { store_only: false })).updated}.`
-    case 'discount': {
-      const { updated } = await bulkUpdate(ids, { discount_percent: percent })
-      return percent === null ? `Sniženje uklonjeno: ${updated}.` : `Sniženje ${percent} % postavljeno: ${updated}.`
+    case 'campaign': {
+      const { updated } = await bulkUpdate(ids, { campaign_id: campaignId })
+      const name = campaigns.value.find((campaign) => campaign.id === campaignId)?.name
+      return name ? `Dodano u kampanju „${name}”: ${updated}.` : `Maknuto iz kampanje: ${updated}.`
     }
     case 'archive':
       await archive(ids)
@@ -146,7 +148,7 @@ watch(listKey, () => isReady.value && reload())
 watch(optionsKey, () => isReady.value && reloadOptions())
 
 onMounted(async () => {
-  await loadCategories()
+  await Promise.all([loadCategories(), loadCampaigns()])
   isReady.value = true
   reload()
   reloadOptions()
@@ -175,7 +177,7 @@ onMounted(async () => {
       Količina za proizvod {{ stockSaved }} je spremljena i zapisana u povijest.
     </BaseAlert>
     <BaseAlert v-if="actionDone" type="success" class="mb-4">{{ actionDone }}</BaseAlert>
-    <BaseAlert v-if="actionError && !pending && !discountIds" type="error" class="mb-4">{{ actionError }}</BaseAlert>
+    <BaseAlert v-if="actionError && !pending && !campaignIds" type="error" class="mb-4">{{ actionError }}</BaseAlert>
 
     <div class="mb-4 flex border-b border-primary-300">
       <button
@@ -258,13 +260,14 @@ onMounted(async () => {
 
     <ProductStockModal :product="editingStock" @close="editingStock = null" @saved="onStockSaved" />
 
-    <ProductDiscountModal
-      :open="Boolean(discountIds)"
-      :count="discountIds?.length ?? 0"
+    <ProductCampaignModal
+      :open="Boolean(campaignIds)"
+      :count="campaignIds?.length ?? 0"
+      :campaigns="campaigns"
       :loading="isWorking"
       :error="actionError"
-      @close="discountIds = null"
-      @apply="(percent) => discountIds && execute('discount', discountIds, percent)"
+      @close="campaignIds = null"
+      @apply="(campaignId) => campaignIds && execute('campaign', campaignIds, campaignId)"
     />
 
     <ConfirmDialog

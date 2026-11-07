@@ -13,6 +13,24 @@ const { members, isLoading, loadError, load, create, changeRole, remove, setBloc
 
 const isFormOpen = ref(false)
 const created = ref<{ email: string; password: string } | null>(null)
+// Nakon dodavanja prozor ostaje otvoren i prikazuje lozinku, kako se potvrda ne bi previdjela.
+const showCreated = ref(false)
+const isPasswordCopied = ref(false)
+
+function openForm() {
+  showCreated.value = false
+  isFormOpen.value = true
+}
+
+async function copyPassword() {
+  if (!created.value) return
+  try {
+    await navigator.clipboard.writeText(created.value.password)
+    isPasswordCopied.value = true
+  } catch {
+    isPasswordCopied.value = false
+  }
+}
 
 const pendingRole = ref<{ member: TeamMember; role: AppRole } | null>(null)
 const roleError = ref('')
@@ -36,7 +54,8 @@ function roleOptionsFor(member: TeamMember) {
 async function submitForm(member: NewTeamMember) {
   await create(member)
   created.value = { email: member.email, password: member.password }
-  isFormOpen.value = false
+  isPasswordCopied.value = false
+  showCreated.value = true
 }
 
 function askRoleChange(member: TeamMember, role: AppRole) {
@@ -102,7 +121,7 @@ onMounted(load)
 <template>
   <div>
     <AdminPageHeader title="Korisnici" description="Članovi tima i njihove uloge.">
-      <BaseButton v-if="can('write')" @click="isFormOpen = true">
+      <BaseButton v-if="can('write')" @click="openForm">
         <Plus class="size-4" stroke-width="2" />
         Novi korisnik
       </BaseButton>
@@ -133,8 +152,17 @@ onMounted(load)
       </li>
     </ul>
 
-    <BaseModal :open="isFormOpen" title="Novi korisnik" @close="isFormOpen = false">
-      <UserForm v-if="actorRole" :actor-role="actorRole" :submit="submitForm" @cancel="isFormOpen = false" />
+    <BaseModal :open="isFormOpen" :title="showCreated ? 'Korisnik je dodan' : 'Novi korisnik'" @close="isFormOpen = false">
+      <div v-if="showCreated && created" class="space-y-4 text-sm">
+        <p class="text-stone-600">Račun <strong class="text-stone-900">{{ created.email }}</strong> je stvoren. Privremena lozinka prikazuje se samo sada, pa je odmah proslijedi sigurnim putem.</p>
+        <p class="break-all border border-primary-300 bg-primary-50 px-3 py-2 font-mono text-base">{{ created.password }}</p>
+        <BaseAlert v-if="isPasswordCopied" type="success">Lozinka je kopirana.</BaseAlert>
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <BaseButton variant="secondary" @click="copyPassword">Kopiraj lozinku</BaseButton>
+          <BaseButton @click="isFormOpen = false">Gotovo</BaseButton>
+        </div>
+      </div>
+      <UserForm v-else-if="actorRole" :actor-role="actorRole" :submit="submitForm" @cancel="isFormOpen = false" />
     </BaseModal>
 
     <ConfirmDialog

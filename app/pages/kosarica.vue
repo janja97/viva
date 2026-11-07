@@ -9,7 +9,7 @@ const isFormOpen = ref(false)
 const isBusy = ref(false)
 const error = ref('')
 const formError = ref('')
-const orderNumber = ref<number | null>(null)
+const isSent = ref(false)
 
 const hasOverStock = computed(() => items.value.some((item) => item.quantity > item.stock))
 
@@ -34,7 +34,8 @@ async function onSubmit(customer: InquiryCustomer) {
   isBusy.value = true
   formError.value = ''
   try {
-    orderNumber.value = await submitInquiry(customer)
+    await submitInquiry(customer)
+    isSent.value = true
     isFormOpen.value = false
   } catch (caught) {
     formError.value = shopErrorMessage(caught)
@@ -76,6 +77,7 @@ onMounted(() => run(load))
 
       <aside class="self-start bg-sand p-6 lg:sticky lg:top-28 lg:p-8" aria-label="Sažetak">
         <h2 class="mb-4 font-display text-2xl font-normal">Sažetak</h2>
+        <CartPromoCode class="mb-4" />
         <CartTotals />
         <button
           type="button"
@@ -94,6 +96,6 @@ onMounted(() => run(load))
     </BaseModal>
 
     <!-- Košarica je već prazna, pa nakon potvrde kupac ide na naslovnu. -->
-    <OrderSuccessModal :number="orderNumber" @close="navigateTo('/')" />
+    <OrderSuccessModal :open="isSent" @close="navigateTo('/')" />
   </div>
 </template>

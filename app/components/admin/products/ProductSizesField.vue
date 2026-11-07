@@ -4,7 +4,11 @@ import { SIZE_PRESETS, SIZE_TYPES } from '~/config/products'
 import type { ProductForm } from '~/types/productForm'
 import type { SizeType } from '~/types/database'
 
-const props = defineProps<{ form: ProductForm }>()
+const props = defineProps<{
+  form: ProductForm
+  // Vrsta koju je odredila kategorija, samo za opis ispod izbornika.
+  categorySizeType?: SizeType | null
+}>()
 
 const customSize = ref('')
 
@@ -14,9 +18,12 @@ const sizeOptions = computed(() => {
 })
 
 function onTypeChange(type: string) {
-  props.form.size_type = type as SizeType
-  props.form.sizes = type === 'universal' ? [...SIZE_PRESETS.universal] : []
+  applySizeType(props.form, type as SizeType)
 }
+
+const typeHint = computed(() => props.categorySizeType
+  ? 'Postavljeno prema kategoriji. Promjena vrste briše odabrane veličine.'
+  : 'Promjena vrste briše odabrane veličine.')
 
 function sortSizes(sizes: string[]) {
   return sizeOptions.value.filter((size) => sizes.includes(size))
@@ -41,7 +48,7 @@ function addCustom() {
       :model-value="form.size_type"
       label="Vrsta veličina"
       :options="SIZE_TYPES"
-      hint="Promjena vrste briše odabrane veličine."
+      :hint="typeHint"
       @update:model-value="onTypeChange"
     />
 

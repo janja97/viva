@@ -10,6 +10,8 @@ const { rows, total, page, pageCount, status, isLoading, loadError, load, setSta
 const { refresh: refreshNewCount } = useNewInquiries()
 
 const canWrite = computed(() => can('write'))
+// Brisati smije samo super admin (RLS, migracija 0023).
+const canDelete = computed(() => can('delete_inquiries'))
 const openId = ref<string | null>(null)
 const opened = computed(() => rows.value.find((row) => row.id === openId.value) ?? null)
 const deleting = ref<{ id: string; number: number } | null>(null)
@@ -24,6 +26,15 @@ function showStatus(value: InquiryStatus | '') {
   page.value = 0
   load()
 }
+
+// Oblačići u gornjoj traci vode ovamo s odabranim statusom, npr. ?status=new.
+const route = useRoute()
+const statusFromQuery = () => {
+  const value = route.query.status
+  return INQUIRY_STATUSES.some((item) => item.value === value) ? (value as InquiryStatus) : ''
+}
+status.value = statusFromQuery()
+watch(() => route.query.status, () => showStatus(statusFromQuery()))
 
 function goToPage(target: number) {
   page.value = target
@@ -85,7 +96,7 @@ onMounted(load)
         :aria-pressed="status === tab.value"
         class="-mb-px min-h-11 shrink-0 cursor-pointer border-b-2 px-4 text-sm font-medium transition-colors sm:min-h-9"
         :class="status === tab.value ? 'border-primary-700 text-stone-900' : 'border-transparent text-stone-500 hover:text-stone-800'"
-        @click="showStatus(tab.value)"
+        @click="navigateTo({ query: { status: tab.value || undefined } })"
       >
         {{ tab.label }}
       </button>
@@ -131,6 +142,7 @@ onMounted(load)
     <InquiryDetailModal
       :inquiry="opened"
       :can-write="canWrite"
+      :can-delete="canDelete"
       :loading="isWorking"
       :error="actionError"
       @close="openId = null"

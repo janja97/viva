@@ -1,5 +1,5 @@
 export type AppRole = 'super_admin' | 'admin' | 'viewer'
-export type SizeType = 'footwear' | 'clothing' | 'universal'
+export type SizeType = 'footwear' | 'clothing' | 'bags' | 'universal'
 
 // Supabase tipovi rade samo s `type`, a ne s `interface`.
 export type Category = {
@@ -14,6 +14,23 @@ export type Category = {
   updated_at: string
 }
 
+export type CampaignKind = 'permanent' | 'temporary'
+
+// Trajna kampanja nema datume, a privremena ima početak i kraj.
+export type Campaign = {
+  id: string
+  name: string
+  kind: CampaignKind
+  discount_percent: number
+  starts_at: string | null
+  ends_at: string | null
+  is_paused: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type BulkProductChanges = { is_visible: boolean } | { store_only: boolean } | { campaign_id: string | null }
+
 export type Product = {
   id: string
   sku: string
@@ -25,7 +42,8 @@ export type Product = {
   size_guide: string | null
   size_type: SizeType
   price: number
-  // Upisuje se postotak, a baza sama računa sniženu cijenu.
+  // Sniženje dolazi iz kampanje: baza upisuje postotak dok je kampanja aktivna i sama računa sniženu cijenu.
+  campaign_id: string | null
   discount_percent: number | null
   sale_price: number | null
   dress_length: string | null
@@ -81,7 +99,7 @@ export type ProductAuditEntry = {
 
 export type ProductPayload = Pick<Product,
   'id' | 'sku' | 'name' | 'category_id' | 'description' | 'material' | 'care' | 'size_guide'
-  | 'size_type' | 'price' | 'discount_percent' | 'dress_length' | 'heel_height' | 'weight_grams' | 'is_visible' | 'store_only' | 'meta_title' | 'meta_description'
+  | 'size_type' | 'price' | 'campaign_id' | 'dress_length' | 'heel_height' | 'weight_grams' | 'is_visible' | 'store_only' | 'meta_title' | 'meta_description'
 > & {
   extra_category_ids: string[]
   brand: string | null
@@ -132,9 +150,81 @@ export type InquiryCustomerInput = {
   city: string
   email: string
   note: string
+  // Promo kod iz košarice. Baza ga ponovno provjerava pri slanju.
+  promo_code: string | null
+}
+
+export type NewsletterSubscriber = {
+  id: string
+  email: string
+  created_at: string
+}
+
+export type PromoCodeKind = 'newsletter' | 'manual'
+
+// Kod pretplatnika (newsletter) vrijedi jednom 15 dana. Vlastiti kod (manual) vrijedi od-do, bez ograničenja broja upotreba.
+export type PromoCode = {
+  id: string
+  code: string
+  kind: PromoCodeKind
+  name: string | null
+  discount_percent: number
+  starts_at: string
+  ends_at: string
+  max_uses: number | null
+  used_count: number
+  is_active: boolean
+  subscriber_id: string | null
+  created_at: string
 }
 
 export type InquiryStatus = 'new' | 'in_progress' | 'sold' | 'cancelled'
+
+export type DashboardBasic = {
+  orders: { new: number; in_progress: number; today: number }
+  products: { visible: number; hidden: number; archived: number; on_sale: number }
+  sold_out_colors: number
+  // Rasprodane boje (sve veličine na nuli), najviše 30.
+  sold_out: { product_id: string; name: string; sku: string; color: string }[]
+  low_stock: { product_id: string; name: string; sku: string; color: string; size: string; quantity: number }[]
+  low_stock_total: number
+  subscribers: number
+}
+
+// Zbroj komada na stanju po glavnoj kategoriji proizvoda i veličini.
+export type StockBySizeRow = { category_id: string; size: string; quantity: number }
+
+export type AnalyticsBucket = 'day' | 'week' | 'month'
+
+// Redak poretka: proizvod, boja, veličina ili kategorija.
+export type AnalyticsRankRow = { name: string; sku?: string; quantity: number; revenue: number }
+
+export type SalesAnalytics = {
+  from: string
+  to: string
+  bucket: AnalyticsBucket
+  kpi: {
+    revenue: number
+    orders: number
+    average_order: number
+    shipping: number
+    promo_discount: number
+    items: number
+    sale_savings: number
+    sale_revenue: number
+    goods_revenue: number
+  }
+  previous: { revenue: number; orders: number; inquiries: number }
+  statuses: Partial<Record<InquiryStatus, number>>
+  // inquiries su svi novi upiti u razdoblju, a orders i revenue samo prodani.
+  trend: { bucket: string; revenue: number; orders: number; inquiries: number }[]
+  products: AnalyticsRankRow[]
+  colors: AnalyticsRankRow[]
+  sizes: AnalyticsRankRow[]
+  categories: AnalyticsRankRow[]
+  promo_codes: { code: string; kind: PromoCodeKind; orders: number; discount: number }[]
+  newsletter: { total: number; new: number; codes_used: number }
+}
 
 // Povijest narudžbe. Narudžbu stvara kupac, pa `created` nema korisnika.
 export type InquiryAuditEntry = {
@@ -160,10 +250,13 @@ export type Inquiry = {
   address: string | null
   postal_code: string | null
   city: string | null
-  // Sveukupno (total) = ukupno za proizvode (subtotal) + poštarina.
+  // Sveukupno (total) = ukupno za proizvode (subtotal) - promo popust + poštarina.
   subtotal: number
   shipping: number
   total: number
+  promo_code_id: string | null
+  promo_code: string | null
+  promo_discount: number
   // Zadnja promjena statusa, upisuje je baza.
   status_changed_at: string | null
   status_changed_by: string | null
@@ -219,6 +312,29 @@ export type Database = {
         Insert: Pick<Category, 'name' | 'slug'> & Partial<Category>
         Update: Partial<Category>
         Relationships: []
+      }
+      campaigns: {
+        Row: Campaign
+        Insert: Pick<Campaign, 'name' | 'kind' | 'discount_percent'> & Partial<Campaign>
+        Update: Partial<Campaign>
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: NewsletterSubscriber
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      promo_codes: {
+        Row: PromoCode
+        Insert: Pick<PromoCode, 'code' | 'kind' | 'discount_percent' | 'starts_at' | 'ends_at'> & Partial<PromoCode>
+        Update: Partial<PromoCode>
+        Relationships: [Relationship & {
+          foreignKeyName: 'promo_codes_subscriber_id_fkey'
+          columns: ['subscriber_id']
+          referencedRelation: 'newsletter_subscribers'
+          referencedColumns: ['id']
+        }]
       }
       product_audit_log: {
         Row: ProductAuditEntry
@@ -339,6 +455,10 @@ export type Database = {
       }
       shop_wishlist: { Args: { p_session: string }; Returns: ShopWishlistRow[] }
       shop_wishlist_set: { Args: { p_session: string; p_color_id: string; p_on: boolean }; Returns: ShopWishlistRow[] }
+      admin_stock_by_size: { Args: Record<string, never>; Returns: StockBySizeRow[] }
+      admin_dashboard_basic: { Args: Record<string, never>; Returns: DashboardBasic }
+      admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
+      shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       shop_submit_inquiry: {
         Args: { p_session: string; p_customer: InquiryCustomerInput }
         Returns: { number: number }
@@ -359,7 +479,7 @@ export type Database = {
         }
       }
       bulk_update_products: {
-        Args: { p_ids: string[]; p_changes: { is_visible: boolean } | { store_only: boolean } | { discount_percent: number | null } }
+        Args: { p_ids: string[]; p_changes: BulkProductChanges }
         Returns: { updated: number; skipped: number }
       }
       current_user_role: { Args: Record<string, never>; Returns: AppRole | null }

@@ -14,21 +14,30 @@ export const inquiryStatusLabel = (status: InquiryStatus | null) =>
 
 export type InquiryWithItems = Inquiry & { inquiry_items: InquiryItem[] }
 
-// Broj novih narudžbi za oznaku u izborniku i gornjoj traci. Zajednički je za cijeli admin.
+// Broj novih narudžbi i onih u obradi, za oznake u izborniku i gornjoj traci. Zajednički je za cijeli admin.
 export function useNewInquiries() {
   const supabase = useSupabase()
   const count = useState('new-inquiries', () => 0)
+  const inProgressCount = useState('in-progress-inquiries', () => 0)
 
-  async function refresh() {
+  async function countByStatus(status: InquiryStatus) {
     const { count: total, error } = await supabase
       .from('inquiries')
       .select('id', { count: 'exact', head: true })
-      .eq('status', 'new')
-    if (error) console.error(error)
-    else count.value = total ?? 0
+      .eq('status', status)
+    if (error) throw error
+    return total ?? 0
   }
 
-  return { count, refresh }
+  async function refresh() {
+    try {
+      ;[count.value, inProgressCount.value] = await Promise.all([countByStatus('new'), countByStatus('in_progress')])
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return { count, inProgressCount, refresh }
 }
 
 // Narudžbe kupaca. Upisuje ih samo baza (shop_submit_inquiry), a ovdje se pregledavaju i mijenja im se status.

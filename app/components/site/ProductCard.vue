@@ -23,9 +23,9 @@ defineProps<{
           height="800"
           class="size-full object-cover transition-transform duration-700 group-hover:scale-105"
         >
-        <span v-if="card.soldOut" class="absolute left-3 top-3 bg-graphite px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white">Rasprodano</span>
-        <span v-else-if="card.compareAtPrice" class="absolute left-3 top-3 bg-graphite px-2.5 py-1 text-[11px] font-medium tracking-[0.1em] text-white">-{{ Math.round((1 - card.price / card.compareAtPrice) * 100) }}%</span>
-        <span v-else-if="isNew" class="absolute left-3 top-3 hidden bg-graphite px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white sm:block">Novo</span>
+        <!-- Sniženje je crveno, a novo zeleno. Rasprodano se na kartici ne ističe. -->
+        <span v-if="card.compareAtPrice" class="absolute left-3 top-3 bg-red-700 px-2.5 py-1 text-[11px] font-medium tracking-[0.1em] text-white">-{{ Math.round((1 - card.price / card.compareAtPrice) * 100) }}%</span>
+        <span v-else-if="isNew" class="absolute left-3 top-3 bg-emerald-700 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white">Novo</span>
       </div>
       <p v-if="card.categoryName" class="mt-3.5 hidden text-[11px] font-medium uppercase tracking-[0.16em] text-muted sm:block">{{ card.categoryName }}</p>
       <h3 class="mt-3 font-display text-xl font-normal leading-snug group-hover:text-gold sm:mt-1 sm:text-[22px]">{{ card.productName }}</h3>

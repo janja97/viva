@@ -4,7 +4,8 @@ import type { InquiryCustomerInput, ShopCartItemRow } from '~/types/database'
 
 export type CartItem = ShopCartItemRow & { image: string | null }
 
-export type InquiryCustomer = InquiryCustomerInput
+// Promo kod ne upisuje kupac u obrazac, nego ga dodaje košarica.
+export type InquiryCustomer = Omit<InquiryCustomerInput, 'promo_code'>
 
 // Košarica je zajednička za cijelu stranicu (zaglavlje, stranica proizvoda i košarica).
 // Podatke uvijek vraća baza, koja sama provjerava dostupnost i količine.
@@ -22,7 +23,12 @@ export function useCart() {
   const subtotal = computed(() => items.value.reduce((sum, item) => sum + item.price * item.quantity, 0))
   const savings = computed(() => items.value.reduce((sum, item) => sum + ((item.compareAtPrice ?? item.price) - item.price) * item.quantity, 0))
   const shipping = computed(() => (items.value.length ? shippingFor(subtotal.value) : 0))
-  const total = computed(() => subtotal.value + shipping.value)
+
+  // Promo kod iz košarice. Popust je na iznos proizvoda, a poštarina se računa prema iznosu prije popusta,
+  // isto kao u shop_submit_inquiry.
+  const promo = useState<{ code: string; percent: number } | null>('cart-promo', () => null)
+  const promoDiscount = computed(() => (promo.value ? Math.round(subtotal.value * promo.value.percent) / 100 : 0))
+  const total = computed(() => subtotal.value - promoDiscount.value + shipping.value)
   // Koliko još nedostaje do besplatne poštarine.
   const missingForFreeShipping = computed(() => (shipping.value > 0 ? Math.max(0, SHIPPING.freeAbove - subtotal.value) : 0))
 
@@ -62,15 +68,27 @@ export function useCart() {
   const setQuantity = (sizeId: string, quantity: number) => update(sizeId, quantity)
   const remove = (sizeId: string) => update(sizeId, 0)
 
+  async function applyPromo(code: string) {
+    const { data, error } = await supabase.rpc('shop_check_promo', { p_code: code.trim() })
+    if (error) throw error
+    promo.value = data
+  }
+
+  const clearPromo = () => { promo.value = null }
+
   async function submitInquiry(customer: InquiryCustomer) {
-    const { data, error } = await supabase.rpc('shop_submit_inquiry', { p_session: sessionId(), p_customer: customer })
+    const { data, error } = await supabase.rpc('shop_submit_inquiry', {
+      p_session: sessionId(),
+      p_customer: { ...customer, promo_code: promo.value?.code ?? null },
+    })
     if (error) throw error
     items.value = []
+    promo.value = null
     return data.number
   }
 
   return {
-    items, isLoaded, isDrawerOpen, count, subtotal, savings, shipping, total, missingForFreeShipping,
-    load, ensureLoaded, add, setQuantity, remove, submitInquiry,
+    items, isLoaded, isDrawerOpen, count, subtotal, savings, shipping, promo, promoDiscount, total, missingForFreeShipping,
+    load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry,
   }
 }

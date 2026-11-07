@@ -23,6 +23,13 @@ const close = () => {
   isDrawerOpen.value = false
 }
 
+// Zatvara se samo klik koji je i počeo izvan ladice, a ne označavanje teksta otpušteno izvan nje.
+const pressedOnBackdrop = ref(false)
+function onBackdropClick() {
+  if (pressedOnBackdrop.value) close()
+  pressedOnBackdrop.value = false
+}
+
 async function run(action: () => Promise<unknown>) {
   isBusy.value = true
   error.value = ''
@@ -44,7 +51,8 @@ const hasOverStock = computed(() => items.value.some((item) => item.quantity > i
     aria-labelledby="kosarica-naslov"
     class="cart-drawer fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-dvh w-full max-w-md bg-ivory p-0 font-body text-ink backdrop:bg-ink/40"
     @cancel.prevent="close"
-    @click.self="close"
+    @pointerdown="pressedOnBackdrop = $event.target === dialog"
+    @click.self="onBackdropClick"
   >
     <div v-if="isDrawerOpen" class="flex h-full flex-col">
       <div class="flex items-center justify-between gap-4 border-b border-line px-5 py-3">

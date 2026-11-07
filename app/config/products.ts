@@ -60,14 +60,35 @@ export const UNIVERSAL_SIZE = 'Univerzalna'
 export const SIZE_TYPES: { value: SizeType; label: string }[] = [
   { value: 'footwear', label: 'Obuća (brojevi)' },
   { value: 'clothing', label: 'Odjeća (oznake i brojevi)' },
+  { value: 'bags', label: 'Torbice' },
   { value: 'universal', label: 'Univerzalna veličina' },
 ]
 
+export const BAG_SIZES = ['Mini', 'Mala', 'Srednja', 'Velika']
+
+// Veličine ponuđene kvačicama. Ostale se mogu upisati ručno.
 export const SIZE_PRESETS: Record<SizeType, string[]> = {
-  footwear: ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
+  footwear: ['35', '36', '37', '38', '39', '40', '41', '42'],
   clothing: [
-    'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL',
-    ...Array.from({ length: 13 }, (_, index) => String(36 + index * 2)),
+    'S', 'M', 'L', 'XL', 'XXL',
+    ...Array.from({ length: 12 }, (_, index) => String(36 + index * 2)),
   ],
+  bags: BAG_SIZES,
   universal: [UNIVERSAL_SIZE],
 }
+
+// Kategorija (ili bilo koja iznad nje) sama određuje vrstu veličina pri unosu proizvoda.
+// Za ostale kategorije (npr. dodaci) vrsta se bira ručno.
+export const CATEGORY_SIZE_TYPES: Record<string, SizeType> = {
+  obuca: 'footwear',
+  odjeca: 'clothing',
+  haljine: 'clothing',
+  torbice: 'bags',
+}
+
+// Duljina haljine nudi se samo za proizvode u ovoj kategoriji ili ispod nje.
+export const DRESS_CATEGORY_SLUG = 'haljine'
+
+// Skupine na nadzornoj ploči (Zalihe, "Zaliha po veličinama"). Svaka uključuje i svoje podkategorije.
+// Kategorija koje nema u bazi se preskače, a ostale se mogu pogledati izbornikom.
+export const STOCK_GROUP_SLUGS = ['haljine', 'kompleti-i-sakoi', 'kaputi', 'obuca', 'torbice', 'dodaci']

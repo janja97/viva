@@ -31,9 +31,14 @@ async function onFiles(event: Event) {
   }
 }
 
-function remove(index: number) {
-  const [image] = props.color.images.splice(index, 1)
+// Uklanjanje slike traži potvrdu, kao i svako brisanje u adminu.
+const removingIndex = ref<number | null>(null)
+
+function remove() {
+  if (removingIndex.value === null) return
+  const [image] = props.color.images.splice(removingIndex.value, 1)
   if (image) props.api.discard(image.path)
+  removingIndex.value = null
 }
 
 function move(index: number, direction: -1 | 1) {
@@ -61,7 +66,7 @@ function move(index: number, direction: -1 | 1) {
           <IconButton label="Pomakni desno" :disabled="index === color.images.length - 1" @click="move(index, 1)">
             <ChevronRight class="size-4" stroke-width="1.75" />
           </IconButton>
-          <IconButton label="Ukloni sliku" danger @click="remove(index)">
+          <IconButton label="Ukloni sliku" danger @click="removingIndex = index">
             <Trash2 class="size-4" stroke-width="1.75" />
           </IconButton>
         </div>
@@ -85,5 +90,15 @@ function move(index: number, direction: -1 | 1) {
       </li>
     </ul>
     <p class="mt-1.5 text-xs text-stone-500">Prva slika je glavna. JPG, PNG, WEBP ili AVIF, najviše 5 MB. Prazan opis popunit će se nazivom i bojom.</p>
+
+    <ConfirmDialog
+      :open="removingIndex !== null"
+      title="Ukloni sliku"
+      confirm-label="Ukloni"
+      @close="removingIndex = null"
+      @confirm="remove"
+    >
+      Sigurno želiš ukloniti ovu sliku? Promjena vrijedi tek kad spremiš proizvod.
+    </ConfirmDialog>
   </div>
 </template>

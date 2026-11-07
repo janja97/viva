@@ -32,16 +32,33 @@ const categoryName = computed(
 
 const mainCategoryPathIds = computed(() => categoryPath(categories.value, form.category_id).map((category) => category.id))
 
-const isValidDiscount = computed(() => {
-  const percent = Number(form.discount_percent)
-  return Number.isInteger(percent) && percent >= 1 && percent <= 99
+const categorySizeType = computed(() => sizeTypeForCategory(categories.value, form.category_id))
+const isDress = computed(() => isDressCategory(categories.value, form.category_id))
+
+// Pri promjeni kategorije vrsta veličina prati kategoriju (obuća, odjeća, torbice).
+// Pri otvaranju postojećeg proizvoda ništa se ne mijenja, jer se kategorija tada ne mijenja.
+watch(() => form.category_id, () => {
+  const type = categorySizeType.value
+  if (type && type !== form.size_type) applySizeType(form, type)
+  if (!isDress.value) form.dress_length = ''
 })
 
-const discountHint = computed(() => {
-  if (form.discount_percent === '' || form.price === '' || !isValidDiscount.value) {
-    return 'Neobavezno. Upiši samo broj, npr. 20. Kupac vidi izračunatu cijenu i prekriženu redovnu.'
-  }
-  return `Kupac plaća ${formatPrice(discountedPrice(Number(form.price), Number(form.discount_percent)))}.`
+// Sniženje dolazi iz kampanje i vrijedi samo dok je ona aktivna.
+const { campaigns, load: loadCampaigns } = useCampaigns()
+const campaignOptions = computed(() => [
+  { value: '', label: 'Bez kampanje' },
+  ...campaigns.value.map((campaign) => ({ value: campaign.id, label: campaignOptionLabel(campaign) })),
+])
+const selectedCampaign = computed(() => campaigns.value.find((campaign) => campaign.id === form.campaign_id) ?? null)
+const activeDiscount = computed(() => (
+  selectedCampaign.value && campaignStatus(selectedCampaign.value) === 'active' ? selectedCampaign.value.discount_percent : null
+))
+
+const campaignHint = computed(() => {
+  if (!selectedCampaign.value) return 'Neobavezno. Kampanje se uređuju na stranici Kampanje.'
+  if (activeDiscount.value === null) return 'Kampanja trenutno nije aktivna, pa kupac plaća redovnu cijenu.'
+  if (form.price === '') return `Sniženje ${activeDiscount.value} %.`
+  return `Kupac plaća ${formatPrice(discountedPrice(Number(form.price), activeDiscount.value))}.`
 })
 
 function colorSlug(color: ColorForm) {
@@ -70,9 +87,14 @@ function addColor() {
   })
 }
 
-function removeColor(index: number) {
-  const [color] = form.colors.splice(index, 1)
+// Uklanjanje boje uvijek traži potvrdu, jer odnosi i njezine količine i slike.
+const removingColor = ref<{ index: number; name: string } | null>(null)
+
+function removeColor() {
+  if (!removingColor.value) return
+  const [color] = form.colors.splice(removingColor.value.index, 1)
   color?.images.forEach((image) => images.discard(image.path))
+  removingColor.value = null
 }
 
 function moveColor(index: number, direction: -1 | 1) {
@@ -82,9 +104,6 @@ function moveColor(index: number, direction: -1 | 1) {
 
 function validate() {
   if (!form.category_id) return 'Odaberi kategoriju.'
-  if (form.discount_percent !== '' && !isValidDiscount.value) {
-    return 'Sniženje mora biti cijeli broj od 1 do 99.'
-  }
   if (!form.sizes.length) return 'Odaberi barem jednu veličinu.'
   if (!form.colors.length) return 'Dodaj barem jednu boju.'
   if (form.is_visible && form.colors.some((color) => !color.images.length)) {
@@ -120,6 +139,7 @@ if (props.isNew) addColor()
 
 onMounted(() => {
   loadCategories()
+  loadCampaigns()
   // Bez prijedloga se brend i dalje može upisati, pa greška ovdje nije važna.
   if (canWrite.value) fetchBrands().then((list) => { brands.value = list }).catch(() => {})
 })
@@ -144,15 +164,11 @@ onBeforeUnmount(images.rollback)
             hint="Ista za sve boje i veličine."
             required
           />
-          <BaseInput
-            v-model="form.discount_percent"
-            label="Sniženje (%)"
-            type="number"
-            inputmode="numeric"
-            :min="1"
-            :max="99"
-            step="1"
-            :hint="discountHint"
+          <BaseSelect
+            v-model="form.campaign_id"
+            label="Kampanja (sniženje)"
+            :options="campaignOptions"
+            :hint="campaignHint"
           />
           <BaseInput
             v-model="form.brand"
@@ -190,7 +206,7 @@ onBeforeUnmount(images.rollback)
       </AdminCard>
 
       <AdminCard title="Veličine">
-        <ProductSizesField :form="form" />
+        <ProductSizesField :form="form" :category-size-type="categorySizeType" />
         <BaseSelect
           v-if="form.size_type === 'footwear'"
           v-model="form.heel_height"
@@ -200,12 +216,12 @@ onBeforeUnmount(images.rollback)
           hint="Neobavezno. Koristi se za filter na webu."
         />
         <BaseSelect
-          v-else-if="form.size_type === 'clothing'"
+          v-else-if="isDress"
           v-model="form.dress_length"
           class="mt-4 max-w-sm"
           label="Duljina haljine"
           :options="[{ value: '', label: 'Nije određeno' }, ...DRESS_LENGTHS]"
-          hint="Neobavezno. Samo za haljine, koristi se za filter na webu."
+          hint="Neobavezno. Koristi se za filter na webu."
         />
       </AdminCard>
 
@@ -230,9 +246,16 @@ onBeforeUnmount(images.rollback)
           :api="images"
           :is-first="index === 0"
           :is-last="index === form.colors.length - 1"
-          @remove="removeColor(index)"
+          @remove="removingColor = { index, name: color.name }"
           @move="moveColor(index, $event)"
         />
+        <!-- Kod više boja gumb na vrhu je daleko, pa je isti i na dnu. -->
+        <div v-if="form.colors.length" class="flex justify-end">
+          <BaseButton variant="secondary" @click="addColor">
+            <Plus class="size-4" stroke-width="2" />
+            Dodaj boju
+          </BaseButton>
+        </div>
       </div>
 
       <AdminCard title="Materijal i održavanje">
@@ -244,7 +267,7 @@ onBeforeUnmount(images.rollback)
         </div>
       </AdminCard>
 
-      <ProductSeoCard :form="form" :category-name="categoryName" />
+      <ProductSeoCard :form="form" :category-name="categoryName" :discount-percent="activeDiscount" />
     </fieldset>
 
     <ProductHistory v-if="!isNew" :product-id="form.id" :refresh-key="historyKey" />
@@ -259,5 +282,15 @@ onBeforeUnmount(images.rollback)
         <BaseButton type="submit" :loading="isSaving">{{ isSaving ? 'Spremanje...' : 'Spremi proizvod' }}</BaseButton>
       </div>
     </div>
+
+    <ConfirmDialog
+      :open="Boolean(removingColor)"
+      title="Ukloni boju"
+      confirm-label="Ukloni"
+      @close="removingColor = null"
+      @confirm="removeColor"
+    >
+      Sigurno želiš ukloniti boju {{ removingColor?.name || 'bez naziva' }} sa svim količinama i slikama? Promjena vrijedi tek kad spremiš proizvod.
+    </ConfirmDialog>
   </form>
 </template>

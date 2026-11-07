@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import { FolderTree, LayoutDashboard, Package, Settings, ShoppingBag, Tag, UserRound, Users } from '@lucide/vue'
+import { FolderTree, LayoutDashboard, Mail, Package, Settings, ShoppingBag, Tag, TicketPercent, UserRound, Users } from '@lucide/vue'
 
 export interface NavLink {
   label: string
@@ -48,7 +48,9 @@ export const ADMIN_NAV_GROUPS: AdminNavLink[][] = [
   [
     { label: 'Proizvodi', to: '/admin/proizvodi', icon: Package },
     { label: 'Kategorije', to: '/admin/kategorije', icon: FolderTree },
-    { label: 'Popusti', to: '/admin/popusti', icon: Tag },
+    { label: 'Kampanje', to: '/admin/kampanje', icon: Tag },
+    { label: 'Promo kodovi', to: '/admin/promo-kodovi', icon: TicketPercent },
+    { label: 'Newsletter', to: '/admin/newsletter', icon: Mail },
   ],
 ]
 

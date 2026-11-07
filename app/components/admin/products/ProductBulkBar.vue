@@ -14,7 +14,7 @@ const ACTIVE_ACTIONS: { action: BulkAction; label: string; danger?: boolean }[] 
   { action: 'hide', label: 'Sakrij s weba' },
   { action: 'store_on', label: 'Samo u trgovini' },
   { action: 'store_off', label: 'Makni "samo u trgovini"' },
-  { action: 'discount', label: 'Sniženje' },
+  { action: 'campaign', label: 'Kampanja (sniženje)' },
   { action: 'archive', label: 'Arhiviraj', danger: true },
 ]
 

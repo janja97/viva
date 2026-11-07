@@ -36,7 +36,7 @@ export type AdminProductFilters = {
   sort: AdminProductSort
 }
 
-const SIZE_TYPE_VALUES: SizeType[] = ['clothing', 'footwear', 'universal']
+const SIZE_TYPE_VALUES: SizeType[] = ['clothing', 'footwear', 'bags', 'universal']
 
 const asText = (value: unknown) => (typeof value === 'string' ? value : '')
 const asList = (value: unknown) => (Array.isArray(value) ? value : value ? [value] : []).filter((item): item is string => typeof item === 'string' && item !== '')

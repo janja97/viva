@@ -25,6 +25,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Samo na serveru. Nikad ga ne premještaj u `public`.
     supabaseSecretKey: '',
+    // Slanje e-maila s kodom za newsletter (Resend). Također samo na serveru.
+    resendApiKey: '',
+    newsletterFrom: '',
     public: {
       supabaseUrl: '',
       supabasePublishableKey: '',

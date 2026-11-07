@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ShoppingBag } from '@lucide/vue'
+import { Clock, ShoppingBag } from '@lucide/vue'
 
-const { count } = useNewInquiries()
+const { count, inProgressCount } = useNewInquiries()
 
 // "1 nova narudžba", "2 nove narudžbe", "5 novih narudžbi"
 const label = computed(() => {
@@ -12,20 +12,38 @@ const label = computed(() => {
   if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return `${value} nove narudžbe`
   return `${value} novih narudžbi`
 })
+
+const inProgressLabel = computed(() => `${inProgressCount.value} u obradi`)
 </script>
 
 <template>
-  <NuxtLink
-    v-if="count"
-    to="/admin/narudzbe"
-    class="inline-flex min-h-11 items-center gap-2 rounded-full bg-red-600 py-1 pl-1.5 pr-3.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 sm:min-h-9"
-  >
-    <span class="relative flex size-7 items-center justify-center rounded-full bg-white text-red-600">
-      <ShoppingBag class="size-4" stroke-width="2" />
-      <span class="absolute -right-0.5 -top-0.5 size-2.5 animate-ping rounded-full bg-white motion-reduce:hidden" aria-hidden="true" />
-    </span>
-    <span class="sm:hidden">{{ count }}</span>
-    <span class="hidden sm:inline">{{ label }}</span>
-    <span class="sr-only sm:hidden">{{ label }}</span>
-  </NuxtLink>
+  <div class="flex items-center gap-2">
+    <NuxtLink
+      v-if="count"
+      to="/admin/narudzbe?status=new"
+      class="inline-flex min-h-11 items-center gap-2 rounded-full bg-red-600 py-1 pl-1.5 pr-3.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 sm:min-h-9"
+    >
+      <span class="relative flex size-7 items-center justify-center rounded-full bg-white text-red-600">
+        <ShoppingBag class="size-4" stroke-width="2" />
+        <span class="absolute -right-0.5 -top-0.5 size-2.5 animate-ping rounded-full bg-white motion-reduce:hidden" aria-hidden="true" />
+      </span>
+      <span class="sm:hidden">{{ count }}</span>
+      <span class="hidden sm:inline">{{ label }}</span>
+      <span class="sr-only sm:hidden">{{ label }}</span>
+    </NuxtLink>
+
+    <!-- Narudžbe u obradi su manje hitne, pa je oblačić žut i bez pulsiranja. -->
+    <NuxtLink
+      v-if="inProgressCount"
+      to="/admin/narudzbe?status=in_progress"
+      class="inline-flex min-h-11 items-center gap-2 rounded-full bg-amber-400 py-1 pl-1.5 pr-3.5 text-sm font-semibold text-stone-900 transition-colors hover:bg-amber-500 sm:min-h-9"
+    >
+      <span class="flex size-7 items-center justify-center rounded-full bg-white text-amber-700">
+        <Clock class="size-4" stroke-width="2" />
+      </span>
+      <span class="sm:hidden">{{ inProgressCount }}</span>
+      <span class="hidden sm:inline">{{ inProgressLabel }}</span>
+      <span class="sr-only sm:hidden">{{ inProgressLabel }}</span>
+    </NuxtLink>
+  </div>
 </template>

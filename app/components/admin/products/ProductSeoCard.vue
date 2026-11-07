@@ -5,6 +5,8 @@ import type { ProductForm } from '~/types/productForm'
 const props = defineProps<{
   form: ProductForm
   categoryName: string
+  // Postotak aktivne kampanje, za cijenu u opisu.
+  discountPercent: number | null
 }>()
 
 const { siteName, siteUrl } = useRuntimeConfig().public
@@ -27,8 +29,8 @@ const previews = computed(() =>
       colorName: color.name,
       categoryName: props.categoryName,
       description: props.form.description,
-      price: props.form.discount_percent
-        ? String(discountedPrice(Number(props.form.price), Number(props.form.discount_percent)))
+      price: props.discountPercent
+        ? String(discountedPrice(Number(props.form.price), props.discountPercent))
         : props.form.price,
       storeOnly: props.form.store_only,
       metaTitle: props.form.meta_title,

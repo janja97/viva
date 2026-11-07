@@ -6,6 +6,7 @@ import type { InquiryAuditEntry, InquiryStatus } from '~/types/database'
 const props = defineProps<{
   inquiry: InquiryWithItems | null
   canWrite: boolean
+  canDelete: boolean
   loading?: boolean
   error?: string
 }>()
@@ -96,6 +97,10 @@ watch(() => [props.inquiry?.id, props.inquiry?.status], async ([id]) => {
               <td colspan="3" class="pt-2 pr-3">Ukupno</td>
               <td class="pt-2 text-right">{{ formatPrice(Number(inquiry.subtotal)) }}</td>
             </tr>
+            <tr v-if="inquiry.promo_code" class="text-stone-600">
+              <td colspan="3" class="pr-3">Promo kod {{ inquiry.promo_code }}</td>
+              <td class="text-right">-{{ formatPrice(Number(inquiry.promo_discount)) }}</td>
+            </tr>
             <tr class="text-stone-600">
               <td colspan="3" class="pr-3">Poštarina</td>
               <td class="text-right">{{ Number(inquiry.shipping) ? formatPrice(Number(inquiry.shipping)) : 'Besplatna' }}</td>
@@ -115,7 +120,7 @@ watch(() => [props.inquiry?.id, props.inquiry?.status], async ([id]) => {
 
       <div v-if="canWrite" class="flex flex-col gap-3 border-t border-primary-300 pt-4 sm:flex-row sm:items-end sm:justify-between">
         <BaseSelect v-model="status" class="sm:w-56" label="Status" :options="statusOptions" :disabled="loading" />
-        <BaseButton variant="danger" :loading="loading" @click="emit('delete')">Obriši narudžbu</BaseButton>
+        <BaseButton v-if="canDelete" variant="danger" :loading="loading" @click="emit('delete')">Obriši narudžbu</BaseButton>
       </div>
     </div>
   </BaseModal>

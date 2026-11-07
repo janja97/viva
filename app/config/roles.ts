@@ -1,6 +1,6 @@
 import type { AppRole } from '~/types/database'
 
-export type Permission = 'read' | 'write' | 'block_users' | 'delete_users'
+export type Permission = 'read' | 'write' | 'block_users' | 'delete_users' | 'delete_inquiries' | 'view_analytics'
 
 export const ROLE_LABELS: Record<AppRole, string> = {
   super_admin: 'Super admin',
@@ -9,8 +9,8 @@ export const ROLE_LABELS: Record<AppRole, string> = {
 }
 
 export const ROLE_DESCRIPTIONS: Record<AppRole, string> = {
-  super_admin: 'Može sve, uključujući blokiranje i brisanje korisnika.',
-  admin: 'Može sve osim blokiranja i brisanja korisnika. Ne može mijenjati super admine.',
+  super_admin: 'Može sve, uključujući blokiranje i brisanje korisnika, brisanje narudžbi i analitiku prodaje.',
+  admin: 'Može sve osim blokiranja i brisanja korisnika i brisanja narudžbi. Ne može mijenjati super admine.',
   viewer: 'Može samo pregledavati podatke.',
 }
 
@@ -19,11 +19,13 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   write: 'Dodavanje i uređivanje',
   block_users: 'Blokiranje korisnika',
   delete_users: 'Brisanje korisnika',
+  delete_inquiries: 'Brisanje narudžbi',
+  view_analytics: 'Analitika prodaje',
 }
 
 // Služi samo za prikaz u sučelju. Stvarnu zaštitu podataka radi RLS u bazi.
 export const ROLE_PERMISSIONS: Record<AppRole, Permission[]> = {
-  super_admin: ['read', 'write', 'block_users', 'delete_users'],
+  super_admin: ['read', 'write', 'block_users', 'delete_users', 'delete_inquiries', 'view_analytics'],
   admin: ['read', 'write'],
   viewer: ['read'],
 }
