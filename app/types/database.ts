@@ -61,6 +61,21 @@ export type StoreSettings = {
 
 export type StoreSettingsInput = Omit<StoreSettings, 'id' | 'updated_at' | 'updated_by_email'>
 
+// Odbrojavanje do akcije na webu (migracija 0032). Samo prikaz, bez sniženja.
+export type Countdown = {
+  id: string
+  title: string
+  message: string
+  link: string | null
+  starts_at: string
+  ends_at: string
+  is_enabled: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type CountdownInput = Pick<Countdown, 'title' | 'message' | 'link' | 'starts_at' | 'ends_at' | 'is_enabled'>
+
 export type BulkProductChanges = { is_visible: boolean } | { store_only: boolean } | { campaign_id: string | null }
 
 export type Product = {
@@ -347,6 +362,12 @@ export type Database = {
         Row: Category
         Insert: Pick<Category, 'name' | 'slug'> & Partial<Category>
         Update: Partial<Category>
+        Relationships: []
+      }
+      countdowns: {
+        Row: Countdown
+        Insert: CountdownInput
+        Update: Partial<CountdownInput>
         Relationships: []
       }
       store_settings: {

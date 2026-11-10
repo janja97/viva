@@ -20,7 +20,8 @@ Imamo i svečane haljine za mame za pričest, krizmu, krštenje i vjenčanje dje
 ## Pogledajte uživo u Mostaru
 Sve modele možete pogledati i isprobati u našoj trgovini u Mepas Mallu u Mostaru. Online narudžbe šaljemo na adrese u BiH, uz plaćanje pouzećem.$t$,
   faq = jsonb_build_array(
-    jsonb_build_object('question', 'Mogu li haljinu isprobati prije kupnje?', 'answer', 'Da, modele možete isprobati u našoj trgovini u Mepas Mallu u Mostaru.'),
+    jsonb_build_object('question', 'Mogu li haljinu isprobati prije kupnje?', 'answer', 'Da, u našoj trgovini u Mepas Mallu u Mostaru možete isprobati više modela prije kupnje.'),
+    jsonb_build_object('question', 'Koje veličine imate?', 'answer', 'Veličine idu do 58, ovisno o modelu. Dostupne veličine vidite na stranici svakog proizvoda.'),
     jsonb_build_object('question', 'Imate li haljine za mame za pričest, krizmu i krštenje?', 'answer', 'Da, u ponudi su svečane haljine za mame za obiteljske proslave.'),
     jsonb_build_object('question', 'Kako se plaća online narudžba?', 'answer', 'Pouzećem, kuriru pri preuzimanju paketa. Dostava traje 3 do 5 dana, samo unutar BiH.'),
     jsonb_build_object('question', 'Mogu li zamijeniti haljinu?', 'answer', 'Da, u roku od 15 dana, ako haljina nema tragova nošenja.')
@@ -45,7 +46,9 @@ Maturalne haljine možete isprobati u trgovini u Mepas Mallu u Mostaru, a online
   faq = jsonb_build_array(
     jsonb_build_object('question', 'Imate li haljine za malu maturu?', 'answer', 'Da, u ponudi su haljine za veliku i za malu maturu.'),
     jsonb_build_object('question', 'Mogu li isprobati maturalnu haljinu?', 'answer', 'Da, u našoj trgovini u Mepas Mallu u Mostaru.'),
-    jsonb_build_object('question', 'Kako se plaća u trgovini?', 'answer', 'Gotovinom u KM ili karticom.'),
+    jsonb_build_object('question', 'Kako se plaća u trgovini?', 'answer', 'Gotovinom u KM ili karticom, a moguće je i plaćanje na rate.'),
+    jsonb_build_object('question', 'Radite li skraćivanje ili prepravke haljina?', 'answer', 'Ne, skraćivanje i prepravke haljina ne radimo.'),
+    jsonb_build_object('question', 'Mogu li rezervirati haljinu?', 'answer', 'Ne, haljine nije moguće rezervirati ni ostaviti sa strane.'),
     jsonb_build_object('question', 'Šaljete li maturalne haljine poštom?', 'answer', 'Da, na adrese u BiH, uz plaćanje pouzećem. Dostava traje 3 do 5 dana.')
   )
 where slug = 'maturalne-haljine';

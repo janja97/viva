@@ -19,6 +19,7 @@ const faq = computed(() => [
   { question: 'Koliko košta dostava?', answer: `Poštarina je ${shippingPrice.value}, a za narudžbe veće od ${freeAbove.value} dostava je besplatna.` },
   { question: 'Koliko traje dostava?', answer: `Dostava traje ${days}.` },
   { question: 'Šaljete li izvan Bosne i Hercegovine?', answer: 'Ne, zasad šaljemo samo na adrese u Bosni i Hercegovini.' },
+  { question: 'Mogu li narudžbu preuzeti u trgovini?', answer: 'Da, u našoj trgovini u Mostaru, a moguće i u Sarajevu. Napišite to u napomeni uz narudžbu.' },
 ])
 </script>
 
@@ -41,6 +42,11 @@ const faq = computed(() => [
     <section>
       <h2>Rok dostave</h2>
       <p>Dostava traje {{ days }}. Šaljemo samo na adrese u Bosni i Hercegovini.</p>
+    </section>
+
+    <section>
+      <h2>Preuzimanje u trgovini</h2>
+      <p>Online narudžbu možete preuzeti i u našoj trgovini u Mepas Mallu u Mostaru, a moguće i u poslovnici u Sarajevu. Napišite to u napomeni uz narudžbu.</p>
     </section>
 
     <section>

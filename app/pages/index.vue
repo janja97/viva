@@ -87,5 +87,6 @@ useHead({
     </section>
 
     <SiteNewsletter />
+    <HomeCountdown />
   </div>
 </template>

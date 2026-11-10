@@ -91,19 +91,19 @@ export const HOME_VIDEO = {
 export const HOME_SERVICES = [
   // {prag} zamjenjuje iznos iz postavki trgovine (besplatna poštarina).
   { title: 'Besplatna dostava', text: 'Za narudžbe veće od {prag} poštarina je besplatna.' },
-  { title: 'Preuzimanje u butiku', text: 'Naručite online i probajte u Mepas Mallu prije plaćanja.' },
+  { title: 'Preuzimanje u trgovini', text: 'Naručite online i preuzmite u našoj trgovini u Mostaru, a moguće i u Sarajevu.' },
   { title: 'Dostava po BiH', text: 'Dostava na vašu adresu za 3 do 5 dana, plaćanje pouzećem i zamjena u 15 dana.' },
-  { title: 'Poklon pakiranje', text: 'Elegantna kutija sa zlatnim detaljem i čestitka na zahtjev.' },
 ]
 
+// Sve tvrdnje potvrdila je vlasnica (studeni 2026.). Adresa poslovnice u Sarajevu još nije poznata.
 export const HOME_FAQ = [
   {
     question: 'Gdje se nalazi trgovina Viva?',
-    answer: 'Nalazimo se u Mepas Mallu u Mostaru, Kneza Branimira 2b.',
+    answer: 'U Mepas Mallu u Mostaru, Kneza Branimira 2b. Imamo i poslovnicu u Sarajevu. Parking je u garaži Mepas Malla i naplaćuje se.',
   },
   {
     question: 'Imate li maturalne haljine?',
-    answer: 'Da, maturalne haljine su važan dio naše ponude, za veliku i za malu maturu. Modele možete pogledati online ili u trgovini.',
+    answer: 'Da, maturalne haljine su važan dio naše ponude, za veliku i za malu maturu. Nova kolekcija stiže nam često, po najnovijoj modi.',
   },
   {
     question: 'Imate li haljine za svadbu, pričest, krizmu ili krštenje?',
@@ -114,15 +114,28 @@ export const HOME_FAQ = [
     answer: 'Ženska odijela, ležernije haljine za posao i manje proslave, jakne i kapute, cipele na petu, torbice i nakit od nehrđajućeg čelika.',
   },
   {
+    question: 'Koje veličine imate?',
+    answer: 'Veličine idu do 58, ovisno o modelu. Nije svaki model dostupan u svim veličinama, a dostupne veličine vidite na stranici proizvoda.',
+  },
+  {
+    question: 'Mogu li isprobati haljinu prije kupnje?',
+    answer: 'Da, u trgovini možete isprobati više modela prije nego što se odlučite.',
+  },
+  {
     question: 'Kako se plaća?',
-    answer: 'U trgovini plaćate gotovinom u KM ili karticom. Online narudžbe plaćate pouzećem, kuriru pri preuzimanju, a dostava je moguća samo unutar BiH.',
+    answer: 'U trgovini plaćate gotovinom u KM ili karticom, a moguće je i plaćanje na rate. Online narudžbe plaćate pouzećem, kuriru pri preuzimanju.',
   },
   {
-    question: 'Dolazite iz Hrvatske?',
-    answer: 'Mnoge kupce iz Splita i Dubrovnika rado dočekujemo u Mepas Mallu, osobito u sezoni matura i vjenčanja. U trgovini možete platiti i karticom.',
+    question: 'Mogu li online narudžbu preuzeti u trgovini?',
+    answer: 'Da, online narudžbu možete preuzeti u našoj trgovini u Mostaru, a moguće i u Sarajevu. Napišite to u napomeni uz narudžbu.',
   },
   {
-    question: 'Mogu li isprobati model prije kupnje?',
-    answer: 'Da, odabrane modele možete isprobati kod nas u trgovini u Mepas Mallu.',
+    question: 'Imate li poklon bon?',
+    answer: 'Da, poklon bon možete kupiti u iznosu po vašem izboru.',
+  },
+  {
+    // Prag i postupak su iz Instrukcije UIO-a (Službeni glasnik BiH 48/25, od 6. 8. 2025.). Provjeriti ako se propis promijeni.
+    question: 'Dolazite iz Hrvatske? Možete li dobiti povrat PDV-a?',
+    answer: 'Mnoge kupce iz Splita i Dubrovnika rado dočekujemo u Mepas Mallu, osobito u sezoni matura i vjenčanja. Kupci bez prebivališta u BiH mogu ostvariti povrat PDV-a za kupnju veću od 200 KM: na blagajni zatražite obrazac PDV-SL-2, ovjerite ga na granici pri izlasku iz BiH u roku od 3 mjeseca, a ovjereni obrazac vratite nama. PDV vraćamo u KM, gotovinom ili na vaš račun.',
   },
 ]
