@@ -89,9 +89,10 @@ export const HOME_VIDEO = {
 }
 
 export const HOME_SERVICES = [
-  { title: 'Besplatna dostava', text: 'Za narudžbe veće od 150 KM poštarina je besplatna.' },
+  // {prag} zamjenjuje iznos iz postavki trgovine (besplatna poštarina).
+  { title: 'Besplatna dostava', text: 'Za narudžbe veće od {prag} poštarina je besplatna.' },
   { title: 'Preuzimanje u butiku', text: 'Naručite online i probajte u Mepas Mallu prije plaćanja.' },
-  { title: 'Dostava po BiH', text: 'Dostava na vašu adresu, s mogućnošću povrata i zamjene.' },
+  { title: 'Dostava po BiH', text: 'Dostava na vašu adresu za 3 do 5 dana, plaćanje pouzećem i zamjena u 15 dana.' },
   { title: 'Poklon pakiranje', text: 'Elegantna kutija sa zlatnim detaljem i čestitka na zahtjev.' },
 ]
 
@@ -102,11 +103,23 @@ export const HOME_FAQ = [
   },
   {
     question: 'Imate li maturalne haljine?',
-    answer: 'Da, maturalne haljine su važan dio naše ponude. Modele možete pogledati online ili u trgovini.',
+    answer: 'Da, maturalne haljine su važan dio naše ponude, za veliku i za malu maturu. Modele možete pogledati online ili u trgovini.',
   },
   {
-    question: 'Prodajete li i muška odijela?',
-    answer: 'Ne, ponuda je samo za žene: svečane i lagane haljine, zimi i kaputi, uz cipele, torbice i dodatke.',
+    question: 'Imate li haljine za svadbu, pričest, krizmu ili krštenje?',
+    answer: 'Da, u ponudi su svečane haljine za svadbe i obiteljske proslave, uključujući modele za mame za pričest, krizmu i krštenje, uz cipele na petu i torbice.',
+  },
+  {
+    question: 'Što još imate osim haljina?',
+    answer: 'Ženska odijela, ležernije haljine za posao i manje proslave, jakne i kapute, cipele na petu, torbice i nakit od nehrđajućeg čelika.',
+  },
+  {
+    question: 'Kako se plaća?',
+    answer: 'U trgovini plaćate gotovinom u KM ili karticom. Online narudžbe plaćate pouzećem, kuriru pri preuzimanju, a dostava je moguća samo unutar BiH.',
+  },
+  {
+    question: 'Dolazite iz Hrvatske?',
+    answer: 'Mnoge kupce iz Splita i Dubrovnika rado dočekujemo u Mepas Mallu, osobito u sezoni matura i vjenčanja. U trgovini možete platiti i karticom.',
   },
   {
     question: 'Mogu li isprobati model prije kupnje?',

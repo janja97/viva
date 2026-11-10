@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
+import { INFO_NAV, PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
 import { STORE } from '~/config/store'
 
 const { siteName } = useRuntimeConfig().public
+const { settings, socialLinks } = useStoreSettings()
 const { to: shopLink } = useShopNavLink()
 const year = new Date().getFullYear()
 
@@ -12,14 +13,14 @@ const headingClass = 'mb-2 text-xs font-medium uppercase tracking-[0.2em]'
 
 <template>
   <footer class="bg-sand">
-    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-10 px-4 pb-10 pt-14 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr] lg:px-8">
+    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-10 px-4 pb-10 pt-14 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] lg:px-8">
       <div class="col-span-2 md:col-span-1">
         <img src="/logo/logo-dark.png" :alt="siteName" width="400" height="214" loading="lazy" class="h-14 w-auto">
         <p class="mt-3 max-w-xs text-sm leading-relaxed text-muted">Butik svečane mode.</p>
         <address class="mt-3 text-sm not-italic leading-relaxed text-muted">
           {{ STORE.mall }}, {{ STORE.street }}, {{ STORE.city }}
-          <template v-if="STORE.phone"><br>{{ STORE.phone }}</template>
-          <template v-if="STORE.email"><br>{{ STORE.email }}</template>
+          <template v-if="settings.phone"><br><a :href="`tel:${phoneDigits(settings.phone)}`" class="hover:text-ink">{{ settings.phone }}</a></template>
+          <template v-if="settings.email"><br><a :href="`mailto:${settings.email}`" class="hover:text-ink">{{ settings.email }}</a></template>
         </address>
       </div>
 
@@ -41,10 +42,19 @@ const headingClass = 'mb-2 text-xs font-medium uppercase tracking-[0.2em]'
         </ul>
       </nav>
 
-      <nav v-if="STORE.social.length" aria-labelledby="podnozje-mreze">
+      <nav aria-labelledby="podnozje-info">
+        <h2 id="podnozje-info" :class="headingClass">Pomoć</h2>
+        <ul>
+          <li v-for="link in INFO_NAV" :key="link.to">
+            <NuxtLink :to="link.to" :class="linkClass">{{ link.label }}</NuxtLink>
+          </li>
+        </ul>
+      </nav>
+
+      <nav v-if="socialLinks.length" aria-labelledby="podnozje-mreze">
         <h2 id="podnozje-mreze" :class="headingClass">Pratite nas</h2>
         <ul>
-          <li v-for="item in STORE.social" :key="item.url">
+          <li v-for="item in socialLinks" :key="item.url">
             <a :href="item.url" target="_blank" rel="noopener" :class="linkClass">{{ item.label }}</a>
           </li>
         </ul>

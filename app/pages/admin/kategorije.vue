@@ -91,7 +91,7 @@ onMounted(load)
       @move="onMove"
     />
 
-    <BaseModal :open="isFormOpen" :title="editing ? 'Uredi kategoriju' : 'Nova kategorija'" @close="isFormOpen = false">
+    <BaseModal :open="isFormOpen" :title="editing ? 'Uredi kategoriju' : 'Nova kategorija'" wide @close="isFormOpen = false">
       <CategoryForm
         :category="editing"
         :default-parent-id="defaultParentId"

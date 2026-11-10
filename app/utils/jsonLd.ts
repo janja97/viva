@@ -1,7 +1,9 @@
 import { STORE } from '~/config/store'
+import type { StoreSettings } from '~/types/database'
 
-// Podaci o trgovini za Google. Telefon i radno vrijeme ulaze tek kad su upisani.
-export function storeJsonLd(name: string, url: string) {
+// Podaci o trgovini za Google. Telefon, e-mail i mreže ulaze tek kad su upisani u postavkama, a zatvoreni dani se izostavljaju.
+export function storeJsonLd(name: string, url: string, settings: StoreSettings) {
+  const social = [settings.instagram_url, settings.facebook_url, settings.tiktok_url].filter(Boolean)
   return {
     '@context': 'https://schema.org',
     '@type': 'ClothingStore',
@@ -19,14 +21,15 @@ export function storeJsonLd(name: string, url: string) {
       addressCountry: STORE.countryCode,
     },
     hasMap: STORE.mapUrl,
-    openingHoursSpecification: STORE.openingHours.map(({ days, opens, closes }) => ({
+    openingHoursSpecification: settings.opening_hours.filter((day) => !day.closed).map(({ day, opens, closes }) => ({
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: days.map((day) => `https://schema.org/${day}`),
+      dayOfWeek: `https://schema.org/${day}`,
       opens,
       closes,
     })),
-    ...(STORE.phone && { telephone: STORE.phone }),
-    ...(STORE.email && { email: STORE.email }),
+    ...(settings.phone && { telephone: settings.phone }),
+    ...(settings.email && { email: settings.email }),
+    ...(social.length && { sameAs: social }),
   }
 }
 

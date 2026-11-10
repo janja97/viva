@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
-import { shippingFor, STORE } from '~/config/store'
+import { DELIVERY, EXCHANGE, STORE } from '~/config/store'
 
 // Svaka boja ima svoj URL, pa se stranica učitava iznova pri promjeni boje.
 definePageMeta({ key: (route) => route.fullPath })
@@ -11,6 +11,7 @@ const { fetchProduct, fetchCards, fetchCategories } = useShop()
 const { siteUrl } = useRuntimeConfig().public
 const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
 
+const storeSettings = useStoreSettings()
 const { data } = await useAsyncData(`product-${slug}`, () => fetchProduct(slug))
 
 if (!data.value) {
@@ -55,6 +56,9 @@ const url = `${origin}${PRODUCT_PATH}/${color.slug}`
 
 usePageSeo({ title, description, image: color.images[0]?.url })
 
+// Poštarina u JSON-LD-u dolazi iz postavki trgovine.
+await storeSettings.ready()
+
 function availability() {
   if (soldOut) return 'https://schema.org/OutOfStock'
   return product.store_only ? 'https://schema.org/InStoreOnly' : 'https://schema.org/InStock'
@@ -86,8 +90,20 @@ useHead({
           ...(!product.store_only && {
             shippingDetails: {
               '@type': 'OfferShippingDetails',
-              shippingRate: { '@type': 'MonetaryAmount', value: shippingFor(currentPrice).toFixed(2), currency: CURRENCY_CODE },
-              shippingDestination: { '@type': 'DefinedRegion', addressCountry: STORE.countryCode },
+              shippingRate: { '@type': 'MonetaryAmount', value: storeSettings.shippingFor(currentPrice).toFixed(2), currency: CURRENCY_CODE },
+              shippingDestination: { '@type': 'DefinedRegion', addressCountry: DELIVERY.countryCode },
+              deliveryTime: {
+                '@type': 'ShippingDeliveryTime',
+                transitTime: { '@type': 'QuantitativeValue', minValue: DELIVERY.minDays, maxValue: DELIVERY.maxDays, unitCode: 'DAY' },
+              },
+            },
+            // Samo zamjena (bez povrata novca), u roku od EXCHANGE.days dana.
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: DELIVERY.countryCode,
+              returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+              merchantReturnDays: EXCHANGE.days,
+              refundType: 'https://schema.org/ExchangeRefund',
             },
           }),
         },
@@ -154,6 +170,14 @@ useHead({
 
         <ul class="mt-7 space-y-2 border-y border-line py-4 text-sm text-muted">
           <li>Dostupno u butiku · {{ STORE.mall }}, {{ STORE.city }}</li>
+          <template v-if="!product.store_only">
+            <li>
+              <NuxtLink to="/dostava" class="hover:text-ink hover:underline">Dostava po BiH za {{ DELIVERY.minDays }} do {{ DELIVERY.maxDays }} dana · plaćanje pouzećem</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/povrat-i-zamjena" class="hover:text-ink hover:underline">Zamjena u roku od {{ EXCHANGE.days }} dana</NuxtLink>
+            </li>
+          </template>
           <li v-if="dressLength">Duljina: {{ dressLength }}</li>
           <li v-if="heelHeight">Peta: {{ heelHeight }}</li>
         </ul>

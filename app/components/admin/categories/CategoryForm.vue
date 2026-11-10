@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Category } from '~/types/database'
+import type { Category, FaqItem } from '~/types/database'
 import type { CategoryInput } from '~/composables/useCategories'
 
 const props = defineProps<{
@@ -15,6 +15,10 @@ const slug = ref(props.category?.slug ?? '')
 const parentId = ref(props.category?.parent_id ?? props.defaultParentId ?? '')
 const description = ref(props.category?.description ?? '')
 const isActive = ref(props.category?.is_active ?? true)
+const metaTitle = ref(props.category?.meta_title ?? '')
+const metaDescription = ref(props.category?.meta_description ?? '')
+const seoText = ref(props.category?.seo_text ?? '')
+const faq = ref<FaqItem[]>(structuredClone(toRaw(props.category?.faq ?? [])))
 
 const errorMessage = ref('')
 const isSaving = ref(false)
@@ -53,6 +57,13 @@ async function onSubmit() {
       parent_id: parentId.value || null,
       description: description.value.trim() || null,
       is_active: isActive.value,
+      meta_title: metaTitle.value.trim() || null,
+      meta_description: metaDescription.value.trim() || null,
+      seo_text: seoText.value.trim() || null,
+      // Prazna pitanja se ne spremaju.
+      faq: faq.value
+        .map((item) => ({ question: item.question.trim(), answer: item.answer.trim() }))
+        .filter((item) => item.question && item.answer),
     })
   } catch (error) {
     errorMessage.value = categoryErrorMessage(error)
@@ -80,7 +91,14 @@ async function onSubmit() {
       :options="parentOptions"
       hint="Najviše tri razine, npr. Obuća / Sandale / Ravne sandale."
     />
-    <BaseTextarea v-model="description" label="Opis" :maxlength="500" hint="Neobavezno. Prikazat će se na stranici kategorije." />
+    <BaseTextarea v-model="description" label="Kratki opis" :maxlength="500" hint="Neobavezno. Jedna do dvije rečenice ispod naslova kategorije." />
+    <CategorySeoFields
+      v-model:meta-title="metaTitle"
+      v-model:meta-description="metaDescription"
+      v-model:seo-text="seoText"
+      v-model:faq="faq"
+      :name="name || 'Kategorija'"
+    />
     <BaseSwitch v-model="isActive" label="Aktivna" hint="Neaktivne kategorije kupci ne vide." />
     <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
       <BaseButton variant="secondary" @click="emit('cancel')">Odustani</BaseButton>

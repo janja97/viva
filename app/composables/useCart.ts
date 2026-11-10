@@ -1,5 +1,4 @@
 import { PRODUCT_IMAGES_BUCKET } from '~/config/products'
-import { SHIPPING, shippingFor } from '~/config/store'
 import type { InquiryCustomerInput, ShopCartItemRow } from '~/types/database'
 
 export type CartItem = ShopCartItemRow & { image: string | null }
@@ -12,6 +11,7 @@ export type InquiryCustomer = Omit<InquiryCustomerInput, 'promo_code'>
 export function useCart() {
   const supabase = useSupabase()
   const { sessionId } = useShopSession()
+  const { settings: storeSettings, shippingFor } = useStoreSettings()
 
   const items = useState<CartItem[]>('cart-items', () => [])
   const isLoaded = useState('cart-loaded', () => false)
@@ -30,7 +30,7 @@ export function useCart() {
   const promoDiscount = computed(() => (promo.value ? Math.round(subtotal.value * promo.value.percent) / 100 : 0))
   const total = computed(() => subtotal.value - promoDiscount.value + shipping.value)
   // Koliko još nedostaje do besplatne poštarine.
-  const missingForFreeShipping = computed(() => (shipping.value > 0 ? Math.max(0, SHIPPING.freeAbove - subtotal.value) : 0))
+  const missingForFreeShipping = computed(() => (shipping.value > 0 ? Math.max(0, Number(storeSettings.value.free_shipping_above) - subtotal.value) : 0))
 
   function setItems(rows: ShopCartItemRow[]) {
     items.value = rows.map((row) => ({

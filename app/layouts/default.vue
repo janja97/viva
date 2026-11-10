@@ -2,7 +2,6 @@
 import '@fontsource-variable/cormorant-garamond/wght.css'
 import '@fontsource-variable/cormorant-garamond/wght-italic.css'
 import '@fontsource-variable/jost'
-import { HOME_TOP_BAR } from '~/config/home'
 </script>
 
 <template>
@@ -13,10 +12,7 @@ import { HOME_TOP_BAR } from '~/config/home'
     >
       Preskoči na sadržaj
     </a>
-    <p class="bg-graphite px-4 py-2 text-center text-[11px] uppercase tracking-[0.16em] text-white">
-      <span class="hidden sm:inline">{{ HOME_TOP_BAR.desktop }}</span>
-      <span class="sm:hidden">{{ HOME_TOP_BAR.mobile }}</span>
-    </p>
+    <SiteTopBar />
     <SiteHeader />
     <main id="sadrzaj" class="flex-1">
       <slot />

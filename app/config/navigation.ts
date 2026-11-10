@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import type { Permission } from '~/config/roles'
 import { FolderTree, LayoutDashboard, Mail, Package, Settings, ShoppingBag, Tag, TicketPercent, UserRound, Users } from '@lucide/vue'
 
 export interface NavLink {
@@ -10,6 +11,8 @@ export interface AdminNavLink extends NavLink {
   icon: Component
   // Broj uz stavku, npr. nove narudžbe.
   badge?: 'newInquiries'
+  // Stavka se prikazuje samo ulogama s ovom ovlasti (npr. Postavke samo adminima).
+  permission?: Permission
 }
 
 export const PUBLIC_NAV: NavLink[] = [
@@ -17,6 +20,12 @@ export const PUBLIC_NAV: NavLink[] = [
   { label: 'Kolekcija', to: '/proizvodi' },
   { label: 'O nama', to: '/o-nama' },
   { label: 'Kontakt', to: '/kontakt' },
+]
+
+// Informacije za kupce, u podnožju.
+export const INFO_NAV: NavLink[] = [
+  { label: 'Dostava i plaćanje', to: '/dostava' },
+  { label: 'Povrat i zamjena', to: '/povrat-i-zamjena' },
 ]
 
 export type ShopNavLink = {
@@ -56,7 +65,7 @@ export const ADMIN_NAV_GROUPS: AdminNavLink[][] = [
 
 // Stoji na dnu izbornika.
 export const ADMIN_NAV_BOTTOM: AdminNavLink[] = [
-  { label: 'Postavke', to: '/admin/postavke', icon: Settings },
+  { label: 'Postavke', to: '/admin/postavke', icon: Settings, permission: 'write' },
   { label: 'Moj račun', to: '/admin/moj-racun', icon: UserRound },
   { label: 'Korisnici', to: '/admin/korisnici', icon: Users },
 ]

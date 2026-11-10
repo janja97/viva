@@ -1,6 +1,6 @@
 import type { Category } from '~/types/database'
 
-export type CategoryInput = Pick<Category, 'name' | 'slug' | 'parent_id' | 'description' | 'is_active'>
+export type CategoryInput = Pick<Category, 'name' | 'slug' | 'parent_id' | 'description' | 'is_active' | 'meta_title' | 'meta_description' | 'seo_text' | 'faq'>
 
 export function useCategories() {
   const supabase = useSupabase()

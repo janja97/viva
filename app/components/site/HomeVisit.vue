@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { STORE } from '~/config/store'
+
+const { settings, hoursText } = useStoreSettings()
 </script>
 
 <template>
@@ -24,7 +26,7 @@ import { STORE } from '~/config/store'
         {{ STORE.mall }}<br>
         {{ STORE.street }}, {{ STORE.postalCode }} {{ STORE.city }}
       </address>
-      <p class="mb-6 mt-4 text-muted">{{ STORE.hours }}</p>
+      <p class="mb-6 mt-4 text-muted">{{ hoursText }}</p>
       <div class="flex flex-wrap items-center gap-4">
         <a
           :href="STORE.mapUrl"
@@ -35,11 +37,11 @@ import { STORE } from '~/config/store'
           Upute do butika
         </a>
         <a
-          v-if="STORE.phone"
-          :href="`tel:${STORE.phone.replace(/\s/g, '')}`"
+          v-if="settings.phone"
+          :href="`tel:${phoneDigits(settings.phone)}`"
           class="hidden min-h-11 items-center text-xs font-medium uppercase tracking-[0.16em] text-gold sm:inline-flex"
         >
-          Pozovi: {{ STORE.phone }}
+          Pozovi: {{ settings.phone }}
         </a>
       </div>
     </div>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { STORE } from '~/config/store'
+
+const { settings, hoursText } = useStoreSettings()
 </script>
 
 <template>
@@ -9,9 +11,10 @@ import { STORE } from '~/config/store'
       <template v-if="STORE.street">{{ STORE.street }}<br></template>
       {{ STORE.postalCode }} {{ STORE.city }}, {{ STORE.country }}
     </address>
-    <p v-if="STORE.hours" class="mt-3">{{ STORE.hours }}</p>
-    <p v-if="STORE.phone" class="mt-3"><a :href="`tel:${STORE.phone.replace(/\s/g, '')}`" class="underline underline-offset-4">{{ STORE.phone }}</a></p>
-    <p v-if="STORE.email" class="mt-1"><a :href="`mailto:${STORE.email}`" class="underline underline-offset-4">{{ STORE.email }}</a></p>
+    <p v-if="hoursText" class="mt-3">{{ hoursText }}</p>
+    <p v-if="settings.phone" class="mt-3"><a :href="`tel:${phoneDigits(settings.phone)}`" class="underline underline-offset-4">{{ settings.phone }}</a></p>
+    <p v-if="settings.email" class="mt-1"><a :href="`mailto:${settings.email}`" class="underline underline-offset-4">{{ settings.email }}</a></p>
+    <SiteChatLinks class="mt-3" />
     <a
       :href="STORE.mapUrl"
       target="_blank"

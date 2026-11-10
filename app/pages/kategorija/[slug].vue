@@ -26,10 +26,15 @@ if (!data.value) {
 
 const { category, children, path, categoryIds } = data.value
 
+// SEO iz admina (migracija 0031), uz {godina} = godina sljedeće mature. Bez upisa vrijede zadani tekstovi.
+const description = category.description ? fillYear(category.description) : ''
+const seoText = category.seo_text ? fillYear(category.seo_text) : ''
+const faq = (category.faq ?? []).map((item) => ({ question: fillYear(item.question), answer: fillYear(item.answer) }))
+
 usePageSeo({
-  title: `${category.name} - svečana moda`,
-  description: category.description
-    ?? `${category.name} iz naše svečane kolekcije. Pogledajte ponudu online ili nas posjetite u Mepas Mallu u Mostaru.`,
+  title: category.meta_title ? fillYear(category.meta_title) : `${category.name} - svečana moda`,
+  description: (category.meta_description ? fillYear(category.meta_description) : description)
+    || `${category.name} iz naše svečane kolekcije. Pogledajte ponudu online ili nas posjetite u Mepas Mallu u Mostaru.`,
 })
 
 const breadcrumbs = [
@@ -44,7 +49,7 @@ const breadcrumbs = [
   <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
     <SiteBreadcrumbs class="mb-6" :items="breadcrumbs" />
     <h1 class="font-display text-5xl font-normal leading-tight">{{ category.name }}</h1>
-    <p v-if="category.description" class="mt-4 max-w-2xl text-muted">{{ category.description }}</p>
+    <p v-if="description" class="mt-4 max-w-2xl text-muted">{{ description }}</p>
 
     <ul v-if="children.length" class="mt-6 flex flex-wrap gap-2">
       <li v-for="child in children" :key="child.id">
@@ -58,8 +63,14 @@ const breadcrumbs = [
       class="mt-8"
       :listing-key="`category-${slug}`"
       :category-ids="categoryIds"
-      :index-when-empty="Boolean(category.description)"
+      :index-when-empty="Boolean(description || seoText)"
       empty-text="U ovoj kategoriji uskoro stižu novi modeli."
     />
+
+    <!-- Duži tekst i pitanja su ispod proizvoda, da kupac prvo vidi ponudu. -->
+    <div v-if="seoText || faq.length" class="mt-16 grid gap-12 border-t border-line pt-12 lg:grid-cols-2 lg:gap-20">
+      <SiteRichText v-if="seoText" class="max-w-2xl" :text="seoText" />
+      <SiteFaq v-if="faq.length" :class="!seoText && 'lg:col-span-2 max-w-3xl'" :items="faq" />
+    </div>
   </section>
 </template>

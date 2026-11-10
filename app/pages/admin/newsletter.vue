@@ -12,8 +12,9 @@ const canWrite = computed(() => can('write'))
 const dateFormat = new Intl.DateTimeFormat('hr-HR', { dateStyle: 'short' })
 
 const isBccOpen = ref(false)
-// Abecedno, kako bi se adrese lakše pregledale prije slanja.
-const emails = computed(() => subscribers.value.map((subscriber) => subscriber.email).sort((a, b) => a.localeCompare(b)))
+// Abecedno, kako bi se adrese lakše pregledale prije slanja. Odjavljeni se ne uključuju.
+const activeSubscribers = computed(() => subscribers.value.filter((subscriber) => !subscriber.unsubscribed_at))
+const emails = computed(() => activeSubscribers.value.map((subscriber) => subscriber.email).sort((a, b) => a.localeCompare(b)))
 const usedCount = computed(() => subscribers.value.filter((subscriber) => subscriber.orderNumbers.length).length)
 
 const deleting = ref<SubscriberRow | null>(null)
@@ -41,7 +42,7 @@ onMounted(load)
   <div>
     <AdminPageHeader
       title="Newsletter"
-      :description="isLoading ? undefined : `Pretplatnika: ${subscribers.length}. Kod za 10 % iskoristilo je ${usedCount}.`"
+      :description="isLoading ? undefined : `Pretplatnika: ${activeSubscribers.length}, odjavljenih: ${subscribers.length - activeSubscribers.length}. Kod za 10 % iskoristilo je ${usedCount}.`"
     >
       <BaseButton :disabled="!emails.length" @click="isBccOpen = true">
         <Mail class="size-4" stroke-width="2" />
@@ -60,8 +61,8 @@ onMounted(load)
     <ul v-else class="divide-y divide-primary-200 border border-primary-300 bg-white">
       <li v-for="subscriber in subscribers" :key="subscriber.id" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-medium text-stone-900">{{ subscriber.email }}</p>
-          <p class="text-xs text-stone-500">Prijava {{ dateFormat.format(new Date(subscriber.created_at)) }}</p>
+          <p class="truncate text-sm font-medium" :class="subscriber.unsubscribed_at ? 'text-stone-400 line-through' : 'text-stone-900'">{{ subscriber.email }}</p>
+          <p class="text-xs text-stone-500">Prijava {{ dateFormat.format(new Date(subscriber.created_at)) }}<template v-if="subscriber.unsubscribed_at"> · <span class="text-amber-700">odjava {{ dateFormat.format(new Date(subscriber.unsubscribed_at)) }}</span></template></p>
         </div>
         <div v-if="subscriber.code" class="text-right text-xs">
           <p class="flex items-center justify-end gap-2">

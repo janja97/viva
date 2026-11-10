@@ -83,7 +83,7 @@ watch(statsPeriod, () => stats.load())
           <BaseAlert type="error">{{ month.loadError.value }}</BaseAlert>
           <BaseButton variant="secondary" @click="month.load">Pokušaj ponovno</BaseButton>
         </div>
-        <SalesOverview v-else-if="month.data.value" :data="month.data.value" :new-count="basic?.orders.new ?? 0" />
+        <SalesOverview v-else-if="month.data.value" :data="month.data.value" :basic="basic" />
       </template>
 
       <template v-else>

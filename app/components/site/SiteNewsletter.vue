@@ -51,6 +51,6 @@ async function onSubmit() {
       </button>
     </form>
     <p class="mx-auto mt-3 min-h-6 max-w-xl text-sm" :class="isError ? 'text-red-700' : 'text-ink'" role="status">{{ message }}</p>
-    <p class="mx-auto mt-1 max-w-xl text-xs text-muted">Kod vrijedi 15 dana za jednu narudžbu. Prijavom pristajete na primanje e-mailova od nas, a odjavu možete zatražiti u svakom trenutku.</p>
+    <p class="mx-auto mt-1 max-w-xl text-xs text-muted">Kod vrijedi 15 dana za jednu narudžbu. Prijavom pristajete na naše e-mailove, a <NuxtLink to="/odjava" class="underline underline-offset-2 hover:text-ink">odjaviti se</NuxtLink> možete u svakom trenutku.</p>
   </section>
 </template>

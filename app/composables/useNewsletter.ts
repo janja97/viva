@@ -1,6 +1,6 @@
 import type { NewsletterSubscriber, PromoCode } from '~/types/database'
 
-export type SubscriberRow = NewsletterSubscriber & {
+export type SubscriberRow = Omit<NewsletterSubscriber, 'unsubscribe_token'> & {
   code: PromoCode | null
   // Brojevi narudžbi u kojima je kod iskorišten.
   orderNumbers: number[]
@@ -20,7 +20,7 @@ export function useNewsletter() {
     const [subscriberResult, orderResult] = await Promise.all([
       supabase
         .from('newsletter_subscribers')
-        .select('id, email, created_at, promo_codes(*)')
+        .select('id, email, created_at, unsubscribed_at, promo_codes(*)')
         .order('created_at', { ascending: false }),
       supabase.from('inquiries').select('number, promo_code_id').not('promo_code_id', 'is', null),
     ])

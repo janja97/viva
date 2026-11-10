@@ -64,7 +64,7 @@ export const SIZE_TYPES: { value: SizeType; label: string }[] = [
   { value: 'universal', label: 'Univerzalna veličina' },
 ]
 
-export const BAG_SIZES = ['Mini', 'Mala', 'Srednja', 'Velika']
+export const BAG_SIZES = ['Mini', 'Midi', 'Maxi']
 
 // Veličine ponuđene kvačicama. Ostale se mogu upisati ručno.
 export const SIZE_PRESETS: Record<SizeType, string[]> = {

@@ -4,7 +4,6 @@ import { PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
 
 const route = useRoute()
 const { siteName } = useRuntimeConfig().public
-const { to: shopLink, isActive } = useShopNavLink()
 const isMenuOpen = ref(false)
 const isSearchOpen = ref(route.path === '/pretraga')
 
@@ -45,15 +44,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
 
       <nav aria-label="Glavna navigacija" class="hidden lg:block">
         <ul class="flex justify-center gap-5 xl:gap-9">
-          <li v-for="link in SHOP_NAV" :key="link.label">
-            <NuxtLink
-              :to="shopLink(link)"
-              :class="[linkClass, (link.highlight || isActive(link)) && 'text-gold']"
-              :aria-current="isActive(link) ? 'page' : undefined"
-            >
-              {{ link.label }}
-            </NuxtLink>
-          </li>
+          <SiteNavItem v-for="link in SHOP_NAV" :key="link.label" :link="link" :link-class="linkClass" />
         </ul>
       </nav>
 
@@ -96,16 +87,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
       class="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-t border-line lg:hidden"
     >
       <ul class="px-4 py-3 sm:px-6">
-        <li v-for="link in SHOP_NAV" :key="link.label">
-          <NuxtLink
-            :to="shopLink(link)"
-            class="flex min-h-13 items-center font-display text-[26px] leading-none"
-            :class="(link.highlight || isActive(link)) && 'text-gold'"
-            :aria-current="isActive(link) ? 'page' : undefined"
-          >
-            {{ link.label }}
-          </NuxtLink>
-        </li>
+        <SiteMobileNavItem v-for="link in SHOP_NAV" :key="link.label" :link="link" />
       </ul>
       <ul class="border-t border-line px-4 py-3 sm:px-6">
         <li v-for="link in PUBLIC_NAV" :key="link.to">

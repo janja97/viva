@@ -2,12 +2,19 @@ export type AppRole = 'super_admin' | 'admin' | 'viewer'
 export type SizeType = 'footwear' | 'clothing' | 'bags' | 'universal'
 
 // Supabase tipovi rade samo s `type`, a ne s `interface`.
+export type FaqItem = { question: string; answer: string }
+
 export type Category = {
   id: string
   parent_id: string | null
   name: string
   slug: string
   description: string | null
+  // SEO (migracija 0031). U tekstu se može upisati {godina}.
+  meta_title: string | null
+  meta_description: string | null
+  seo_text: string | null
+  faq: FaqItem[]
   sort_order: number
   is_active: boolean
   created_at: string
@@ -28,6 +35,31 @@ export type Campaign = {
   created_at: string
   updated_at: string
 }
+
+export type WeekDay = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+
+export type OpeningHoursDay = { day: WeekDay; closed: boolean; opens: string; closes: string }
+
+// Postavke trgovine, jedan redak (migracija 0029).
+export type StoreSettings = {
+  id: boolean
+  phone: string
+  whatsapp: string
+  viber: string
+  email: string
+  instagram_url: string
+  facebook_url: string
+  tiktok_url: string
+  opening_hours: OpeningHoursDay[]
+  shipping_price: number
+  free_shipping_above: number
+  announcement_enabled: boolean
+  announcement_text: string
+  updated_at: string
+  updated_by_email: string | null
+}
+
+export type StoreSettingsInput = Omit<StoreSettings, 'id' | 'updated_at' | 'updated_by_email'>
 
 export type BulkProductChanges = { is_visible: boolean } | { store_only: boolean } | { campaign_id: string | null }
 
@@ -158,6 +190,10 @@ export type NewsletterSubscriber = {
   id: string
   email: string
   created_at: string
+  // Osobni token za poveznicu za odjavu u e-mailu (migracija 0030).
+  unsubscribe_token: string
+  // Odjavljeni ostaju na popisu, kako ponovnom prijavom ne bi dobili novi kod.
+  unsubscribed_at: string | null
 }
 
 export type PromoCodeKind = 'newsletter' | 'manual'
@@ -313,6 +349,12 @@ export type Database = {
         Update: Partial<Category>
         Relationships: []
       }
+      store_settings: {
+        Row: StoreSettings
+        Insert: never
+        Update: Partial<StoreSettingsInput>
+        Relationships: []
+      }
       campaigns: {
         Row: Campaign
         Insert: Pick<Campaign, 'name' | 'kind' | 'discount_percent'> & Partial<Campaign>
@@ -459,6 +501,8 @@ export type Database = {
       admin_dashboard_basic: { Args: Record<string, never>; Returns: DashboardBasic }
       admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
+      newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }
+      newsletter_unsubscribe_email: { Args: { p_email: string }; Returns: undefined }
       shop_submit_inquiry: {
         Args: { p_session: string; p_customer: InquiryCustomerInput }
         Returns: { number: number }

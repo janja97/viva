@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { AdminNavLink } from '~/config/navigation'
 
-defineProps<{ links: AdminNavLink[] }>()
+const props = defineProps<{ links: AdminNavLink[] }>()
+
+const { can } = usePermissions()
+const visibleLinks = computed(() => props.links.filter((link) => !link.permission || can(link.permission)))
 
 const { count: newInquiries, inProgressCount } = useNewInquiries()
 const badgeCount = (link: AdminNavLink) => (link.badge === 'newInquiries' ? newInquiries.value : 0)
@@ -18,7 +21,7 @@ function badgeLabel(link: AdminNavLink) {
 
 <template>
   <ul class="space-y-0.5">
-    <li v-for="link in links" :key="link.to">
+    <li v-for="link in visibleLinks" :key="link.to">
       <NuxtLink
         :to="link.to"
         class="flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm text-primary-900 transition-colors hover:bg-primary-200 lg:min-h-9"

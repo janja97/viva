@@ -6,7 +6,7 @@ const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
 
 usePageSeo({
   title: 'Svečane i maturalne haljine u Mostaru',
-  description: 'Svečane, maturalne i elegantne ženske haljine, kaputi, cipele i dodaci u Mostaru. Pogledajte kolekciju online i posjetite Vivu u Mepas Mallu.',
+  description: 'Svečane i maturalne haljine, haljine za svadbu, ženska odijela, cipele na petu i torbice u Mepas Mallu u Mostaru. Dostava po BiH, plaćanje pouzećem.',
 })
 
 const { fetchCards } = useShop()
@@ -17,11 +17,14 @@ const { data } = await useAsyncData('home', async () => {
   return { cards: products.cards.slice(0, 4) }
 })
 
+const storeSettings = useStoreSettings()
+await storeSettings.ready()
+
 useHead({
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify(storeJsonLd(siteName, origin)),
+      innerHTML: JSON.stringify(storeJsonLd(siteName, origin, storeSettings.settings.value)),
     },
     {
       type: 'application/ld+json',

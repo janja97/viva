@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DRESS_LENGTHS, HEEL_HEIGHTS } from '~/config/products'
+import { DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_COLORS } from '~/config/products'
 
 const props = defineProps<{
   options: {
@@ -15,7 +15,21 @@ const props = defineProps<{
 
 const { filters, apply, toggle } = useShopFilters()
 
-const sortedSizes = computed(() => sortSizes(props.options?.sizes ?? []))
+// Nude se samo vrijednosti koje postoje među proizvodima ovog popisa (npr. obuća nema duljinu haljine),
+// uz one koje su već odabrane u adresi, da se odabir uvijek može i maknuti.
+const sortedSizes = computed(() => sortSizes([...new Set([...(props.options?.sizes ?? []), ...filters.value.sizes])]))
+const colors = computed(() => {
+  const available = props.options?.colors ?? []
+  const missing = filters.value.colors
+    .filter((name) => !available.some((color) => color.name === name))
+    .map((name) => ({ name, hex: PRODUCT_COLORS.find((color) => color.name === name)?.hex ?? '' }))
+  return [...available, ...missing]
+})
+const lengths = computed(() => DRESS_LENGTHS.filter((item) =>
+  props.options?.lengths.includes(item.value) || filters.value.lengths.includes(item.value)))
+const heels = computed(() => HEEL_HEIGHTS.filter((item) =>
+  props.options?.heels.includes(item.value) || filters.value.heels.includes(item.value)))
+const showSale = computed(() => props.options?.hasSale || filters.value.onSale)
 
 function onPrice(key: 'minPrice' | 'maxPrice', event: Event) {
   const { value } = event.target as HTMLInputElement
@@ -33,7 +47,7 @@ const priceClass = 'min-h-11 w-full min-w-0 border border-line bg-white px-3 tex
   <div class="space-y-7 font-body">
     <fieldset class="min-w-0">
       <legend :class="headingClass">Ponuda</legend>
-      <label :class="checkClass">
+      <label v-if="showSale" :class="checkClass">
         <input type="checkbox" :class="inputClass" :checked="filters.onSale" @change="apply({ onSale: !filters.onSale })">
         Na sniženju
       </label>
@@ -58,9 +72,9 @@ const priceClass = 'min-h-11 w-full min-w-0 border border-line bg-white px-3 tex
       </div>
     </fieldset>
 
-    <fieldset v-if="options?.colors.length" class="min-w-0">
+    <fieldset v-if="colors.length" class="min-w-0">
       <legend :class="headingClass">Boja</legend>
-      <label v-for="color in options.colors" :key="color.name" :class="checkClass">
+      <label v-for="color in colors" :key="color.name" :class="checkClass">
         <input type="checkbox" :class="inputClass" :checked="filters.colors.includes(color.name)" @change="toggle('colors', color.name)">
         <ColorSwatch class="size-4 flex-none" :name="color.name" :hex="color.hex" />
         {{ color.name }}
@@ -82,17 +96,17 @@ const priceClass = 'min-h-11 w-full min-w-0 border border-line bg-white px-3 tex
       </div>
     </fieldset>
 
-    <fieldset class="min-w-0">
+    <fieldset v-if="lengths.length" class="min-w-0">
       <legend :class="headingClass">Duljina haljine</legend>
-      <label v-for="item in DRESS_LENGTHS" :key="item.value" :class="checkClass">
+      <label v-for="item in lengths" :key="item.value" :class="checkClass">
         <input type="checkbox" :class="inputClass" :checked="filters.lengths.includes(item.value)" @change="toggle('lengths', item.value)">
         {{ item.label }}
       </label>
     </fieldset>
 
-    <fieldset class="min-w-0">
+    <fieldset v-if="heels.length" class="min-w-0">
       <legend :class="headingClass">Visina pete</legend>
-      <label v-for="item in HEEL_HEIGHTS" :key="item.value" :class="checkClass">
+      <label v-for="item in heels" :key="item.value" :class="checkClass">
         <input type="checkbox" :class="inputClass" :checked="filters.heels.includes(item.value)" @change="toggle('heels', item.value)">
         {{ item.label }}
       </label>
