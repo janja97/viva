@@ -26,7 +26,7 @@ Sve modele možete pogledati i isprobati u našoj trgovini u Mepas Mallu u Mosta
     jsonb_build_object('question', 'Kako se plaća online narudžba?', 'answer', 'Pouzećem, kuriru pri preuzimanju paketa. Dostava traje 3 do 5 dana, samo unutar BiH.'),
     jsonb_build_object('question', 'Mogu li zamijeniti haljinu?', 'answer', 'Da, u roku od 15 dana, ako haljina nema tragova nošenja.')
   )
-where slug in ('haljine', 'svecane-haljine');
+where slug = 'haljine';
 
 -- Maturalne haljine: velika i mala matura, s godinom.
 update public.categories set
@@ -106,7 +106,7 @@ Zimi je kaput dio svečanog izgleda. U ponudi su elegantni ženski kaputi i jakn
 Kapute možete isprobati u našoj trgovini u Mepas Mallu u Mostaru, a online narudžbe šaljemo na adrese u BiH.$t$
 where slug = 'kaputi';
 
--- Kompleti i sakoi: ženska odijela.
+-- Ženska odijela (kompleti i sakoi).
 update public.categories set
   meta_title = 'Ženska odijela i sakoi | Svečano i za posao, Mostar',
   meta_description = 'Ženska odijela, sakoi i kompleti za posao, svadbu i svečane prilike. Pogledajte online ili u Mepas Mallu u Mostaru.',
@@ -114,6 +114,6 @@ update public.categories set
 Žensko odijelo elegantna je zamjena za haljinu, za svadbu, svečanu priliku ili posao. U ponudi su kompleti od sakoa i hlača te sakoi koji se mogu nositi i zasebno.
 
 Odijela možete isprobati u našoj trgovini u Mepas Mallu u Mostaru.$t$
-where slug = 'kompleti-i-sakoi';
+where slug = 'zenska-odijela';
 
 commit;

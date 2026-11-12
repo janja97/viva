@@ -11,7 +11,14 @@ const MAX_DESCRIPTION = 4500
 const GOOGLE_CATEGORIES: Record<string, string> = {
   haljine: '2271', // Apparel & Accessories > Clothing > Dresses
   kaputi: '5598', // Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
-  'kompleti-i-sakoi': '5183', // Apparel & Accessories > Clothing > Suits
+  'zenska-odijela': '5183', // Apparel & Accessories > Clothing > Suits
+  jakne: '5598', // Apparel & Accessories > Clothing > Outerwear > Coats & Jackets
+  nakit: '188', // Apparel & Accessories > Jewelry
+  bolera: '5598', // Apparel & Accessories > Clothing > Outerwear
+  hlace: '204', // Apparel & Accessories > Clothing > Pants
+  kosulje: '212', // Apparel & Accessories > Clothing > Shirts & Tops
+  salovi: '177', // Apparel & Accessories > Clothing Accessories > Scarves & Shawls
+  'koferi-i-putne-torbe': '5181', // Luggage & Bags
   odjeca: '1604', // Apparel & Accessories > Clothing
   obuca: '187', // Apparel & Accessories > Shoes
   torbice: '3032', // Apparel & Accessories > Handbags, Wallets & Cases > Handbags

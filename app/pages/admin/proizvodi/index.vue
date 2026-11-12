@@ -15,6 +15,13 @@ const { campaigns, load: loadCampaigns } = useCampaigns()
 
 const canWrite = computed(() => can('write'))
 
+// Filtri i stranica popisa pamte se, da se nakon spremanja proizvoda vrati na isti popis (ProductEditor).
+const listQuery = useAdminProductListQuery()
+watch(() => route.query, (query) => {
+  const { spremljeno: _saved, ...rest } = query
+  listQuery.value = rest
+}, { immediate: true })
+
 // Kategorija u filtru uključuje sve svoje podkategorije.
 const categoryIds = computed(() => {
   const id = filters.value.categoryId

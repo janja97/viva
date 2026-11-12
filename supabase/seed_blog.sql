@@ -58,7 +58,7 @@ Za dnevno vjenčanje ili svadbu na otvorenom dobro stoje haljine do koljena ili 
 Svadba traje dugo, pa birajte haljinu u kojoj se možete slobodno kretati, sjediti i plesati. Isprobajte je u pokretu, ne samo ispred ogledala.
 
 ## Ženska odijela kao elegantna zamjena
-Ako vam haljine nisu prvi izbor, elegantno žensko odijelo ili komplet sa sakoom jednako je svečan izbor. Pogledajte [ženska odijela i sakoe](/kategorija/kompleti-i-sakoi).
+Ako vam haljine nisu prvi izbor, elegantno žensko odijelo ili komplet sa sakoom jednako je svečan izbor. Pogledajte [ženska odijela i sakoe](/kategorija/zenska-odijela).
 
 ## Cipele i torbica
 Uz haljinu birajte cipele u kojima možete izdržati cijelu večer, a malu svečanu torbicu uskladite s cipelama ili s detaljima na haljini. Pogledajte [svečane haljine](/kategorija/haljine), [obuću](/kategorija/obuca) i [torbice](/kategorija/torbice).

@@ -1,4 +1,4 @@
-import type { LocationQueryRaw } from 'vue-router'
+import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 import type { SizeType } from '~/types/database'
 
 export type AdminProductSort = 'new' | 'old' | 'price_asc' | 'price_desc' | 'qty_asc' | 'qty_desc' | 'name' | 'archived'
@@ -162,4 +162,9 @@ export function useAdminProductFilters() {
   }
 
   return { filters, page, activeCount, apply, toggle, goToPage, showArchived, clear, toRpcFilters }
+}
+
+// Zadnji upit popisa proizvoda (filtri, stranica), da se nakon spremanja vrati na isti popis.
+export function useAdminProductListQuery() {
+  return useState<LocationQuery>('admin-product-list-query', () => ({}))
 }

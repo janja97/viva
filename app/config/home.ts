@@ -11,13 +11,13 @@ export const HOME_HERO = {
   text: 'Za maturu, vjenčanje i svaku svečanu večer — haljine, kaputi, cipele i torbice birani s pažnjom u našem butiku u Mepas Mallu.',
   image: '',
   imageAlt: 'Model u dugoj večernjoj haljini',
-  primary: { label: 'Svečane haljine', slug: 'svecano' },
+  primary: { label: 'Svečane haljine', slug: 'svecane-haljine' },
   secondary: { label: 'Kaputi', slug: 'kaputi' },
 }
 
 export const HOME_CATEGORIES = [
   { title: 'Haljine', slug: 'haljine', image: '/images/home/svecana-haljina-kategorija.jpg', imageAlt: 'Ružičasta svečana haljina na jedno rame, sa šljokicama, remenom i satenskim šlepom' },
-  { title: 'Kompleti & sakoi', slug: 'kompleti-i-sakoi', image: '/images/home/kompleti-i-sakoi-kategorija.jpg', imageAlt: 'Ženski komplet od sakoa i hlača u bež boji, uz bijelu košulju s naglašenim ovratnikom i torbicu' },
+  { title: 'Ženska odijela', slug: 'zenska-odijela', image: '/images/home/kompleti-i-sakoi-kategorija.jpg', imageAlt: 'Ženski komplet od sakoa i hlača u bež boji, uz bijelu košulju s naglašenim ovratnikom i torbicu' },
   { title: 'Obuća', slug: 'obuca', image: '/images/home/obuca-kategorija.jpg', imageAlt: 'Bež čizme do koljena s ukrasnim vezicama i zlatnim gumbima' },
   { title: 'Torbice', slug: 'torbice', image: '/images/home/torbice-kategorija.jpg', imageAlt: 'Srebrna svjetlucava torbica s mašnom uz crnu satensku haljinu' },
   { title: 'Modni dodaci', slug: 'dodaci', image: '/images/home/modni-dodaci-kategorija.jpg', imageAlt: 'Bež pismo torbica i cipele na petu uz smeđu satensku haljinu' },
@@ -45,7 +45,7 @@ export const HOME_PANELS = [
     accent: 'trenuci',
     text: 'Duge večernje haljine, koktel modeli, sandale na petu i torbice-pisma koje zaokružuju izgled.',
     link: 'Istraži kolekciju',
-    slug: 'svecano',
+    slug: 'svecane-haljine',
     tone: 'champagne',
     image: '/images/home/svecana-haljina-srebrna.jpg',
     imageAlt: 'Srebrnosiva duga haljina s perlicama i visokim ovratnikom',

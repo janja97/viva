@@ -21,7 +21,8 @@ const images = useProductImages(form.id)
 
 const canWrite = computed(() => can('write') && !props.readOnly)
 const errorMessage = ref('')
-const isSaved = ref(false)
+// Nakon spremanja forma vraća na popis proizvoda, s filtrima koje je popis imao.
+const listQuery = useAdminProductListQuery()
 const isSaving = ref(false)
 
 const historyKey = ref(0)
@@ -113,7 +114,6 @@ function validate() {
 }
 
 async function onSubmit() {
-  isSaved.value = false
   errorMessage.value = validate()
   if (errorMessage.value) return
 
@@ -121,12 +121,8 @@ async function onSubmit() {
   try {
     await save(form)
     await images.commit()
-    if (props.isNew) {
-      await navigateTo({ path: '/admin/proizvodi', query: { spremljeno: form.sku } })
-    } else {
-      isSaved.value = true
-      historyKey.value++
-    }
+    // I novi i izmijenjeni proizvod vraćaju na popis, s istim filtrima i stranicom kao prije.
+    await navigateTo({ path: '/admin/proizvodi', query: { ...listQuery.value, spremljeno: form.sku } })
   } catch (error) {
     errorMessage.value = productErrorMessage(error)
   } finally {
@@ -275,8 +271,7 @@ onBeforeUnmount(images.rollback)
     <div v-if="canWrite" class="fixed inset-x-0 bottom-0 z-20 border-t border-primary-300 bg-white px-4 py-3 sm:px-6 lg:left-60 lg:px-8">
       <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-end gap-3">
         <BaseAlert v-if="errorMessage" type="error" class="w-full sm:mr-auto sm:w-auto">{{ errorMessage }}</BaseAlert>
-        <BaseAlert v-else-if="isSaved" type="success" class="w-full sm:mr-auto sm:w-auto">Proizvod je spremljen.</BaseAlert>
-        <NuxtLink to="/admin/proizvodi" class="inline-flex min-h-11 items-center rounded-lg px-3.5 text-sm font-medium text-stone-700 hover:bg-primary-100 sm:min-h-9">
+        <NuxtLink :to="{ path: '/admin/proizvodi', query: listQuery }" class="inline-flex min-h-11 items-center rounded-lg px-3.5 text-sm font-medium text-stone-700 hover:bg-primary-100 sm:min-h-9">
           Natrag
         </NuxtLink>
         <BaseButton type="submit" :loading="isSaving">{{ isSaving ? 'Spremanje...' : 'Spremi proizvod' }}</BaseButton>

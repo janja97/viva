@@ -11,7 +11,7 @@ const categoryLink = useCategoryLink()
 const links = [
   { label: 'Svečane haljine', slug: 'haljine' },
   { label: 'Maturalne haljine', slug: 'maturalne-haljine' },
-  { label: 'Ženska odijela', slug: 'kompleti-i-sakoi' },
+  { label: 'Ženska odijela', slug: 'zenska-odijela' },
   { label: 'Cipele na petu', slug: 'obuca' },
   { label: 'Torbice', slug: 'torbice' },
   { label: 'Nakit i dodaci', slug: 'dodaci' },
