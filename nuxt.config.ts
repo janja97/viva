@@ -37,6 +37,9 @@ export default defineNuxtConfig({
       supabasePublishableKey: '',
       siteUrl: '',
       siteName: 'Viva',
+      // NUXT_PUBLIC_COMING_SOON=true: javni web prikazuje samo stranicu "Uskoro" (ComingSoon).
+      // Admin radi, a prijavljeni članovi tima vide pravi web. Lokalno i nakon otvaranja ostaje false.
+      comingSoon: false,
     },
   },
   routeRules: {
