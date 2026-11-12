@@ -3,7 +3,7 @@ import type { StoreSettings } from '~/types/database'
 
 // Podaci o trgovini za Google. Telefon, e-mail i mreže ulaze tek kad su upisani u postavkama, a zatvoreni dani se izostavljaju.
 export function storeJsonLd(name: string, url: string, settings: StoreSettings) {
-  const social = [settings.instagram_url, settings.facebook_url, settings.tiktok_url].filter(Boolean)
+  const social = [settings.instagram_url, settings.facebook_url].filter(Boolean)
   return {
     '@context': 'https://schema.org',
     '@type': 'ClothingStore',

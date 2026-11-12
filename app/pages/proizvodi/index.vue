@@ -1,7 +1,7 @@
 <script setup lang="ts">
 usePageSeo({
-  title: 'Kolekcija svečanih haljina',
-  description: 'Pogledajte kolekciju luksuznih svečanih haljina, obuće i dodataka. Trgovina u Mepas Mallu u Mostaru.',
+  title: 'Svečane haljine, cipele i torbice - kolekcija',
+  description: 'Svečane i maturalne haljine, ženska odijela, cipele na petu, torbice i nakit. Dostava po BiH, plaćanje pouzećem ili isprobajte u Mepas Mallu u Mostaru.',
 })
 </script>
 

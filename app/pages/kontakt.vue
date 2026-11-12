@@ -1,7 +1,7 @@
 <script setup lang="ts">
 usePageSeo({
-  title: 'Kontakt i lokacija u Mostaru',
-  description: 'Posjetite našu trgovinu luksuzne svečane mode u Mepas Mallu u Mostaru. Adresa i lokacija na karti.',
+  title: 'Kontakt i lokacija: Mepas Mall Mostar',
+  description: 'Posjetite butik svečane mode u Mepas Mallu u Mostaru, Kneza Branimira 2b. Adresa, radno vrijeme, karta i kontakt. Imamo i poslovnicu u Sarajevu.',
 })
 </script>
 

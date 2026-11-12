@@ -51,6 +51,7 @@ export type StoreSettings = {
   email: string
   instagram_url: string
   facebook_url: string
+  // Stupac postoji u bazi (migracija 0029), ali se ne koristi: TikToka nema.
   tiktok_url: string
   opening_hours: OpeningHoursDay[]
   shipping_price: number
@@ -110,6 +111,26 @@ export type ShopPromoPage = Pick<PromoPage, 'slug' | 'title' | 'intro' | 'nav_la
   // Postoci s proizvodima, od najvećeg.
   groups: { discount_percent: number; product_ids: string[] }[]
 }
+
+// Članak bloga (migracija 0037). Tekst: prazan red je odlomak, "## " je podnaslov.
+export type BlogPost = {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  body: string
+  cover_path: string | null
+  cover_alt: string
+  meta_title: string | null
+  meta_description: string | null
+  faq: FaqItem[]
+  is_published: boolean
+  published_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type BlogPostInput = Omit<BlogPost, 'id' | 'published_at' | 'created_at' | 'updated_at'>
 
 export type BulkProductChanges = { is_visible: boolean } | { store_only: boolean } | { campaign_id: string | null }
 
@@ -413,6 +434,12 @@ export type Database = {
           { foreignKeyName: 'promo_page_campaigns_page_id_fkey'; columns: ['page_id']; isOneToOne: false; referencedRelation: 'promo_pages'; referencedColumns: ['id'] },
         ]
       }
+      blog_posts: {
+        Row: BlogPost
+        Insert: BlogPostInput
+        Update: Partial<BlogPostInput>
+        Relationships: []
+      }
       countdowns: {
         Row: Countdown
         Insert: CountdownInput
@@ -573,6 +600,7 @@ export type Database = {
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }
       shop_promo_page: { Args: { p_slug: string }; Returns: ShopPromoPage | null }
+      shop_product_redirect: { Args: { p_color_slug: string }; Returns: { status: 'archived' | 'not_archived' | 'unknown'; category_slug?: string | null } }
       save_promo_page: { Args: { p_id: string; p_page: PromoPageInput; p_campaign_ids: string[] }; Returns: undefined }
       newsletter_unsubscribe_email: { Args: { p_email: string }; Returns: undefined }
       shop_submit_inquiry: {

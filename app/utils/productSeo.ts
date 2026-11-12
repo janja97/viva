@@ -29,13 +29,18 @@ export function productSeoTitle({ name, colorName, categoryName, metaTitle }: Pr
   return withCategory.length <= MAX_TITLE ? withCategory : truncate(base, MAX_TITLE)
 }
 
+// Bez ručnog opisa: naziv i boja, opis proizvoda ili kategorija i cijena, pa kako se kupuje.
+// Mostar i dostava po BiH su na kraju jer se po njima traži, a otpadaju prvi kad tekst ne stane.
 export function productSeoDescription(input: ProductSeoInput) {
   if (input.metaDescription.trim()) return truncate(input.metaDescription, MAX_DESCRIPTION)
 
   const intro = `${input.name.trim()} u boji ${input.colorName.trim().toLowerCase()}.`
-  if (input.description.trim()) return truncate(`${intro} ${input.description}`, MAX_DESCRIPTION)
+  const where = input.storeOnly
+    ? 'Dostupno u trgovini u Mepas Mallu u Mostaru.'
+    : 'Dostava po BiH, plaćanje pouzećem ili isprobajte u Mepas Mallu u Mostaru.'
+  if (input.description.trim()) return truncate(`${intro} ${input.description} ${where}`, MAX_DESCRIPTION)
 
+  const category = input.categoryName ? ` ${input.categoryName}.` : ''
   const price = input.price ? ` Cijena ${formatPrice(Number(input.price))}.` : ''
-  const availability = input.storeOnly ? ' Dostupno u poslovnicama.' : ' Pogledajte dostupne veličine.'
-  return truncate(`${intro}${input.categoryName ? ` ${input.categoryName}.` : ''}${price}${availability}`, MAX_DESCRIPTION)
+  return truncate(`${intro}${category}${price} ${where}`, MAX_DESCRIPTION)
 }

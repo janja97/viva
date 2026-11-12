@@ -4,6 +4,7 @@ import type { StoreSettings, WeekDay } from '~/types/database'
 // i obavijest na vrhu weba admin mijenja na /admin/postavke (tablica store_settings, migracija 0029).
 export const STORE = {
   mall: 'Mepas Mall',
+  floor: '3. kat',
   street: 'Kneza Branimira 2b',
   postalCode: '88000',
   city: 'Mostar',

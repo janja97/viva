@@ -2,6 +2,8 @@ import type { SizeType } from '~/types/database'
 
 export const PRODUCT_IMAGES_BUCKET = 'product-images'
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+// Original smije biti veći, jer se prije slanja smanjuje (utils/optimizeImage.ts).
+export const MAX_SOURCE_IMAGE_BYTES = 25 * 1024 * 1024
 
 // Vrste datoteka moraju odgovarati onima dopuštenima u spremištu (migracija 0004).
 export const IMAGE_EXTENSIONS: Record<string, string> = {
@@ -92,3 +94,14 @@ export const DRESS_CATEGORY_SLUG = 'haljine'
 // Skupine na nadzornoj ploči (Zalihe, "Zaliha po veličinama"). Svaka uključuje i svoje podkategorije.
 // Kategorija koje nema u bazi se preskače, a ostale se mogu pogledati izbornikom.
 export const STOCK_GROUP_SLUGS = ['haljine', 'kompleti-i-sakoi', 'kaputi', 'obuca', 'torbice', 'dodaci']
+
+// "Kompletirajte izgled" na stranici proizvoda: koje kategorije (s podkategorijama) se nude uz koju.
+// Gleda se najdublja kategorija proizvoda koja ima pravilo, npr. haljine prije odjece.
+// Kategorija koje nema u bazi se preskače, a bez pravila se prikazuju najnoviji proizvodi.
+export const COMPLETE_LOOK: Record<string, string[]> = {
+  haljine: ['obuca', 'torbice', 'dodaci'],
+  odjeca: ['obuca', 'torbice', 'dodaci'],
+  obuca: ['torbice', 'haljine', 'dodaci'],
+  torbice: ['obuca', 'dodaci', 'haljine'],
+  dodaci: ['torbice', 'obuca', 'haljine'],
+}

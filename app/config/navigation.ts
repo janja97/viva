@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 import type { Permission } from '~/config/roles'
-import { FolderTree, LayoutDashboard, Mail, Megaphone, Package, Settings, ShoppingBag, Tag, TicketPercent, Timer, UserRound, Users } from '@lucide/vue'
+import { FolderTree, LayoutDashboard, Mail, Megaphone, Newspaper, Package, Settings, ShoppingBag, Tag, TicketPercent, Timer, UserRound, Users } from '@lucide/vue'
 
 export interface NavLink {
   label: string
@@ -19,6 +19,7 @@ export const PUBLIC_NAV: NavLink[] = [
   { label: 'Početna', to: '/' },
   { label: 'Kolekcija', to: '/proizvodi' },
   { label: 'O nama', to: '/o-nama' },
+  { label: 'Savjeti', to: '/blog' },
   { label: 'Kontakt', to: '/kontakt' },
 ]
 
@@ -64,6 +65,7 @@ export const ADMIN_NAV_GROUPS: AdminNavLink[][] = [
     { label: 'Promo kodovi', to: '/admin/promo-kodovi', icon: TicketPercent },
     { label: 'Odbrojavanja', to: '/admin/odbrojavanja', icon: Timer },
     { label: 'Newsletter', to: '/admin/newsletter', icon: Mail },
+    { label: 'Blog', to: '/admin/blog', icon: Newspaper },
   ],
 ]
 

@@ -32,9 +32,9 @@ const seoText = category.seo_text ? fillYear(category.seo_text) : ''
 const faq = (category.faq ?? []).map((item) => ({ question: fillYear(item.question), answer: fillYear(item.answer) }))
 
 usePageSeo({
-  title: category.meta_title ? fillYear(category.meta_title) : `${category.name} - svečana moda`,
+  title: category.meta_title ? fillYear(category.meta_title) : `${category.name} - svečana moda Mostar`,
   description: (category.meta_description ? fillYear(category.meta_description) : description)
-    || `${category.name} iz naše svečane kolekcije. Pogledajte ponudu online ili nas posjetite u Mepas Mallu u Mostaru.`,
+    || `${category.name} iz naše svečane kolekcije. Dostava po BiH, plaćanje pouzećem ili isprobajte u Mepas Mallu u Mostaru.`,
 })
 
 const breadcrumbs = [
@@ -43,6 +43,19 @@ const breadcrumbs = [
   ...path.slice(0, -1).map((item) => ({ label: item.name, to: `/kategorija/${item.slug}` })),
   { label: category.name },
 ]
+
+// Ista putanja i za Google (BreadcrumbList), s punim adresama.
+const { siteUrl } = useRuntimeConfig().public
+const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(breadcrumbJsonLd([
+      ...breadcrumbs.slice(0, -1).map((item) => ({ name: item.label, url: `${origin}${item.to}` })),
+      { name: category.name, url: `${origin}/kategorija/${category.slug}` },
+    ])),
+  }],
+})
 </script>
 
 <template>

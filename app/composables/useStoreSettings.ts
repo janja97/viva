@@ -29,7 +29,6 @@ export function useStoreSettings() {
   const socialLinks = computed(() => [
     { label: 'Instagram', url: settings.value.instagram_url },
     { label: 'Facebook', url: settings.value.facebook_url },
-    { label: 'TikTok', url: settings.value.tiktok_url },
   ].filter((item) => item.url))
 
   const shippingFor = (subtotal: number) => shippingForSettings(subtotal, settings.value)

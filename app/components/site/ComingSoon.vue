@@ -38,16 +38,20 @@ useHead({
         Uskoro otvaramo <em class="block text-gold-light">online trgovinu</em>
       </h1>
       <p class="mt-6 max-w-sm leading-relaxed text-white/80">
-        Svečane i maturalne haljine, ženska odijela, cipele i torbice. Do tada nas posjetite u {{ STORE.mall }}u u {{ STORE.city }}u.
+        Svečane i maturalne haljine, ženska odijela, cipele i torbice. Do tada nas posjetite u {{ STORE.mall }}u, {{ STORE.floor }}, u {{ STORE.city }}u.
       </p>
 
-      <!-- Zlatna linija koja putuje, kao znak da se trgovina priprema. -->
-      <div class="coming-soon__loader mt-10 h-px w-48 overflow-hidden bg-white/20" role="progressbar" aria-label="Trgovina se priprema">
-        <span class="block h-full w-1/3 bg-gold" />
+      <!-- Zlatna traka koja se polako puni, kao znak da se trgovina priprema. -->
+      <div class="mt-10 flex flex-col items-center" role="progressbar" aria-label="Pripremamo trgovinu">
+        <div class="coming-soon__loader h-0.5 w-56 overflow-hidden bg-white/15 sm:w-72">
+          <span class="block h-full w-full origin-left bg-gold" />
+        </div>
+        <p class="coming-soon__loading-text mt-3 text-[10px] uppercase tracking-[0.35em] text-gold-light" aria-hidden="true">Pripremamo trgovinu</p>
       </div>
 
       <div class="mt-10 space-y-2 text-sm text-white/80">
-        <p>{{ STORE.mall }}, {{ STORE.street }}, {{ STORE.city }}</p>
+        <p>{{ STORE.mall }}, {{ STORE.floor }}</p>
+        <p>{{ STORE.street }}, {{ STORE.city }}</p>
         <p v-if="settings.phone">
           <a :href="`tel:${phoneDigits(settings.phone)}`" class="inline-flex min-h-11 items-center hover:text-gold-light">{{ settings.phone }}</a>
         </p>
@@ -75,8 +79,13 @@ useHead({
   animation: coming-soon-zoom 12s ease-out both;
 }
 
+/* Traka se puni oko 5 sekundi, kratko zastane puna, nestane i kreće ispočetka. */
 .coming-soon__loader > span {
-  animation: coming-soon-slide 1.8s ease-in-out infinite;
+  animation: coming-soon-fill 5.5s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+
+.coming-soon__loading-text {
+  animation: coming-soon-pulse 2.8s ease-in-out infinite;
 }
 
 @keyframes coming-soon-rise {
@@ -89,16 +98,27 @@ useHead({
   to { transform: scale(1); }
 }
 
-@keyframes coming-soon-slide {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(300%); }
+@keyframes coming-soon-fill {
+  0% { transform: scaleX(0); opacity: 1; }
+  80% { transform: scaleX(1); opacity: 1; }
+  92% { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+
+@keyframes coming-soon-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .coming-soon__content > *,
   .coming-soon__photo,
-  .coming-soon__loader > span {
+  .coming-soon__loader > span,
+  .coming-soon__loading-text {
     animation: none;
+  }
+  .coming-soon__loader > span {
+    transform: scaleX(0.7);
   }
 }
 </style>

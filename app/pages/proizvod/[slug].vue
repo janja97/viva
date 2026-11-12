@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
+import { COMPLETE_LOOK, CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
 import { DELIVERY, EXCHANGE, STORE } from '~/config/store'
 
 // Svaka boja ima svoj URL, pa se stranica učitava iznova pri promjeni boje.
-definePageMeta({ key: (route) => route.fullPath })
+// Arhivirani proizvod trajno vodi na svoju kategoriju (middleware archived-product, migracija 0036).
+definePageMeta({ key: (route) => route.fullPath, middleware: 'archived-product' })
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -34,11 +35,31 @@ const currentPrice = isOnSale ? Number(product.sale_price) : regularPrice
 const dressLength = DRESS_LENGTHS.find((item) => item.value === product.dress_length)?.label
 const heelHeight = HEEL_HEIGHTS.find((item) => item.value === product.heel_height)?.label
 
-// Drugi proizvodi. Greška ovdje ne smije srušiti stranicu proizvoda.
-const { data: related } = await useAsyncData(`related-${slug}`, async () => {
+// "Kompletirajte izgled": proizvodi iz kategorija koje idu uz ovu (COMPLETE_LOOK), naizmjence po kategoriji.
+// Bez pravila, ili ako tamo nema proizvoda, najnoviji proizvodi. Greška ovdje ne smije srušiti stranicu.
+const { data: related } = await useAsyncData(`related-${slug}`, () => completeLook().catch((error) => {
+  console.error(error)
+  return []
+}))
+
+async function completeLook() {
+  const categories = allCategories.value ?? []
+  const path = categoryPath(categories, product.category_id)
+  const rule = [...path].reverse().map((item) => COMPLETE_LOOK[item.slug]).find(Boolean) ?? []
+  const groups = await Promise.all(rule.map(async (ruleSlug) => {
+    const target = categories.find((item) => item.slug === ruleSlug)
+    if (!target) return []
+    return (await fetchCards({ pageSize: 4, categoryIds: [target.id, ...descendantIds(categories, target.id)] })).cards
+  }))
+  const isOther = (card: { colors: { id: string }[] }) => !card.colors.some((item) => item.id === color.id)
+  // Jedna kartica iz svake kategorije redom, pa sljedeća.
+  const mixed = Array.from({ length: 4 }, (_, index) => groups.map((group) => group[index]))
+    .flat()
+    .filter((card): card is NonNullable<typeof card> => Boolean(card) && isOther(card!))
+  if (mixed.length >= 2) return mixed.slice(0, 4)
   const { cards } = await fetchCards({ pageSize: 8 })
-  return cards.filter((card) => !card.colors.some((item) => item.id === color.id)).slice(0, 4)
-})
+  return cards.filter(isOther).slice(0, 4)
+}
 
 const seoInput = {
   name: product.name,
@@ -200,7 +221,7 @@ useHead({
     </article>
 
     <section v-if="related?.length" class="pb-20">
-      <SectionHeading title="Upotpunite izgled" />
+      <SectionHeading title="Kompletirajte izgled" />
       <ProductGrid :cards="related" />
     </section>
   </div>

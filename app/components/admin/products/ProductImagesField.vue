@@ -22,7 +22,8 @@ async function onFiles(event: Event) {
   for (const file of files) {
     uploadingCount.value++
     try {
-      props.color.images.push(await props.api.upload(props.color.id, file))
+      // Ime datoteke prati URL boje (naziv-boja-sifra), npr. aurora-crna-123-1a2b3c4d.webp.
+      props.color.images.push(await props.api.upload(props.color.id, file, props.color.slug || props.color.name))
     } catch (error) {
       errorMessage.value = productErrorMessage(error)
     } finally {
