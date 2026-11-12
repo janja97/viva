@@ -59,6 +59,7 @@ const updatedText = computed(() => {
     <p v-else-if="!form" class="text-sm text-stone-500">Učitavanje...</p>
 
     <form v-else class="max-w-3xl space-y-4" @submit.prevent="submit" @input="saved = false">
+      <SettingsOrderCard v-model="form" />
       <SettingsContactCard v-model="form" />
       <SettingsSocialCard v-model="form" />
       <SettingsHoursCard v-model="form" />

@@ -40,6 +40,8 @@ export type WeekDay = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday'
 
 export type OpeningHoursDay = { day: WeekDay; closed: boolean; opens: string; closes: string }
 
+export type OrderChannel = 'whatsapp' | 'web'
+
 // Postavke trgovine, jedan redak (migracija 0029).
 export type StoreSettings = {
   id: boolean
@@ -55,6 +57,8 @@ export type StoreSettings = {
   free_shipping_above: number
   announcement_enabled: boolean
   announcement_text: string
+  // Kako kupac naručuje iz košarice (migracija 0035).
+  order_channel: OrderChannel
   updated_at: string
   updated_by_email: string | null
 }
@@ -75,6 +79,37 @@ export type Countdown = {
 }
 
 export type CountdownInput = Pick<Countdown, 'title' | 'message' | 'link' | 'starts_at' | 'ends_at' | 'is_enabled'>
+
+// Akcijska stranica, npr. /black-friday (migracije 0033 i 0034). Proizvode, postotke i datume daju njezine kampanje (promo_page_campaigns).
+export type PromoPage = {
+  id: string
+  slug: string
+  title: string
+  intro: string
+  nav_label: string
+  meta_title: string | null
+  meta_description: string | null
+  off_text: string
+  faq: FaqItem[]
+  is_active: boolean
+  updated_at: string
+}
+
+export type PromoPageInput = Omit<PromoPage, 'id' | 'slug' | 'updated_at'>
+
+// Stranica s id-evima svojih kampanja, za admin.
+export type PromoPageWithCampaigns = PromoPage & { campaign_ids: string[] }
+
+export type PromoPageState = 'live' | 'upcoming' | 'off'
+
+// Što kupci dobivaju iz shop_promo_page.
+export type ShopPromoPage = Pick<PromoPage, 'slug' | 'title' | 'intro' | 'nav_label' | 'meta_title' | 'meta_description' | 'off_text' | 'faq'> & {
+  state: PromoPageState
+  starts_at: string | null
+  ends_at: string | null
+  // Postoci s proizvodima, od najvećeg.
+  groups: { discount_percent: number; product_ids: string[] }[]
+}
 
 export type BulkProductChanges = { is_visible: boolean } | { store_only: boolean } | { campaign_id: string | null }
 
@@ -364,6 +399,20 @@ export type Database = {
         Update: Partial<Category>
         Relationships: []
       }
+      promo_pages: {
+        Row: PromoPage
+        Insert: PromoPageInput & Pick<PromoPage, 'slug'>
+        Update: Partial<PromoPageInput>
+        Relationships: []
+      }
+      promo_page_campaigns: {
+        Row: { page_id: string; campaign_id: string }
+        Insert: { page_id: string; campaign_id: string }
+        Update: never
+        Relationships: [
+          { foreignKeyName: 'promo_page_campaigns_page_id_fkey'; columns: ['page_id']; isOneToOne: false; referencedRelation: 'promo_pages'; referencedColumns: ['id'] },
+        ]
+      }
       countdowns: {
         Row: Countdown
         Insert: CountdownInput
@@ -523,6 +572,8 @@ export type Database = {
       admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }
+      shop_promo_page: { Args: { p_slug: string }; Returns: ShopPromoPage | null }
+      save_promo_page: { Args: { p_id: string; p_page: PromoPageInput; p_campaign_ids: string[] }; Returns: undefined }
       newsletter_unsubscribe_email: { Args: { p_email: string }; Returns: undefined }
       shop_submit_inquiry: {
         Args: { p_session: string; p_customer: InquiryCustomerInput }

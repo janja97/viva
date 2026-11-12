@@ -59,6 +59,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   free_shipping_above: 150,
   announcement_enabled: false,
   announcement_text: '',
+  // Rezerva je obrazac na webu, kako bi narudžbe radile i prije migracije 0035.
+  order_channel: 'web',
   updated_at: '',
   updated_by_email: null,
 }

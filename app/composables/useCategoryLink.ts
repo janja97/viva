@@ -1,4 +1,4 @@
-import type { ShopNavLink } from '~/config/navigation'
+import { SHOP_NAV, type ShopNavLink } from '~/config/navigation'
 
 export type SiteCategory = { id: string; name: string; slug: string; parent_id: string | null }
 
@@ -25,12 +25,13 @@ export function useShopNavLink() {
   const categoryLink = useCategoryLink()
   const { data: categories } = useSiteCategories()
 
-  const to = (link: ShopNavLink) => ({ path: categoryLink(link.slug), query: link.query })
+  const to = (link: ShopNavLink) => (link.path ? { path: link.path } : { path: categoryLink(link.slug), query: link.query })
 
   // Stavka bez postojeće kategorije također vodi na kolekciju, pa se aktivna ne prepoznaje po poveznici.
   // "Novo" i "Popust" vode na isti popis, a razlikuje ih samo filtar sniženja.
-  const isActive = (link: ShopNavLink) =>
-    route.path === (link.slug ? `/kategorija/${link.slug}` : '/proizvodi')
+  const isActive = (link: ShopNavLink) => link.path
+    ? route.path === link.path
+    : route.path === (link.slug ? `/kategorija/${link.slug}` : '/proizvodi')
     && route.query.snizeno === link.query?.snizeno
 
   // Izravne podkategorije stavke, redom kao u adminu.
@@ -40,4 +41,12 @@ export function useShopNavLink() {
   }
 
   return { to, isActive, subcategories }
+}
+
+// Izbornik trgovine. Dok je Black Friday u tijeku, stavka "Popust" vodi na /black-friday pod nazivom iz admina.
+export function useShopNav() {
+  const { data: promo } = useShopPromoPage('black-friday')
+  return computed<ShopNavLink[]>(() => SHOP_NAV.map((link) => (link.query?.snizeno && promo.value?.state === 'live'
+    ? { label: promo.value.nav_label || link.label, path: `/${promo.value.slug}`, highlight: true }
+    : link)))
 }

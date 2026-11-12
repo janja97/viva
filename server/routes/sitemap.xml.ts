@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-const STATIC_ROUTES = ['/', '/proizvodi', '/o-nama', '/kontakt', '/dostava', '/povrat-i-zamjena']
+const STATIC_ROUTES = ['/', '/proizvodi', '/o-nama', '/kontakt', '/dostava', '/povrat-i-zamjena', '/black-friday']
 
 // Svoj zapis dobiva svaka boja proizvoda te svaka kategorija s proizvodima ili opisom.
 export default defineEventHandler(async (event) => {

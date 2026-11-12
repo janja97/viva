@@ -8,6 +8,10 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   vite: {
     plugins: [tailwindcss()],
+    // Unaprijed spojeni paketi, da razvojni server ne učitava stranicu ponovno kad ih prvi put otkrije.
+    optimizeDeps: {
+      include: ['@lucide/vue', '@supabase/supabase-js'],
+    },
   },
   app: {
     head: {

@@ -5,6 +5,10 @@ usePageSeo({ title: 'Košarica', noindex: true })
 
 const { items, isLoaded, load, setQuantity, remove, submitInquiry } = useCart()
 
+// Postavke > Narudžbe (migracija 0035): WhatsApp poruka ili obrazac na webu. Bez WhatsApp broja uvijek obrazac.
+const { settings } = useStoreSettings()
+const viaWhatsapp = computed(() => settings.value.order_channel === 'whatsapp' && Boolean(settings.value.whatsapp))
+
 const isFormOpen = ref(false)
 const isBusy = ref(false)
 const error = ref('')
@@ -86,13 +90,14 @@ onMounted(() => run(load))
           class="mt-6 inline-flex min-h-13 w-full items-center justify-center border border-ink bg-ink px-8 text-xs font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-transparent hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
           @click="openForm"
         >
-          Naruči
+          {{ viaWhatsapp ? 'Naruči preko WhatsAppa' : 'Naruči' }}
         </button>
       </aside>
     </div>
 
-    <BaseModal :open="isFormOpen" title="Podaci za dostavu" @close="isFormOpen = false">
-      <InquiryForm :loading="isBusy" :error="formError" @submit="onSubmit" @cancel="isFormOpen = false" />
+    <BaseModal :open="isFormOpen" :title="viaWhatsapp ? 'Narudžba preko WhatsAppa' : 'Podaci za dostavu'" @close="isFormOpen = false">
+      <WhatsappOrderForm v-if="viaWhatsapp" :phone="settings.whatsapp" @cancel="isFormOpen = false" />
+      <InquiryForm v-else :loading="isBusy" :error="formError" @submit="onSubmit" @cancel="isFormOpen = false" />
     </BaseModal>
 
     <!-- Košarica je već prazna, pa nakon potvrde kupac ide na naslovnu. -->

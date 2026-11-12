@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Heart, Search, ShoppingBag, X } from '@lucide/vue'
-import { PUBLIC_NAV, SHOP_NAV } from '~/config/navigation'
+import { PUBLIC_NAV } from '~/config/navigation'
 
+const shopNav = useShopNav()
 const route = useRoute()
 const { siteName } = useRuntimeConfig().public
 const isMenuOpen = ref(false)
@@ -44,7 +45,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
 
       <nav aria-label="Glavna navigacija" class="hidden lg:block">
         <ul class="flex justify-center gap-5 xl:gap-9">
-          <SiteNavItem v-for="link in SHOP_NAV" :key="link.label" :link="link" :link-class="linkClass" />
+          <SiteNavItem v-for="link in shopNav" :key="link.label" :link="link" :link-class="linkClass" />
         </ul>
       </nav>
 
@@ -87,7 +88,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
       class="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-t border-line lg:hidden"
     >
       <ul class="px-4 py-3 sm:px-6">
-        <SiteMobileNavItem v-for="link in SHOP_NAV" :key="link.label" :link="link" />
+        <SiteMobileNavItem v-for="link in shopNav" :key="link.label" :link="link" />
       </ul>
       <ul class="border-t border-line px-4 py-3 sm:px-6">
         <li v-for="link in PUBLIC_NAV" :key="link.to">

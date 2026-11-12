@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 import type { Permission } from '~/config/roles'
-import { FolderTree, LayoutDashboard, Mail, Package, Settings, ShoppingBag, Tag, TicketPercent, Timer, UserRound, Users } from '@lucide/vue'
+import { FolderTree, LayoutDashboard, Mail, Megaphone, Package, Settings, ShoppingBag, Tag, TicketPercent, Timer, UserRound, Users } from '@lucide/vue'
 
 export interface NavLink {
   label: string
@@ -30,6 +30,8 @@ export const INFO_NAV: NavLink[] = [
 
 export type ShopNavLink = {
   label: string
+  // Stalna putanja umjesto kategorije, npr. /black-friday dok je akcija u tijeku.
+  path?: string
   slug?: string
   // Filtar na popisu, npr. samo sniženi proizvodi.
   query?: { snizeno?: '1' }
@@ -58,6 +60,7 @@ export const ADMIN_NAV_GROUPS: AdminNavLink[][] = [
     { label: 'Proizvodi', to: '/admin/proizvodi', icon: Package },
     { label: 'Kategorije', to: '/admin/kategorije', icon: FolderTree },
     { label: 'Kampanje', to: '/admin/kampanje', icon: Tag },
+    { label: 'Akcijske stranice', to: '/admin/akcijske-stranice', icon: Megaphone },
     { label: 'Promo kodovi', to: '/admin/promo-kodovi', icon: TicketPercent },
     { label: 'Odbrojavanja', to: '/admin/odbrojavanja', icon: Timer },
     { label: 'Newsletter', to: '/admin/newsletter', icon: Mail },
