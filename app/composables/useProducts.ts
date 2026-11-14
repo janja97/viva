@@ -1,3 +1,4 @@
+import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 import { PRODUCT_IMAGES_BUCKET } from '~/config/products'
 import type { BulkProductChanges, Database, Product, ProductColor, ProductPayload } from '~/types/database'
 import type { ProductForm } from '~/types/productForm'
@@ -182,6 +183,13 @@ export function useProducts() {
     return data
   }
 
+  // Čišćenje zaliha: proizvodi se na stranicu dodaju pojedinačno i prikazuju samo na njoj (migracija 0039).
+  async function setPromoPage(ids: string[], on: boolean) {
+    const { data, error } = await supabase.rpc('set_promo_page_products', { p_slug: EXCLUSIVE_PROMO_PAGE.slug, p_ids: ids, p_on: on })
+    if (error) throw error
+    return data
+  }
+
   async function fetchStock(id: string) {
     const { data, error } = await supabase
       .from('products')
@@ -209,7 +217,7 @@ export function useProducts() {
     return data ?? []
   }
 
-  return { fetchForm, save, archive, restore, remove, bulkUpdate, fetchStock, adjustStock, fetchBrands }
+  return { fetchForm, save, archive, restore, remove, bulkUpdate, setPromoPage, fetchStock, adjustStock, fetchBrands }
 }
 
 export type ProductListRow = {
@@ -220,6 +228,8 @@ export type ProductListRow = {
   salePrice: number | null
   isVisible: boolean
   storeOnly: boolean
+  // Proizvod je dodan na stranicu Čišćenje zaliha.
+  onPromoPage: boolean
   categoryName: string
   brand: string | null
   colors: { id: string; name: string; hex: string }[]
@@ -227,7 +237,7 @@ export type ProductListRow = {
   thumbnail: string | null
 }
 
-export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'campaign' | 'archive' | 'restore' | 'delete'
+export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'campaign' | 'promo_on' | 'promo_off' | 'archive' | 'restore' | 'delete'
 
 export type ProductFilterOptions = Database['public']['Functions']['admin_product_filter_options']['Returns']
 
@@ -268,7 +278,7 @@ export function useProductList() {
       if (result.ids.length) {
         const response = await supabase
           .from('products')
-          .select('id, sku, name, price, sale_price, is_visible, store_only, categories!products_category_id_fkey(name), product_internal(brand), product_colors(id, name, hex, sort_order, product_sizes(quantity), product_images(path, sort_order))')
+          .select('id, sku, name, price, sale_price, is_visible, store_only, promo_page_id, categories!products_category_id_fkey(name), product_internal(brand), product_colors(id, name, hex, sort_order, product_sizes(quantity), product_images(path, sort_order))')
           .in('id', result.ids)
         if (response.error) throw response.error
         data = response.data
@@ -314,6 +324,7 @@ export function useProductList() {
       salePrice: product.sale_price === null || product.sale_price === undefined ? null : Number(product.sale_price),
       isVisible: product.is_visible,
       storeOnly: product.store_only,
+      onPromoPage: product.promo_page_id !== null,
       categoryName: product.categories?.name ?? '',
       brand: product.product_internal?.brand ?? null,
       colors: colors.map(({ id, name, hex }) => ({ id, name, hex })),
@@ -325,7 +336,7 @@ export function useProductList() {
   return { rows, total, pageCount, options, isLoading, loadError, load, loadOptions, fetchAllIds }
 }
 
-type ProductRowData = Pick<Product, 'id' | 'sku' | 'name' | 'price' | 'sale_price' | 'is_visible' | 'store_only'> & {
+type ProductRowData = Pick<Product, 'id' | 'sku' | 'name' | 'price' | 'sale_price' | 'is_visible' | 'store_only' | 'promo_page_id'> & {
   categories: { name: string } | null
   product_internal: { brand: string | null } | null
   product_colors: (Pick<ProductColor, 'id' | 'name' | 'hex' | 'sort_order'> & {

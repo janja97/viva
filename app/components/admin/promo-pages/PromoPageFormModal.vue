@@ -19,6 +19,7 @@ const form = reactive({
   offText: '',
   campaignIds: [] as string[],
   isActive: false,
+  isExclusive: false,
   faq: [] as FaqItem[],
 })
 const localError = ref('')
@@ -35,6 +36,7 @@ watch(() => props.open, (isOpen) => {
   form.offText = page.off_text
   form.campaignIds = [...page.campaign_ids]
   form.isActive = page.is_active
+  form.isExclusive = page.is_exclusive
   form.faq = structuredClone(toRaw(page.faq))
 })
 
@@ -46,7 +48,7 @@ function toggleCampaign(id: string) {
 }
 
 function submit() {
-  localError.value = form.isActive && !form.campaignIds.length ? 'Za uključenu stranicu odaberi barem jednu kampanju, jer kampanje daju proizvode, postotke i datume.' : ''
+  localError.value = form.isActive && !form.isExclusive && !form.campaignIds.length ? 'Za uključenu stranicu odaberi barem jednu kampanju, jer kampanje daju proizvode, postotke i datume.' : ''
   if (localError.value) return
   emit('save', {
     title: form.title.trim(),
@@ -56,6 +58,7 @@ function submit() {
     meta_description: form.metaDescription.trim() || null,
     off_text: form.offText.trim(),
     is_active: form.isActive,
+    is_exclusive: form.isExclusive,
     faq: form.faq
       .map((item) => ({ question: item.question.trim(), answer: item.answer.trim() }))
       .filter((item) => item.question && item.answer),
@@ -66,9 +69,18 @@ function submit() {
 <template>
   <BaseModal :open="open" :title="page ? `Uredi: /${page.slug}` : 'Akcijska stranica'" wide @close="emit('close')">
     <form class="space-y-4" @submit.prevent="submit">
-      <BaseSwitch v-model="form.isActive" label="Uključena" hint="Dok je uključena i barem jedna kampanja traje, stranica prikazuje proizvode, a stavka Popust u izborniku vodi ovamo." />
+      <BaseSwitch
+        v-model="form.isActive"
+        label="Uključena"
+        :hint="form.isExclusive
+          ? 'Dok je uključena, stranica je u izborniku i prikazuje dodane proizvode, a njih nema u kolekciji, kategorijama ni pretrazi. Kad je isključiš, vraćaju se u trgovinu.'
+          : 'Dok je uključena i barem jedna kampanja traje, stranica prikazuje proizvode, a stavka Popust u izborniku vodi ovamo.'"
+      />
+      <p v-if="form.isExclusive" class="text-xs text-stone-500">
+        Proizvode dodaješ pojedinačno na popisu proizvoda: označi ih kvačicom i odaberi "Dodaj u {{ page?.title }}". Sniženje im i dalje daje kampanja.
+      </p>
 
-      <fieldset>
+      <fieldset v-else>
         <legend class="mb-1.5 text-sm font-medium text-stone-700">Kampanje (popusti)</legend>
         <p v-if="!campaigns.length" class="text-xs text-stone-500">Još nema kampanja. Napravi ih u Kampanjama, npr. −20 %, −30 % i −50 %.</p>
         <ul v-else class="divide-y divide-primary-200 border border-primary-300">
@@ -87,7 +99,7 @@ function submit() {
 
       <div class="grid gap-4 sm:grid-cols-2">
         <BaseInput v-model="form.title" label="Naslov na stranici" :maxlength="80" required />
-        <BaseInput v-model="form.navLabel" label="Naziv u izborniku" :maxlength="30" hint="Zamjenjuje Popust dok akcija traje." />
+        <BaseInput v-model="form.navLabel" label="Naziv u izborniku" :maxlength="30" :hint="form.isExclusive ? 'Zasebna stavka u izborniku dok je stranica uključena.' : 'Zamjenjuje Popust dok akcija traje.'" />
       </div>
       <BaseTextarea v-model="form.intro" label="Tekst za vrijeme akcije" :maxlength="1000" hint="Npr. vrijedi li i u trgovini u Mostaru i Sarajevu." />
       <BaseTextarea v-model="form.offText" label="Tekst izvan akcije" :maxlength="500" hint="Stranica ostaje i kad akcija ne traje, uz prijavu na newsletter." />

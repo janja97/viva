@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { History, Plus } from '@lucide/vue'
 import type { BulkAction } from '~/composables/useProducts'
+import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 
 definePageMeta({ layout: 'admin' })
 usePageSeo({ title: 'Proizvodi', noindex: true })
@@ -10,7 +11,7 @@ const { can } = usePermissions()
 const { filters, page, activeCount, goToPage, showArchived, toRpcFilters } = useAdminProductFilters()
 const { categories, load: loadCategories } = useCategories()
 const { rows, total, pageCount, options, isLoading, loadError, load, loadOptions, fetchAllIds } = useProductList()
-const { archive, restore, remove, bulkUpdate } = useProducts()
+const { archive, restore, remove, bulkUpdate, setPromoPage } = useProducts()
 const { campaigns, load: loadCampaigns } = useCampaigns()
 
 const canWrite = computed(() => can('write'))
@@ -71,7 +72,7 @@ async function selectAllMatching() {
 }
 
 // RADNJE
-const pending = ref<{ action: 'archive' | 'delete'; ids: string[]; label: string } | null>(null)
+const pending = ref<{ action: 'archive' | 'delete' | 'promo_off'; ids: string[]; label: string } | null>(null)
 const campaignIds = ref<string[] | null>(null)
 const isWorking = ref(false)
 const actionError = ref('')
@@ -87,7 +88,7 @@ const labelFor = (ids: string[]) => (ids.length === 1
 function startAction(action: BulkAction, ids = selected.value) {
   if (!ids.length) return
   actionError.value = ''
-  if (action === 'archive' || action === 'delete') pending.value = { action, ids, label: labelFor(ids) }
+  if (action === 'archive' || action === 'delete' || action === 'promo_off') pending.value = { action, ids, label: labelFor(ids) }
   else if (action === 'campaign') campaignIds.value = ids
   else execute(action, ids)
 }
@@ -129,6 +130,10 @@ async function perform(action: BulkAction, ids: string[], campaignId: string | n
       const name = campaigns.value.find((campaign) => campaign.id === campaignId)?.name
       return name ? `Dodano u kampanju „${name}”: ${updated}.` : `Maknuto iz kampanje: ${updated}.`
     }
+    case 'promo_on':
+      return `Dodano u ${EXCLUSIVE_PROMO_PAGE.label}: ${await setPromoPage(ids, true)}. Dok je ta stranica uključena, ovi proizvodi su samo na njoj.`
+    case 'promo_off':
+      return `Maknuto iz: ${EXCLUSIVE_PROMO_PAGE.label}: ${await setPromoPage(ids, false)}.`
     case 'archive':
       await archive(ids)
       return `Arhivirano: ${ids.length}.`
@@ -279,8 +284,8 @@ onMounted(async () => {
 
     <ConfirmDialog
       :open="Boolean(pending)"
-      :title="pending?.action === 'delete' ? 'Trajno obriši' : 'Arhiviraj'"
-      :confirm-label="pending?.action === 'delete' ? 'Obriši trajno' : 'Arhiviraj'"
+      :title="pending?.action === 'delete' ? 'Trajno obriši' : pending?.action === 'promo_off' ? `Makni iz: ${EXCLUSIVE_PROMO_PAGE.label}` : 'Arhiviraj'"
+      :confirm-label="pending?.action === 'delete' ? 'Obriši trajno' : pending?.action === 'promo_off' ? 'Makni' : 'Arhiviraj'"
       :loading="isWorking"
       :error="actionError"
       @close="pending = null"
@@ -288,6 +293,9 @@ onMounted(async () => {
     >
       <template v-if="pending?.action === 'delete'">
         Sigurno želiš trajno obrisati {{ pending?.label }} sa svim bojama, količinama i slikama? U povijesti ostaje samo zapis o brisanju. Ova radnja se ne može poništiti.
+      </template>
+      <template v-else-if="pending?.action === 'promo_off'">
+        Sigurno želiš maknuti {{ pending?.label }} sa stranice {{ EXCLUSIVE_PROMO_PAGE.label }}? Proizvod se vraća u kolekciju, kategorije i pretragu. Sniženje iz kampanje ostaje.
       </template>
       <template v-else>
         {{ pending?.label }} nestat će s weba i preći u arhivu. Podaci ostaju, ali se brišu sve slike osim prve. Proizvod možeš kasnije vratiti, ali ćeš slike morati dodati ponovno.

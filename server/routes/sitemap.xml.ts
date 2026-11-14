@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-const STATIC_ROUTES = ['/', '/proizvodi', '/o-nama', '/kontakt', '/dostava', '/povrat-i-zamjena', '/black-friday', '/blog']
+const STATIC_ROUTES = ['/', '/proizvodi', '/o-nama', '/kontakt', '/dostava', '/povrat-i-zamjena', '/ciscenje-zaliha','/blog']
 const PRODUCT_IMAGES_BUCKET = 'product-images'
 // Google uzima najviše 1000 slika po adresi, a za proizvod je dovoljno nekoliko.
 const MAX_IMAGES_PER_URL = 6

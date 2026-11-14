@@ -54,11 +54,13 @@ export function useShop() {
   }
 
   // Svaka boja je zasebna kartica.
-  async function fetchCards({ page = 0, pageSize = SHOP_PAGE_SIZE, categoryIds, productIds }: {
+  // Proizvodi koji su samo na akcijskoj stranici (promo_only, migracija 0038) dolaze samo uz `includePromoOnly`.
+  async function fetchCards({ page = 0, pageSize = SHOP_PAGE_SIZE, categoryIds, productIds, includePromoOnly = false }: {
     page?: number
     pageSize?: number
     categoryIds?: string[]
     productIds?: string[]
+    includePromoOnly?: boolean
   } = {}) {
     let query = supabase
       .from('products')
@@ -74,6 +76,7 @@ export function useShop() {
     // Vrijedi za glavnu i dodatne kategorije, jer su obje u ovoj tablici.
     if (categoryIds) query = query.in('product_categories.category_id', categoryIds)
     if (productIds) query = query.in('id', productIds)
+    if (!includePromoOnly) query = query.eq('promo_only', false)
 
     const { data, error, count } = await query
     if (error) throw error

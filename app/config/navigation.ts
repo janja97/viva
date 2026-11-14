@@ -31,7 +31,7 @@ export const INFO_NAV: NavLink[] = [
 
 export type ShopNavLink = {
   label: string
-  // Stalna putanja umjesto kategorije, npr. /black-friday dok je akcija u tijeku.
+  // Stalna putanja umjesto kategorije, npr. /ciscenje-zaliha dok je akcija u tijeku.
   path?: string
   slug?: string
   // Filtar na popisu, npr. samo sniženi proizvodi.
@@ -50,6 +50,15 @@ export const SHOP_NAV: ShopNavLink[] = [
   { label: 'Novo', highlight: true },
   { label: 'Popust', query: { snizeno: '1' }, highlight: true },
 ]
+
+// Akcijske stranice koje imaju datoteku u app/pages. Dok traju, preuzimaju stavku "Popust" (ako ih traje više,
+// vrijedi prva s popisa), a admin prikazuje samo njih. Black Friday je zasad maknut: redak u bazi ostaje,
+// a vraća se datotekom pages/black-friday.vue, slugom ovdje i u STATIC_ROUTES sitemapa.
+export const PROMO_PAGE_SLUGS = ['ciscenje-zaliha']
+
+// Stranica na koju se proizvodi dodaju pojedinačno s popisa proizvoda i prikazuju samo na njoj (migracija 0039).
+// Dok je uključena, u izborniku je zasebna stavka iza "Popust".
+export const EXCLUSIVE_PROMO_PAGE = { slug: 'ciscenje-zaliha', label: 'Čišćenje zaliha' }
 
 // Svaka grupa je u izborniku odvojena crtom.
 export const ADMIN_NAV_GROUPS: AdminNavLink[][] = [

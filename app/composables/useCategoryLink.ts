@@ -1,4 +1,4 @@
-import { SHOP_NAV, type ShopNavLink } from '~/config/navigation'
+import { PROMO_PAGE_SLUGS, SHOP_NAV, type ShopNavLink } from '~/config/navigation'
 
 export type SiteCategory = { id: string; name: string; slug: string; parent_id: string | null }
 
@@ -43,10 +43,20 @@ export function useShopNavLink() {
   return { to, isActive, subcategories }
 }
 
-// Izbornik trgovine. Dok je Black Friday u tijeku, stavka "Popust" vodi na /black-friday pod nazivom iz admina.
+// Izbornik trgovine. Dok obična akcijska stranica traje, stavka "Popust" vodi na nju pod nazivom iz admina.
 export function useShopNav() {
-  const { data: promo } = useShopPromoPage('black-friday')
-  return computed<ShopNavLink[]>(() => SHOP_NAV.map((link) => (link.query?.snizeno && promo.value?.state === 'live'
-    ? { label: promo.value.nav_label || link.label, path: `/${promo.value.slug}`, highlight: true }
-    : link)))
+  const pages = PROMO_PAGE_SLUGS.map((slug) => useShopPromoPage(slug).data)
+  return computed<ShopNavLink[]>(() => {
+    const live = pages.flatMap((page) => (page.value?.state === 'live' ? [page.value] : []))
+    const promo = live.find((page) => !page.is_exclusive)
+    // Stranica "samo ovdje" (Čišćenje zaliha) ne zamjenjuje "Popust", jer ostali sniženi proizvodi ostaju u trgovini.
+    const extra = live.filter((page) => page.is_exclusive)
+      .map((page): ShopNavLink => ({ label: page.nav_label || page.title, path: `/${page.slug}`, highlight: true }))
+    return [
+      ...SHOP_NAV.map((link) => (link.query?.snizeno && promo
+        ? { label: promo.nav_label || link.label, path: `/${promo.slug}`, highlight: true }
+        : link)),
+      ...extra,
+    ]
+  })
 }

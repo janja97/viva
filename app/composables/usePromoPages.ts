@@ -1,3 +1,4 @@
+import { PROMO_PAGE_SLUGS } from '~/config/navigation'
 import type { PromoPageInput, PromoPageWithCampaigns, ShopPromoPage } from '~/types/database'
 
 // {godina} u tekstu akcijske stranice: godina početka kampanje, a bez nje tekuća godina.
@@ -6,7 +7,7 @@ export function fillPromoYear(text: string, page: Pick<ShopPromoPage, 'starts_at
   return text.replaceAll('{godina}', String(year))
 }
 
-// Javna akcijska stranica (npr. /black-friday) kroz shop_promo_page (migracija 0033).
+// Javna akcijska stranica (npr. /ciscenje-zaliha) kroz shop_promo_page (migracija 0033).
 // Isti ključ koristi i izbornik, pa se podaci učitavaju jednom.
 export function useShopPromoPage(slug: string) {
   const supabase = useSupabase()
@@ -34,7 +35,8 @@ export function usePromoPages() {
     isLoading.value = true
     loadError.value = ''
     const [pageResult, linkResult] = await Promise.all([
-      supabase.from('promo_pages').select('*').order('slug'),
+      // Samo stranice koje imaju datoteku u app/pages, inače bi poveznica vodila na 404.
+      supabase.from('promo_pages').select('*').in('slug', PROMO_PAGE_SLUGS).order('slug'),
       supabase.from('promo_page_campaigns').select('page_id, campaign_id'),
     ])
     isLoading.value = false

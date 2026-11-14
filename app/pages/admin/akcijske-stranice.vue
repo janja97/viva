@@ -19,10 +19,12 @@ const pageCampaigns = (page: PromoPageWithCampaigns) => campaigns.value
   .sort((a, b) => b.discount_percent - a.discount_percent)
 
 // Npr. "−50 %, −30 %, −20 %", od najvećeg.
-const percentList = (page: PromoPageWithCampaigns) => pageCampaigns(page).map((campaign) => `−${campaign.discount_percent} %`).join(', ') || 'bez kampanje'
+const percentList = (page: PromoPageWithCampaigns) => page.is_exclusive ? 'proizvodi se dodaju pojedinačno i prikazuju samo ovdje' : pageCampaigns(page).map((campaign) => `−${campaign.discount_percent} %`).join(', ') || 'bez kampanje'
 
 // Isto pravilo kao shop_promo_page: u tijeku je dok traje barem jedna kampanja, a odbrojava dok neka tek počinje.
 function pageStatus(page: PromoPageWithCampaigns) {
+  // Stranica s pojedinačno dodanim proizvodima je u tijeku čim je uključena.
+  if (page.is_exclusive && page.is_active) return { label: 'U tijeku', color: 'bg-emerald-100 text-emerald-800' }
   const statuses = pageCampaigns(page).map((campaign) => campaignStatus(campaign))
   if (!page.is_active || !statuses.length) return { label: 'Isključena', color: 'bg-stone-200 text-stone-700' }
   const status = statuses.includes('active') ? 'active' : statuses.includes('scheduled') ? 'scheduled' : 'ended'
@@ -50,7 +52,7 @@ onMounted(() => Promise.all([load(), loadCampaigns()]))
 
 <template>
   <div>
-    <AdminPageHeader title="Akcijske stranice" description="Stalne stranice za akcije, npr. Black Friday. Proizvode, postotak i datume daje kampanja." />
+    <AdminPageHeader title="Akcijske stranice" description="Stalne stranice za akcije, npr. Čišćenje zaliha. Proizvode, postotak i datume daje kampanja." />
 
     <p v-if="isLoading && !pages.length" class="text-sm text-stone-500">Učitavanje...</p>
     <div v-else-if="loadError" class="space-y-3">
@@ -78,9 +80,13 @@ onMounted(() => Promise.all([load(), loadCampaigns()]))
     </ul>
 
     <div class="mt-4 max-w-2xl space-y-2 text-xs text-stone-500">
-      <p>Kako pokrenuti Black Friday: 1. u Kampanjama napravi privremenu kampanju za svaki popust (npr. −20 %, −30 % i −50 %) s istim datumima, 2. na popisu proizvoda dodijeli proizvode kampanjama, 3. ovdje kvačicama odaberi te kampanje i uključi stranicu.</p>
-      <p>Prije početka stranica odbrojava do početka, za vrijeme akcije prikazuje proizvode i odbrojava do kraja, a nakon kraja prikazuje tekst izvan akcije. Adresa ostaje ista svake godine.</p>
+      <p>Čišćenje zaliha: 1. na popisu proizvoda označi kvačicom proizvode i odaberi "Dodaj u Čišćenje zaliha", 2. ovdje uključi stranicu. Dok je uključena, ti se proizvodi vide samo na /ciscenje-zaliha, a nema ih u kolekciji, kategorijama ni pretrazi.</p>
+      <p>Sniženje daje kampanja, kao i dosad. Ostali proizvodi iste kampanje ostaju u trgovini.</p>
     </div>
+
+    <template v-for="page in pages" :key="page.id">
+      <PromoPageProducts v-if="page.is_exclusive" class="mt-8" :page="page" :can-write="canWrite" />
+    </template>
 
     <PromoPageFormModal
       :open="Boolean(editing)"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ListChecks, X } from '@lucide/vue'
 import type { BulkAction } from '~/composables/useProducts'
+import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 
 const props = defineProps<{
   count: number
@@ -15,6 +16,8 @@ const ACTIVE_ACTIONS: { action: BulkAction; label: string; danger?: boolean }[] 
   { action: 'store_on', label: 'Samo u trgovini' },
   { action: 'store_off', label: 'Makni "samo u trgovini"' },
   { action: 'campaign', label: 'Kampanja (sniženje)' },
+  { action: 'promo_on', label: `Dodaj u ${EXCLUSIVE_PROMO_PAGE.label}` },
+  { action: 'promo_off', label: `Makni iz: ${EXCLUSIVE_PROMO_PAGE.label}` },
   { action: 'archive', label: 'Arhiviraj', danger: true },
 ]
 

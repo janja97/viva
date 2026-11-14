@@ -93,6 +93,8 @@ export type PromoPage = {
   off_text: string
   faq: FaqItem[]
   is_active: boolean
+  // Proizvodi se na stranicu dodaju pojedinačno (products.promo_page_id) i dok je uključena prikazuju samo na njoj.
+  is_exclusive: boolean
   updated_at: string
 }
 
@@ -104,7 +106,7 @@ export type PromoPageWithCampaigns = PromoPage & { campaign_ids: string[] }
 export type PromoPageState = 'live' | 'upcoming' | 'off'
 
 // Što kupci dobivaju iz shop_promo_page.
-export type ShopPromoPage = Pick<PromoPage, 'slug' | 'title' | 'intro' | 'nav_label' | 'meta_title' | 'meta_description' | 'off_text' | 'faq'> & {
+export type ShopPromoPage = Pick<PromoPage, 'slug' | 'title' | 'intro' | 'nav_label' | 'meta_title' | 'meta_description' | 'off_text' | 'faq' | 'is_exclusive'> & {
   state: PromoPageState
   starts_at: string | null
   ends_at: string | null
@@ -149,6 +151,10 @@ export type Product = {
   campaign_id: string | null
   discount_percent: number | null
   sale_price: number | null
+  // Akcijska stranica na koju je proizvod pojedinačno dodan (Čišćenje zaliha, migracija 0039).
+  promo_page_id: string | null
+  // Baza ga upisuje dok je ta stranica uključena: tada je proizvod samo na njoj, a ne u ostatku trgovine.
+  promo_only: boolean
   dress_length: string | null
   heel_height: string | null
   weight_grams: number | null
@@ -622,6 +628,7 @@ export type Database = {
           maxPrice: number | null
         }
       }
+      set_promo_page_products: { Args: { p_slug: string; p_ids: string[]; p_on: boolean }; Returns: number }
       bulk_update_products: {
         Args: { p_ids: string[]; p_changes: BulkProductChanges }
         Returns: { updated: number; skipped: number }

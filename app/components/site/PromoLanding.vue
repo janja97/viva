@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Akcijska stranica (npr. /black-friday, /admin/akcijske-stranice, migracije 0033 i 0034).
+// Akcijska stranica (npr. /ciscenje-zaliha,/admin/akcijske-stranice, migracije 0033 i 0034).
 // U tijeku: odjeljak za svaki postotak (od najvećeg) i odbrojavanje do kraja. Prije početka: odbrojavanje do početka.
 // Izvan akcije stranica ostaje, s tekstom i prijavom na newsletter, kako bi je Google zadržao.
 const props = defineProps<{ slug: string }>()
@@ -24,21 +24,22 @@ const { data: sections } = await useAsyncData(`promo-cards-${props.slug}`, async
   if (page.value?.state !== 'live') return []
   const groups = await Promise.all(page.value.groups.map(async (group) => ({
     percent: group.discount_percent,
-    cards: (await fetchCards({ productIds: group.product_ids, pageSize: 96 })).cards,
+    cards: (await fetchCards({ productIds: group.product_ids, pageSize: 96, includePromoOnly: true })).cards,
   })))
   return groups.filter((group) => group.cards.length)
 }, { watch: [page], default: () => [] })
 
-// "−30 %" za jedan popust, a "do −50 %" kad ih je više.
+// "−30 %" za jedan popust, a "do −50 %" kad ih je više. Postotak 0 su proizvodi bez sniženja (Čišćenje zaliha).
 const headline = computed(() => {
-  const percents = sections.value.map((section) => section.percent)
+  const percents = sections.value.map((section) => section.percent).filter(Boolean)
   if (!percents.length) return ''
   return percents.length > 1 ? `do −${Math.max(...percents)} %` : `−${percents[0]} %`
 })
 
 const faq = computed(() => page.value!.faq.map((item) => ({ question: fill(item.question), answer: fill(item.answer) })))
 const target = computed(() => (page.value?.state === 'upcoming' ? page.value.starts_at : page.value?.ends_at) ?? null)
-const sectionId = (percent: number) => `popust-${percent}`
+const sectionId = (percent: number) => (percent ? `popust-${percent}` : 'ostalo')
+const sectionLabel = (percent: number) => (percent ? `−${percent} %` : 'Ostali modeli')
 
 // Kad odbrojavanje dođe do nule, stanje se ponovno čita iz baze (početak ili kraj akcije).
 async function onCountdownDone() {
@@ -68,7 +69,7 @@ async function onCountdownDone() {
           <ul class="flex flex-wrap justify-center gap-2">
             <li v-for="section in sections" :key="section.percent">
               <a :href="`#${sectionId(section.percent)}`" class="inline-flex min-h-11 items-center border border-gold px-5 font-display text-xl text-gold-light transition-colors hover:bg-gold hover:text-graphite">
-                −{{ section.percent }} %
+                {{ sectionLabel(section.percent) }}
               </a>
             </li>
           </ul>
@@ -85,7 +86,7 @@ async function onCountdownDone() {
         class="mx-auto max-w-7xl scroll-mt-24 px-4 pt-12 sm:px-6 lg:px-8"
       >
         <h2 :id="`${sectionId(section.percent)}-naslov`" class="mb-6 flex items-baseline gap-3 border-b border-line pb-3 font-display text-4xl font-normal">
-          <span class="text-red-700">−{{ section.percent }} %</span>
+          <span :class="section.percent ? 'text-red-700' : 'text-ink'">{{ sectionLabel(section.percent) }}</span>
           <span class="font-body text-sm text-muted">{{ section.cards.length }} {{ section.cards.length % 10 === 1 && section.cards.length % 100 !== 11 ? 'model' : 'modela' }}</span>
         </h2>
         <ProductGrid :cards="section.cards" />
@@ -93,7 +94,10 @@ async function onCountdownDone() {
 
       <p v-if="!sections.length" class="py-16 text-center text-muted">Proizvodi na akciji stižu uskoro.</p>
       <div class="mx-auto max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
-        <SiteLink to="/proizvodi?snizeno=1" variant="outline">Svi sniženi proizvodi s filtrima</SiteLink>
+        <SiteLink to="/proizvodi?snizeno=1" variant="outline">
+          <!-- Proizvodi stranice "samo ovdje" nisu na popisu sniženih, pa poveznica vodi na ostale. -->
+          {{ page.is_exclusive ? 'Ostali sniženi proizvodi' : 'Svi sniženi proizvodi s filtrima' }}
+        </SiteLink>
       </div>
     </template>
 

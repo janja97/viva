@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Archive, ArchiveRestore, Eye, ImageOff, Pencil, Trash2 } from '@lucide/vue'
 import type { ProductListRow } from '~/composables/useProducts'
+import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 
 defineProps<{
   product: ProductListRow
@@ -36,6 +37,7 @@ const emit = defineEmits<{ archive: []; restore: []; delete: []; editStock: []; 
           <ColorSwatch v-for="color in product.colors" :key="color.id" class="size-3.5" :name="color.name" :hex="color.hex" />
           <span v-if="!product.isVisible && !archived" class="rounded-md bg-stone-200 px-1.5 py-0.5 text-xs text-stone-700">Skriveno</span>
           <span v-if="product.storeOnly" class="rounded-md bg-primary-200 px-1.5 py-0.5 text-xs text-primary-900">Samo u poslovnicama</span>
+          <span v-if="product.onPromoPage" class="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">{{ EXCLUSIVE_PROMO_PAGE.label }}</span>
           <span v-if="product.stock === 0" class="rounded-md bg-red-100 px-1.5 py-0.5 text-xs text-red-800">Rasprodano</span>
         </span>
       </span>
