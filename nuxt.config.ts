@@ -1,5 +1,8 @@
 import tailwindcss from '@tailwindcss/vite'
 
+// Netlify pri izgradnji postavlja CONTEXT: production, deploy-preview ili branch-deploy. Projekt nema Node tipove.
+const NETLIFY_CONTEXT = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.CONTEXT ?? ''
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
   devtools: { enabled: false },
@@ -40,6 +43,9 @@ export default defineNuxtConfig({
       // NUXT_PUBLIC_COMING_SOON=true: javni web prikazuje samo stranicu "Uskoro" (ComingSoon).
       // Admin radi, a prijavljeni članovi tima vide pravi web. Lokalno i nakon otvaranja ostaje false.
       comingSoon: false,
+      // Netlifyjev pregled grane ili PR-a (ne produkcija): stranica "Uskoro" se tada ne prikazuje,
+      // da tim može pregledati trgovinu prije otvaranja. Netlify sam postavlja CONTEXT pri izgradnji.
+      previewDeploy: ['branch-deploy', 'deploy-preview'].includes(NETLIFY_CONTEXT),
     },
   },
   routeRules: {

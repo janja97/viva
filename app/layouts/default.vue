@@ -7,7 +7,9 @@ import '@fontsource-variable/jost'
 // Prijavljeni članovi tima vide pravi web (provjera tek u pregledniku), a odjava s newslettera uvijek radi.
 const ALWAYS_OPEN_PATHS = ['/odjava']
 
-const { comingSoon } = useRuntimeConfig().public
+// Na Netlifyjevom pregledu grane (previewDeploy) stranice "Uskoro" nema, pa se trgovina može pregledati prije otvaranja.
+const config = useRuntimeConfig().public
+const comingSoon = Boolean(config.comingSoon) && !config.previewDeploy
 const route = useRoute()
 const { role, init } = useAuth()
 
