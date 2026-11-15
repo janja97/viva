@@ -93,12 +93,14 @@ async function onCountdownDone() {
       </section>
 
       <p v-if="!sections.length" class="py-16 text-center text-muted">Proizvodi na akciji stižu uskoro.</p>
+      <!-- Popust je zasad isključen (i u SHOP_NAV). Za povratak makni komentar.
       <div class="mx-auto max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
         <SiteLink to="/proizvodi?snizeno=1" variant="outline">
-          <!-- Proizvodi stranice "samo ovdje" nisu na popisu sniženih, pa poveznica vodi na ostale. -->
           {{ page.is_exclusive ? 'Ostali sniženi proizvodi' : 'Svi sniženi proizvodi s filtrima' }}
         </SiteLink>
       </div>
+      -->
+      <div class="pb-12" />
     </template>
 
     <SiteNewsletter v-else />

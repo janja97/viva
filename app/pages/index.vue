@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { HOME_FAQ } from '~/config/home'
+import { HOME_CLEARANCE, HOME_FAQ, HOME_NEW, HOME_SEASON } from '~/config/home'
+import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 
 const { siteName, siteUrl } = useRuntimeConfig().public
 const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
@@ -11,11 +12,21 @@ usePageSeo({
 
 const { fetchCards } = useShop()
 
-// Greška baze ne smije srušiti naslovnu, pa se tada proizvodi samo ne prikazuju.
+// "Novo": nasumičan izbor među najnovijim proizvodima, pa nije uvijek isti. Miješa se ovdje (na serveru),
+// a rezultat ide pregledniku, da se prikaz ne razlikuje. Greška baze ne smije srušiti naslovnu.
 const { data } = await useAsyncData('home', async () => {
-  const products = await fetchCards({ pageSize: 4 })
-  return { cards: products.cards.slice(0, 4) }
+  const products = await fetchCards({ pageSize: HOME_NEW.pool })
+  const cards = [...products.cards]
+  for (let index = cards.length - 1; index > 0; index--) {
+    const other = Math.floor(Math.random() * (index + 1))
+    ;[cards[index], cards[other]] = [cards[other]!, cards[index]!]
+  }
+  return { cards: cards.slice(0, HOME_NEW.count) }
 })
+
+// Najava čišćenja zaliha vidi se samo dok je ta stranica uključena.
+const { data: clearance } = await useShopPromoPage(EXCLUSIVE_PROMO_PAGE.slug)
+const categoryLink = useCategoryLink()
 
 const storeSettings = useStoreSettings()
 await storeSettings.ready()
@@ -57,20 +68,35 @@ useHead({
     <HomeHero />
     <HomeCategories />
     <HomePanels />
+    <HomeOccasions />
+    <HomeFeature
+      :eyebrow="HOME_SEASON.eyebrow"
+      :title="HOME_SEASON.title"
+      :accent="HOME_SEASON.accent"
+      :text="HOME_SEASON.text"
+      :link-label="HOME_SEASON.link"
+      :to="categoryLink(HOME_SEASON.slug)"
+      :image="HOME_SEASON.image"
+      :image-alt="HOME_SEASON.imageAlt"
+    />
     <HomeLookbook />
-
-    <section v-if="data?.cards.length" class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-28">
-      <SectionHeading
-        eyebrow="Upravo stiglo"
-        title="Novo u butiku"
-        link-to="/proizvodi"
-        link-label="Pogledaj sve"
-        link-label-short="Sve"
-      />
-      <ProductGrid :cards="data.cards" is-new />
-    </section>
+    <HomeNew v-if="data?.cards.length" :cards="data.cards" />
+    <HomeFeature
+      v-if="clearance?.state === 'live'"
+      :eyebrow="HOME_CLEARANCE.eyebrow"
+      :title="HOME_CLEARANCE.title"
+      :accent="HOME_CLEARANCE.accent"
+      :text="HOME_CLEARANCE.text"
+      :link-label="HOME_CLEARANCE.link"
+      :to="`/${EXCLUSIVE_PROMO_PAGE.slug}`"
+      :image="HOME_CLEARANCE.image"
+      :image-alt="HOME_CLEARANCE.imageAlt"
+      reverse
+      dark
+    />
 
     <HomeVideo />
+    <HomeHighlights />
     <HomeServices />
     <HomeVisit />
 

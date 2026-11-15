@@ -48,7 +48,8 @@ export const SHOP_NAV: ShopNavLink[] = [
   { label: 'Torbice', slug: 'torbice' },
   { label: 'Dodaci', slug: 'dodaci' },
   { label: 'Novo', highlight: true },
-  { label: 'Popust', query: { snizeno: '1' }, highlight: true },
+  // Popust je zasad isključen na zahtjev vlasnice. Za povratak samo makni komentar (i u PromoLanding).
+  // { label: 'Popust', query: { snizeno: '1' }, highlight: true },
 ]
 
 // Akcijske stranice koje imaju datoteku u app/pages. Dok traju, preuzimaju stavku "Popust" (ako ih traje više,

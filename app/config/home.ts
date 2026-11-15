@@ -52,6 +52,64 @@ export const HOME_PANELS = [
   },
 ]
 
+// Haljine po prigodi (HomeOccasions). Slug je podkategorija haljina; isključena kategorija se ne prikazuje.
+export const HOME_OCCASIONS = {
+  eyebrow: 'Haljine za svaku prigodu',
+  title: 'Odaberite po prigodi',
+  items: [
+    { title: 'Maturalne haljine', slug: 'maturalne-haljine', text: 'Za veliku i malu maturu.' },
+    { title: 'Haljine za svadbu', slug: 'haljine-za-svadbu', text: 'Za goste na vjenčanju i obiteljske proslave.' },
+    { title: 'Svečane haljine', slug: 'svecane-haljine', text: 'Duge večernje haljine za posebne večeri.' },
+    { title: 'Koktel haljine', slug: 'koktel-haljine', text: 'Kraći modeli za proslave i izlaske.' },
+    { title: 'Ležerne haljine', slug: 'lezerne-haljine', text: 'Za posao i manje proslave.' },
+  ],
+}
+
+// Sezonska istaknuta sekcija (HomeFeature). Zimi čizme, a ljeti zamijeni npr. sandalama:
+// { eyebrow: 'Proljeće / Ljeto', title: 'Sandale', accent: 'na petu', text: '...', link: 'Pogledaj sandale', slug: 'sandale', image: '/images/home/...jpg', imageAlt: 'Što je na fotografiji' }
+export const HOME_SEASON = {
+  eyebrow: 'Jesen / Zima',
+  title: 'Čizme',
+  accent: 'za hladnije dane',
+  text: 'Ravne čizme i čizme na petu, koje se lijepo slažu uz kapute i haljine.',
+  link: 'Pogledaj čizme',
+  slug: 'cizme',
+  image: '/images/home/obuca-kategorija.jpg',
+  imageAlt: 'Bež čizme do koljena s ukrasnim vezicama i zlatnim gumbima',
+}
+
+// "Novo" na naslovnoj (HomeNew): nasumičan izbor među najnovijim proizvodima, drukčiji pri svakom učitavanju.
+export const HOME_NEW = {
+  eyebrow: 'Upravo stiglo',
+  title: 'Novo u butiku',
+  // Koliko se najnovijih proizvoda uzima u obzir i koliko ih se prikaže.
+  pool: 24,
+  count: 10,
+}
+
+// Najava stranice Čišćenje zaliha (HomeFeature), bez proizvoda. Prikazuje se samo dok je ta stranica uključena.
+// Fotografija je privremena, iz galerije haljina. Zamijeni je vlastitom (uspravna, najmanje 900 × 1200 px).
+export const HOME_CLEARANCE = {
+  eyebrow: 'Posebna ponuda',
+  title: 'Čišćenje',
+  accent: 'zaliha',
+  text: 'Odabrani modeli po sniženim cijenama, izdvojeni na jednoj stranici.',
+  link: 'Pogledaj ponudu',
+  image: '/images/home/galerija/svecana-haljina-14.jpg',
+  imageAlt: 'Crna duga haljina s crvenom podlogom, prorezom i svjetlucavim ukrasom',
+}
+
+// Kratke prednosti trgovine (HomeHighlights). Samo tvrdnje koje je potvrdila vlasnica.
+export const HOME_HIGHLIGHTS = {
+  eyebrow: 'Zašto Viva',
+  title: 'Dobro je znati',
+  items: [
+    { title: 'Veličine do 58', text: 'Ovisno o modelu. Dostupne veličine vidite na stranici svakog proizvoda.' },
+    { title: 'Isprobajte u trgovini', text: 'U trgovini možete isprobati više modela prije nego što se odlučite.' },
+    { title: 'Poklon bon', text: 'Poklon bon možete kupiti u iznosu po vašem izboru.' },
+  ],
+}
+
 // Galerija svečanih haljina. Prva slika je veća. Opis (alt) neka kaže što je na fotografiji, zbog Googlea i čitača zaslona.
 export const HOME_LOOKBOOK = {
   eyebrow: 'Mature · Vjenčanja · Gala',
@@ -128,6 +186,26 @@ export const HOME_FAQ = [
   {
     question: 'Mogu li online narudžbu preuzeti u trgovini?',
     answer: 'Da, online narudžbu možete preuzeti u našoj trgovini u Mostaru, a moguće i u Sarajevu. Napišite to u napomeni uz narudžbu.',
+  },
+  {
+    question: 'Radite li skraćivanje ili prepravke haljina?',
+    answer: 'Ne, skraćivanje i prepravke ne radimo. Zato preporučujemo da u trgovini isprobate više modela i veličina.',
+  },
+  {
+    question: 'Mogu li rezervirati haljinu ili je ostaviti sa strane?',
+    answer: 'Ne, haljine ne rezerviramo i ne ostavljamo sa strane.',
+  },
+  {
+    question: 'Koliko traje dostava i kamo dostavljate?',
+    answer: 'Dostavljamo samo unutar Bosne i Hercegovine. Dostava traje 3 do 5 dana, a plaćate pouzećem, kuriru pri preuzimanju.',
+  },
+  {
+    question: 'Mogu li zamijeniti proizvod?',
+    answer: 'Da, proizvod možete zamijeniti u roku od 15 dana, ako nema tragova nošenja. Ako proizvod ima grešku, javite nam se i riješit ćemo to.',
+  },
+  {
+    question: 'Od čega je vaš nakit?',
+    answer: 'Nakit u našoj ponudi je od nehrđajućeg čelika.',
   },
   {
     question: 'Imate li poklon bon?',
