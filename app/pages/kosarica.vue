@@ -64,7 +64,7 @@ onMounted(() => run(load))
       <SiteLink to="/proizvodi" class="mt-6">Pogledaj kolekciju</SiteLink>
     </div>
 
-    <div v-else class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
+    <div v-else class="mt-6 grid gap-8 sm:mt-8 sm:gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
       <div>
         <div class="divide-y divide-line border-y border-line">
           <CartItemRow
@@ -79,7 +79,7 @@ onMounted(() => run(load))
         <p v-if="error" role="alert" class="mt-4 text-sm text-red-700">{{ error }}</p>
       </div>
 
-      <aside class="self-start bg-sand p-6 lg:sticky lg:top-28 lg:p-8" aria-label="Sažetak">
+      <aside class="-mx-4 bg-sand px-4 py-6 sm:mx-0 sm:p-6 lg:sticky lg:top-28 lg:self-start lg:p-8" aria-label="Sažetak">
         <h2 class="mb-4 font-display text-2xl font-normal">Sažetak</h2>
         <CartPromoCode class="mb-4" />
         <CartTotals />

@@ -13,6 +13,7 @@ defineProps<{
 <template>
   <article class="group">
     <NuxtLink :to="`${PRODUCT_PATH}/${card.slug}`" class="block">
+      <!-- Slika se prikazuje cijela (object-contain), da se proizvod ne odreže sa strane. Višak ispunjava podloga. -->
       <div class="relative aspect-3/4 overflow-hidden bg-photo">
         <img
           v-if="card.image"
@@ -21,7 +22,7 @@ defineProps<{
           :loading="eager ? 'eager' : 'lazy'"
           width="600"
           height="800"
-          class="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+          class="size-full object-contain transition-transform duration-700 group-hover:scale-105"
         >
         <!-- Sniženje je crveno, a novo zeleno. Rasprodano se na kartici ne ističe. -->
         <span v-if="card.compareAtPrice" class="absolute left-3 top-3 bg-red-700 px-2.5 py-1 text-[11px] font-medium tracking-[0.1em] text-white">-{{ Math.round((1 - card.price / card.compareAtPrice) * 100) }}%</span>

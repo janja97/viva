@@ -13,20 +13,20 @@ const stepClass = 'inline-flex size-11 items-center justify-center transition-co
 </script>
 
 <template>
-  <article class="flex gap-4 py-5">
-    <NuxtLink :to="`${PRODUCT_PATH}/${item.slug}`" class="block w-24 shrink-0 sm:w-28">
+  <article class="flex gap-3 py-4 sm:gap-4 sm:py-5">
+    <NuxtLink :to="`${PRODUCT_PATH}/${item.slug}`" class="block w-20 shrink-0 sm:w-28">
       <div class="aspect-3/4 overflow-hidden bg-photo">
-        <img v-if="item.image" :src="item.image" :alt="item.imageAlt ?? `${item.productName} ${item.colorName}`" loading="lazy" width="300" height="400" class="size-full object-cover">
+        <img v-if="item.image" :src="item.image" :alt="item.imageAlt ?? `${item.productName} ${item.colorName}`" loading="lazy" width="300" height="400" class="size-full object-contain">
       </div>
     </NuxtLink>
 
     <div class="flex min-w-0 flex-1 flex-col">
-      <div class="flex items-start justify-between gap-3">
+      <div class="flex items-start justify-between gap-2 sm:gap-3">
         <div class="min-w-0">
-          <h2 class="font-display text-xl font-normal leading-snug">
+          <h2 class="wrap-break-word font-display text-lg font-normal leading-snug sm:text-xl">
             <NuxtLink :to="`${PRODUCT_PATH}/${item.slug}`" class="hover:text-gold">{{ item.productName }}</NuxtLink>
           </h2>
-          <p class="mt-1 text-sm text-muted">{{ item.colorName }} · Veličina {{ item.size }}</p>
+          <p class="mt-1 wrap-break-word text-sm text-muted">{{ item.colorName }} · Veličina {{ item.size }}</p>
           <p class="text-xs text-muted">Šifra: {{ item.sku }}</p>
         </div>
         <button
@@ -40,7 +40,7 @@ const stepClass = 'inline-flex size-11 items-center justify-center transition-co
         </button>
       </div>
 
-      <div class="mt-auto flex flex-wrap items-end justify-between gap-3 pt-3">
+      <div class="mt-auto flex flex-wrap items-end justify-between gap-x-3 gap-y-2 pt-3">
         <div class="inline-flex items-center border border-line bg-white">
           <button type="button" :class="stepClass" :disabled="disabled || item.quantity <= 1" aria-label="Smanji količinu" @click="emit('quantity', item.quantity - 1)">
             <Minus class="size-4" stroke-width="1.5" />

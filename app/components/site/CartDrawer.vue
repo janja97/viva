@@ -55,7 +55,7 @@ const hasOverStock = computed(() => items.value.some((item) => item.quantity > i
     @click.self="onBackdropClick"
   >
     <div v-if="isDrawerOpen" class="flex h-full flex-col">
-      <div class="flex items-center justify-between gap-4 border-b border-line px-5 py-3">
+      <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-5">
         <h2 id="kosarica-naslov" class="font-display text-2xl font-normal">Košarica<template v-if="count"> ({{ count }})</template></h2>
         <button type="button" aria-label="Zatvori košaricu" class="-mr-3 inline-flex size-11 items-center justify-center hover:text-gold" @click="close">
           <X class="size-5" stroke-width="1.25" />
@@ -73,7 +73,7 @@ const hasOverStock = computed(() => items.value.some((item) => item.quantity > i
       </div>
 
       <template v-else>
-        <div class="flex-1 divide-y divide-line overflow-y-auto px-5">
+        <div class="min-h-0 flex-1 divide-y divide-line overflow-y-auto overscroll-contain px-4 sm:px-5">
           <CartItemRow
             v-for="item in items"
             :key="item.sizeId"
@@ -84,21 +84,22 @@ const hasOverStock = computed(() => items.value.some((item) => item.quantity > i
           />
         </div>
 
-        <div class="border-t border-line bg-sand px-5 py-5">
+        <!-- Na mobitelu su gumbi jedan do drugoga i niži, da popis proizvoda ostane vidljiv. -->
+        <div class="border-t border-line bg-sand px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:py-5">
           <p v-if="error" role="alert" class="mb-3 text-sm text-red-700">{{ error }}</p>
           <CartTotals />
-          <div class="mt-5 grid gap-2">
+          <div class="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:grid-cols-1">
             <NuxtLink
               v-if="!hasOverStock"
               to="/kosarica"
-              class="inline-flex min-h-13 items-center justify-center border border-ink bg-ink px-8 text-xs font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-transparent hover:text-ink"
+              class="order-last inline-flex min-h-12 items-center justify-center border border-ink bg-ink px-3 text-center text-xs font-medium uppercase tracking-[0.14em] text-white sm:order-none sm:min-h-13 sm:px-8 sm:tracking-[0.2em] transition-colors hover:bg-transparent hover:text-ink"
             >
               Naruči
             </NuxtLink>
-            <p v-else class="text-sm text-red-700">Smanjite količinu označenih proizvoda prije narudžbe.</p>
+            <p v-else class="order-last col-span-2 text-sm text-red-700 sm:order-none sm:col-span-1">Smanjite količinu označenih proizvoda prije narudžbe.</p>
             <button
               type="button"
-              class="inline-flex min-h-13 items-center justify-center border border-line bg-white px-8 text-xs font-medium uppercase tracking-[0.2em] transition-colors hover:border-ink"
+              class="inline-flex min-h-12 items-center justify-center border border-line bg-white px-3 text-center text-xs font-medium uppercase tracking-[0.14em] transition-colors hover:border-ink sm:min-h-13 sm:px-8 sm:tracking-[0.2em]"
               @click="close"
             >
               Nastavi s kupnjom
