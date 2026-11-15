@@ -13,8 +13,8 @@ defineProps<{
 <template>
   <article class="group">
     <NuxtLink :to="`${PRODUCT_PATH}/${card.slug}`" class="block">
-      <!-- Slika se prikazuje cijela (object-contain), da se proizvod ne odreže sa strane. Višak ispunjava podloga. -->
-      <div class="relative aspect-3/4 overflow-hidden bg-photo">
+      <!-- Slika se prikazuje cijela (object-contain), da se proizvod ne odreže sa strane. Okvir nema vlastitu boju, pa se prazan rub stapa s podlogom stranice. -->
+      <div class="relative aspect-3/4 overflow-hidden">
         <img
           v-if="card.image"
           :src="card.image"

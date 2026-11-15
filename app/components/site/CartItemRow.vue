@@ -15,7 +15,7 @@ const stepClass = 'inline-flex size-11 items-center justify-center transition-co
 <template>
   <article class="flex gap-3 py-4 sm:gap-4 sm:py-5">
     <NuxtLink :to="`${PRODUCT_PATH}/${item.slug}`" class="block w-20 shrink-0 sm:w-28">
-      <div class="aspect-3/4 overflow-hidden bg-photo">
+      <div class="aspect-3/4 overflow-hidden">
         <img v-if="item.image" :src="item.image" :alt="item.imageAlt ?? `${item.productName} ${item.colorName}`" loading="lazy" width="300" height="400" class="size-full object-contain">
       </div>
     </NuxtLink>
