@@ -44,16 +44,19 @@ export function useShopNavLink() {
 }
 
 // Izbornik trgovine. Dok obična akcijska stranica traje, stavka "Popust" vodi na nju pod nazivom iz admina.
+// Stavka čija je kategorija isključena ili ne postoji ne prikazuje se (ni u zaglavlju ni u podnožju).
 export function useShopNav() {
   const pages = PROMO_PAGE_SLUGS.map((slug) => useShopPromoPage(slug).data)
+  const { data: categories } = useSiteCategories()
   return computed<ShopNavLink[]>(() => {
+    const activeSlugs = new Set(categories.value.map((category) => category.slug))
     const live = pages.flatMap((page) => (page.value?.state === 'live' ? [page.value] : []))
     const promo = live.find((page) => !page.is_exclusive)
     // Stranica "samo ovdje" (Čišćenje zaliha) ne zamjenjuje "Popust", jer ostali sniženi proizvodi ostaju u trgovini.
     const extra = live.filter((page) => page.is_exclusive)
       .map((page): ShopNavLink => ({ label: page.nav_label || page.title, path: `/${page.slug}`, highlight: true }))
     return [
-      ...SHOP_NAV.map((link) => (link.query?.snizeno && promo
+      ...SHOP_NAV.filter((link) => !link.slug || activeSlugs.has(link.slug)).map((link) => (link.query?.snizeno && promo
         ? { label: promo.nav_label || link.label, path: `/${promo.slug}`, highlight: true }
         : link)),
       ...extra,

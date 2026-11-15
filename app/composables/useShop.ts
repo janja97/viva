@@ -1,7 +1,8 @@
 import { PRODUCT_IMAGES_BUCKET } from '~/config/products'
 import type { Category } from '~/types/database'
 
-export const SHOP_PAGE_SIZE = 24
+// Popisi se učitavaju po 12 (puni redovi za 2, 3 i 4 stupca), a sljedećih 12 kad kupac dođe do kraja (ShopListing).
+export const SHOP_PAGE_SIZE = 12
 const SEARCH_LIMIT = 60
 
 export type ShopCard = {

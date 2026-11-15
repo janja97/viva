@@ -46,21 +46,25 @@ const reloadOptions = () => loadOptions({
 // Ostaje pri promjeni stranice, a briše se kad se promijene filtri, kako radnja ne bi zahvatila skrivene proizvode.
 const selected = ref<string[]>([])
 const selectedSet = computed(() => new Set(selected.value))
-const isPageSelected = computed(() => rows.value.length > 0 && rows.value.every((row) => selectedSet.value.has(row.id)))
+// "Odaberi sve" bira sve rezultate filtra na svim stranicama (do MAX_BULK_SELECTION), a ne samo prikazanu stranicu.
+const selectableTotal = computed(() => Math.min(total.value, MAX_BULK_SELECTION))
+const isAllSelected = computed(() => selectableTotal.value > 0 && selected.value.length >= selectableTotal.value)
 const isSelectingAll = ref(false)
 
 function toggleSelected(id: string) {
   selected.value = selectedSet.value.has(id) ? selected.value.filter((item) => item !== id) : [...selected.value, id]
 }
 
-function togglePage() {
-  const pageIds = rows.value.map((row) => row.id)
-  selected.value = isPageSelected.value
-    ? selected.value.filter((id) => !pageIds.includes(id))
-    : [...new Set([...selected.value, ...pageIds])]
-}
-
-async function selectAllMatching() {
+async function toggleAll() {
+  if (isAllSelected.value) {
+    selected.value = []
+    return
+  }
+  // Sve je već na ovoj stranici, pa ne treba pitati bazu.
+  if (total.value <= rows.value.length) {
+    selected.value = rows.value.map((row) => row.id)
+    return
+  }
   isSelectingAll.value = true
   try {
     selected.value = await fetchAllIds(rpcFilters.value, filters.value.sort)
@@ -224,18 +228,14 @@ onMounted(async () => {
       <div class="rounded-xl border border-primary-300 bg-white shadow-sm" :class="isLoading && 'opacity-60'">
         <div v-if="canWrite" class="flex flex-wrap items-center gap-x-3 border-b border-primary-200 px-4 py-1 text-sm">
           <label class="-ml-3 flex min-h-11 cursor-pointer items-center gap-2 pl-3 sm:min-h-9">
-            <input type="checkbox" class="size-4 cursor-pointer accent-primary-700" :checked="isPageSelected" @change="togglePage">
-            Odaberi sve na stranici
+            <input type="checkbox" class="size-4 cursor-pointer accent-primary-700" :checked="isAllSelected" :disabled="isSelectingAll" @change="toggleAll">
+            Odaberi sve ({{ selectableTotal }})
           </label>
-          <button
-            v-if="isPageSelected && total > rows.length && selected.length < Math.min(total, MAX_BULK_SELECTION)"
-            type="button"
-            :disabled="isSelectingAll"
-            class="inline-flex min-h-11 cursor-pointer items-center font-medium text-primary-800 underline underline-offset-4 hover:text-primary-900 disabled:opacity-50 sm:min-h-9"
-            @click="selectAllMatching"
-          >
-            Odaberi svih {{ Math.min(total, MAX_BULK_SELECTION) }} rezultata
-          </button>
+          <p v-if="isSelectingAll" class="text-stone-500">Odabir...</p>
+          <p v-else-if="selected.length" class="text-stone-500" aria-live="polite">
+            Odabrano {{ selected.length }} od {{ total }}, na svim stranicama.
+            <template v-if="total > MAX_BULK_SELECTION">Odjednom se može odabrati najviše {{ MAX_BULK_SELECTION }}.</template>
+          </p>
         </div>
         <ul class="divide-y divide-primary-200">
           <li v-for="product in rows" :key="product.id">
