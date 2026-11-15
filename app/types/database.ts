@@ -171,7 +171,12 @@ export type Product = {
 export type ProductColor = {
   id: string
   product_id: string
+  // Naziv koji kupac vidi: osnovna boja i oznaka, npr. "Crna pliš" (migracija 0040).
   name: string
+  // Osnovna boja s popisa ("Crna"), za filtar i uzorak boje. Kod starih redaka može biti null, tada vrijedi name.
+  base_color: string | null
+  // Oznaka kad proizvod ima istu boju više puta, npr. "pliš". Prazno kad je nema.
+  label: string
   hex: string
   slug: string
   sort_order: number
@@ -212,7 +217,7 @@ export type ProductPayload = Pick<Product,
 > & {
   extra_category_ids: string[]
   brand: string | null
-  colors: (Pick<ProductColor, 'id' | 'name' | 'hex' | 'slug' | 'sort_order'> & {
+  colors: (Pick<ProductColor, 'id' | 'name' | 'base_color' | 'label' | 'hex' | 'slug' | 'sort_order'> & {
     sizes: Pick<ProductSize, 'size' | 'quantity' | 'sort_order'>[]
     images: Pick<ProductImage, 'id' | 'path' | 'alt' | 'sort_order'>[]
   })[]

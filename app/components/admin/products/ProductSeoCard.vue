@@ -26,7 +26,7 @@ const previews = computed(() =>
   props.form.colors.map((color) => {
     const input = {
       name: props.form.name,
-      colorName: color.name,
+      colorName: colorTitle(color),
       categoryName: props.categoryName,
       description: props.form.description,
       price: props.discountPercent

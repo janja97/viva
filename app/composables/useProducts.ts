@@ -62,7 +62,9 @@ export function toProductPayload(form: ProductForm): ProductPayload {
     meta_description: form.meta_description.trim() || null,
     colors: form.colors.map((color, colorIndex) => ({
       id: color.id,
-      name: color.name.trim(),
+      name: colorTitle(color),
+      base_color: color.name.trim(),
+      label: color.label.trim(),
       hex: color.hex,
       slug: color.slug,
       sort_order: colorIndex,
@@ -74,7 +76,7 @@ export function toProductPayload(form: ProductForm): ProductPayload {
       images: color.images.map((image, imageIndex) => ({
         id: image.id,
         path: image.path,
-        alt: image.alt.trim() || `${name} ${color.name.trim()}`,
+        alt: image.alt.trim() || `${name} ${colorTitle(color)}`,
         sort_order: imageIndex,
       })),
     })),
@@ -128,7 +130,8 @@ export function useProducts() {
       sizes,
       colors: colors.map((color) => ({
         id: color.id,
-        name: color.name,
+        name: color.base_color ?? color.name,
+        label: color.label ?? '',
         hex: color.hex,
         slug: color.slug,
         autoSlug: false,

@@ -94,7 +94,7 @@ useHead({
         '@type': 'Product',
         name: `${product.name} ${color.name}`,
         sku: product.sku,
-        color: color.name,
+        color: color.base_color ?? color.name,
         category: category.name,
         description,
         ...(product.material && { material: product.material }),

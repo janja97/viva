@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   const [productResult, categoryResult, settingsResult] = await Promise.all([
     supabase
       .from('products')
-      .select('id, name, description, material, price, sale_price, category_id, categories!products_category_id_fkey!inner(is_active), product_colors(name, slug, sort_order, product_sizes(id, size, quantity), product_images(path, sort_order))')
+      .select('id, name, description, material, price, sale_price, category_id, categories!products_category_id_fkey!inner(is_active), product_colors(name, base_color, slug, sort_order, product_sizes(id, size, quantity), product_images(path, sort_order))')
       .eq('is_visible', true)
       .eq('store_only', false)
       .eq('categories.is_active', true),
@@ -96,7 +96,7 @@ export default defineEventHandler(async (event) => {
           tag('brand', siteName),
           tag('gender', 'female'),
           tag('age_group', 'adult'),
-          tag('color', color.name),
+          tag('color', color.base_color ?? color.name),
           tag('size', size.size),
           tag('material', product.material?.slice(0, 200)),
           tag('google_product_category', googleCategory),

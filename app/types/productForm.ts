@@ -8,7 +8,10 @@ export type ImageForm = {
 
 export type ColorForm = {
   id: string
+  // Osnovna boja s popisa, npr. "Crna".
   name: string
+  // Neobavezna oznaka kad proizvod ima istu boju više puta, npr. "koža" ili "pliš".
+  label: string
   hex: string
   slug: string
   // URL prati naziv samo dok boja nije spremljena i dok ga korisnik ne promijeni.

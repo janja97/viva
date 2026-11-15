@@ -63,12 +63,12 @@ const campaignHint = computed(() => {
 })
 
 function colorSlug(color: ColorForm) {
-  return slugify(`${form.name} ${color.name} ${form.sku}`)
+  return slugify(`${form.name} ${colorTitle(color)} ${form.sku}`)
 }
 
 // Šifra čini slug jedinstvenim kad više proizvoda ima isti naziv i boju.
 watch(
-  () => [form.name, form.sku, ...form.colors.map((color) => color.name)],
+  () => [form.name, form.sku, ...form.colors.map((color) => colorTitle(color))],
   () => {
     for (const color of form.colors) {
       if (color.autoSlug) color.slug = colorSlug(color)
@@ -80,6 +80,7 @@ function addColor() {
   form.colors.push({
     id: crypto.randomUUID(),
     name: '',
+    label: '',
     hex: '#000000',
     slug: '',
     autoSlug: true,
@@ -107,6 +108,10 @@ function validate() {
   if (!form.category_id) return 'Odaberi kategoriju.'
   if (!form.sizes.length) return 'Odaberi barem jednu veličinu.'
   if (!form.colors.length) return 'Dodaj barem jednu boju.'
+  // Ista boja smije više puta, ali tada svaka treba svoju oznaku (npr. koža i pliš), da ih kupac razlikuje.
+  const titles = form.colors.map((color) => colorTitle(color).toLowerCase())
+  const duplicate = form.colors.find((color, index) => titles.indexOf(colorTitle(color).toLowerCase()) !== index)
+  if (duplicate) return `Boja „${colorTitle(duplicate)}” je dodana više puta. Istim bojama upiši različitu oznaku, npr. koža i pliš.`
   if (form.is_visible && form.colors.some((color) => !color.images.length)) {
     return 'Proizvod vidljiv na webu mora imati barem jednu sliku za svaku boju.'
   }
@@ -237,12 +242,11 @@ onBeforeUnmount(images.rollback)
           :key="color.id"
           :color="color"
           :sizes="form.sizes"
-          :used-colors="form.colors.filter((other) => other.id !== color.id).map((other) => other.name)"
           :generated-slug="colorSlug(color)"
           :api="images"
           :is-first="index === 0"
           :is-last="index === form.colors.length - 1"
-          @remove="removingColor = { index, name: color.name }"
+          @remove="removingColor = { index, name: colorTitle(color) }"
           @move="moveColor(index, $event)"
         />
         <!-- Kod više boja gumb na vrhu je daleko, pa je isti i na dnu. -->

@@ -7,8 +7,6 @@ import type { ColorForm } from '~/types/productForm'
 const props = defineProps<{
   color: ColorForm
   sizes: string[]
-  // Boje koje već koriste druge kartice istog proizvoda.
-  usedColors: string[]
   generatedSlug: string
   api: ProductImagesApi
   isFirst: boolean
@@ -20,9 +18,10 @@ const emit = defineEmits<{
   move: [direction: -1 | 1]
 }>()
 
+// Ista boja smije na više kartica (uz različitu oznaku), pa se nude sve.
 // Stari naziv koji nije na popisu ostaje ponuđen, kako se spremljena boja ne bi izgubila.
 const colorOptions = computed(() => {
-  const names = PRODUCT_COLORS.map(({ name }) => name).filter((name) => !props.usedColors.includes(name))
+  const names = PRODUCT_COLORS.map(({ name }) => name)
   if (props.color.name && !names.includes(props.color.name)) names.unshift(props.color.name)
   return [{ value: '', label: 'Odaberi boju' }, ...names.map((name) => ({ value: name, label: name }))]
 })
@@ -44,7 +43,7 @@ const stock = computed(() =>
     <header class="flex flex-wrap items-center justify-between gap-2 border-b border-primary-300 bg-primary-100 px-4 py-2">
       <div class="flex min-w-0 items-center gap-2">
         <ColorSwatch v-if="color.name" class="size-4" :name="color.name" :hex="color.hex" />
-        <h3 class="truncate text-sm font-semibold text-primary-900">{{ color.name || 'Nova boja' }}</h3>
+        <h3 class="truncate text-sm font-semibold text-primary-900">{{ colorTitle(color) || 'Nova boja' }}</h3>
         <span class="whitespace-nowrap text-xs text-stone-600">{{ stock }} kom</span>
       </div>
       <div class="-mr-2 flex items-center">
@@ -54,20 +53,29 @@ const stock = computed(() =>
         <IconButton label="Pomakni boju dolje" :disabled="isLast" @click="emit('move', 1)">
           <ChevronDown class="size-4" stroke-width="1.75" />
         </IconButton>
-        <IconButton :label="`Ukloni boju ${color.name}`" danger @click="emit('remove')">
+        <IconButton :label="`Ukloni boju ${colorTitle(color)}`" danger @click="emit('remove')">
           <Trash2 class="size-4" stroke-width="1.75" />
         </IconButton>
       </div>
     </header>
 
     <div class="space-y-5 p-4 sm:p-5">
-      <BaseSelect
-        :model-value="color.name"
-        label="Boja"
-        :options="colorOptions"
-        required
-        @update:model-value="onColorChange"
-      />
+      <div class="grid gap-4 sm:grid-cols-2">
+        <BaseSelect
+          :model-value="color.name"
+          label="Boja"
+          :options="colorOptions"
+          required
+          @update:model-value="onColorChange"
+        />
+        <BaseInput
+          v-model="color.label"
+          label="Oznaka (neobavezno)"
+          :maxlength="30"
+          placeholder="npr. koža ili pliš"
+          hint="Kad proizvod ima istu boju više puta. Kupac vidi npr. Crna pliš."
+        />
+      </div>
 
       <div class="rounded-lg border border-primary-300 bg-primary-50 p-3 sm:p-4">
         <p class="text-sm font-semibold text-primary-900">Količina po veličini</p>
