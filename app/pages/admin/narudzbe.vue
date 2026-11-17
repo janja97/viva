@@ -116,11 +116,12 @@ onMounted(load)
           <button type="button" class="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left hover:bg-primary-50" @click="open(inquiry.id)">
             <span class="min-w-0 flex-1">
               <span class="flex flex-wrap items-center gap-2">
-                <span class="text-sm font-medium">#{{ inquiry.number }} · {{ inquiry.customer_name }}</span>
+                <span class="text-sm font-medium">#{{ inquiry.number }} · {{ inquiry.customer_name ?? 'Kupac s WhatsAppa' }}</span>
+                <span v-if="inquiry.channel === 'whatsapp'" class="bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-800">WhatsApp</span>
                 <InquiryStatusBadge :status="inquiry.status" />
               </span>
               <span class="block truncate text-xs text-stone-500">
-                {{ dateFormat.format(new Date(inquiry.created_at)) }} · {{ inquiry.phone }} · {{ inquiry.inquiry_items.reduce((sum, item) => sum + item.quantity, 0) }} kom.
+                {{ dateFormat.format(new Date(inquiry.created_at)) }}<template v-if="inquiry.phone"> · {{ inquiry.phone }}</template> · {{ inquiry.inquiry_items.reduce((sum, item) => sum + item.quantity, 0) }} kom.
               </span>
               <span v-if="inquiry.status_changed_at" class="block truncate text-xs text-stone-500">
                 Zadnja promjena: {{ inquiry.status_changed_by_email ?? 'nepoznat korisnik' }}, {{ dateFormat.format(new Date(inquiry.status_changed_at)) }}

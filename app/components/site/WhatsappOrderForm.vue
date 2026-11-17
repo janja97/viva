@@ -1,10 +1,11 @@
 <script setup lang="ts">
 // Narudžba preko WhatsAppa (Postavke > Narudžbe, migracija 0035). Otvara WhatsApp s gotovom porukom,
-// a kupac je pošalje sam. Upit se ne sprema u bazu i košarica ostaje, ako kupac poruku ipak ne pošalje.
+// a kupac je pošalje sam. Narudžba se sprema i u admin (migracija 0043, bez imena i telefona),
+// a košarica ostaje, ako kupac poruku ipak ne pošalje.
 const props = defineProps<{ phone: string }>()
 const emit = defineEmits<{ cancel: [] }>()
 
-const { items, promo } = useCart()
+const { items, promo, submitWhatsappInquiry } = useCart()
 const { track } = useProductTracking()
 const { siteUrl } = useRuntimeConfig().public
 
@@ -21,6 +22,8 @@ const url = computed(() => whatsappUrl(props.phone, message.value))
 
 function open() {
   window.open(url.value, '_blank', 'noopener')
+  // Spremanje ne smije zaustaviti WhatsApp, pa se greška samo zapiše.
+  submitWhatsappInquiry(note.value).catch(console.error)
   // Svaki proizvod iz košarice bilježi se kao narudžba preko WhatsAppa (migracija 0041).
   for (const item of items.value) track(item.colorId, 'whatsapp_order', item.quantity)
   isOpened.value = true

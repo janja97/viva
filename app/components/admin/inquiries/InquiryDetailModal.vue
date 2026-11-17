@@ -51,8 +51,12 @@ watch(() => [props.inquiry?.id, props.inquiry?.status], async ([id]) => {
       </p>
 
       <div class="space-y-1">
-        <p class="font-medium text-stone-900">{{ inquiry.customer_name }}</p>
-        <a :href="`tel:${inquiry.phone.replace(/[^\d+]/g, '')}`" class="flex min-h-11 items-center gap-2 text-primary-800 hover:text-primary-900 sm:min-h-8">
+        <p v-if="inquiry.channel === 'whatsapp'" class="border-l-2 border-emerald-600 bg-emerald-50 px-3 py-2 text-emerald-900">
+          Narudžba preko WhatsAppa. Ime, telefon i adresu kupac je napisao u WhatsApp poruci, pa ih ovdje nema.
+          Kupac je otvorio WhatsApp s narudžbom, ali je možda nije poslao.
+        </p>
+        <p v-if="inquiry.customer_name" class="font-medium text-stone-900">{{ inquiry.customer_name }}</p>
+        <a v-if="inquiry.phone" :href="`tel:${inquiry.phone.replace(/[^\d+]/g, '')}`" class="flex min-h-11 items-center gap-2 text-primary-800 hover:text-primary-900 sm:min-h-8">
           <Phone class="size-4" stroke-width="1.75" />
           {{ inquiry.phone }}
         </a>

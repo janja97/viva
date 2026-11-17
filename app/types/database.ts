@@ -372,8 +372,10 @@ export type Inquiry = {
   id: string
   number: number
   status: InquiryStatus
-  customer_name: string
-  phone: string
+  // whatsapp: kupac je otvorio WhatsApp s narudžbom (migracija 0043); ime i telefon su tada u poruci, ne ovdje.
+  channel: 'web' | 'whatsapp'
+  customer_name: string | null
+  phone: string | null
   email: string | null
   note: string | null
   address: string | null
@@ -621,6 +623,7 @@ export type Database = {
       shop_track_event: { Args: { p_session: string; p_color_id: string; p_event: ProductEventType; p_quantity?: number }; Returns: undefined }
       admin_product_engagement: { Args: { p_from: string | null; p_to: string | null; p_category_ids?: string[] | null; p_limit?: number }; Returns: ProductEngagement }
       admin_product_event_counts: { Args: { p_ids: string[] }; Returns: (ProductEventCounts & { product_id: string })[] }
+      shop_submit_whatsapp_inquiry: { Args: { p_session: string; p_note: string | null; p_promo_code: string | null }; Returns: { number: number } }
       admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }

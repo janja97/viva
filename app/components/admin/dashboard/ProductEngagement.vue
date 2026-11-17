@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Eye, MessageCircle, ShoppingBag } from '@lucide/vue'
+import { Eye, MessageCircle } from '@lucide/vue'
 import type { AnalyticsPeriod } from '~/composables/useDashboard'
 import type { ProductEngagement } from '~/types/database'
 
-// Kartica "Pregledi": što se najviše gleda, dodaje u košaricu i naručuje preko WhatsAppa (migracija 0041).
+// Kartica "Pregledi": što se najviše gleda i naručuje preko WhatsAppa (migracije 0041 i 0043).
 // Bira se razdoblje i glavna kategorija (Haljine, Obuća...), s podkategorijama.
 const { fetchEngagement } = useDashboard()
 const { categories, load: loadCategories } = useCategories()
@@ -29,7 +29,7 @@ async function load() {
   }
 }
 
-// Udio pregleda koji završe u košarici.
+// Udio pregleda koji završe WhatsApp narudžbom.
 const rate = (part: number, whole: number) => (whole ? `${Math.round((part / whole) * 100)} %` : '–')
 const maxViews = computed(() => Math.max(1, ...(data.value?.products ?? []).map((row) => Number(row.views))))
 
@@ -67,10 +67,9 @@ const chipClass = (active: boolean) => [
     </div>
 
     <template v-else-if="data">
-      <div class="grid grid-cols-3 gap-2 sm:gap-4" :class="isLoading && 'opacity-60'">
+      <div class="grid grid-cols-2 gap-2 sm:gap-4" :class="isLoading && 'opacity-60'">
         <AdminCard v-for="item in [
           { label: 'Pregleda', value: data.totals.views, icon: Eye },
-          { label: 'U košaricu', value: data.totals.cart_adds, icon: ShoppingBag },
           { label: 'WhatsApp', value: data.totals.whatsapp_orders, icon: MessageCircle },
         ]" :key="item.label" :title="String(item.value)">
           <p class="-mt-2 flex items-center gap-1.5 text-xs text-stone-500 sm:text-sm">
@@ -87,7 +86,6 @@ const chipClass = (active: boolean) => [
               <tr>
                 <th class="py-1.5 pr-3 font-medium">Kategorija</th>
                 <th class="py-1.5 pr-3 text-right font-medium">Pregleda</th>
-                <th class="py-1.5 pr-3 text-right font-medium">U košaricu</th>
                 <th class="py-1.5 text-right font-medium">WhatsApp</th>
               </tr>
             </thead>
@@ -95,7 +93,6 @@ const chipClass = (active: boolean) => [
               <tr v-for="row in data.categories" :key="row.name">
                 <td class="py-2 pr-3">{{ row.name }}</td>
                 <td class="py-2 pr-3 text-right">{{ row.views }}</td>
-                <td class="py-2 pr-3 text-right">{{ row.cart_adds }}</td>
                 <td class="py-2 text-right">{{ row.whatsapp_orders }}</td>
               </tr>
             </tbody>
@@ -113,8 +110,8 @@ const chipClass = (active: boolean) => [
                 <span class="text-stone-900">{{ row.name }}</span>
                 <span class="ml-1.5 text-xs text-stone-500">{{ row.sku }}</span>
               </NuxtLink>
-              <p class="shrink-0 tabular-nums text-stone-700" :title="`${row.cart_adds} u košaricu (${rate(row.cart_adds, row.views)}), ${row.whatsapp_orders} preko WhatsAppa`">
-                {{ row.views }} <span class="text-stone-500">· {{ row.cart_adds }} · {{ row.whatsapp_orders }}</span>
+              <p class="shrink-0 tabular-nums text-stone-700" :title="`${row.whatsapp_orders} preko WhatsAppa (${rate(row.whatsapp_orders, row.views)} pregleda)`">
+                {{ row.views }} <span class="text-stone-500">· {{ row.whatsapp_orders }}</span>
               </p>
             </div>
             <div class="mt-1 h-1.5 bg-primary-100">
@@ -122,7 +119,7 @@ const chipClass = (active: boolean) => [
             </div>
           </li>
         </ol>
-        <p v-if="data.products.length" class="mt-4 text-xs text-stone-500">Brojevi: pregleda · u košaricu · WhatsApp.</p>
+        <p v-if="data.products.length" class="mt-4 text-xs text-stone-500">Brojevi: pregleda · WhatsApp narudžbi.</p>
       </AdminCard>
     </template>
   </div>

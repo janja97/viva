@@ -76,6 +76,16 @@ export function useCart() {
 
   const clearPromo = () => { promo.value = null }
 
+  // WhatsApp narudžba (migracija 0043): sprema se u admin bez podataka kupca, a košarica ostaje.
+  async function submitWhatsappInquiry(note: string) {
+    const { error } = await supabase.rpc('shop_submit_whatsapp_inquiry', {
+      p_session: sessionId(),
+      p_note: note.trim() || null,
+      p_promo_code: promo.value?.code ?? null,
+    })
+    if (error) throw error
+  }
+
   async function submitInquiry(customer: InquiryCustomer) {
     const { data, error } = await supabase.rpc('shop_submit_inquiry', {
       p_session: sessionId(),
@@ -89,6 +99,6 @@ export function useCart() {
 
   return {
     items, isLoaded, isDrawerOpen, count, subtotal, savings, shipping, promo, promoDiscount, total, missingForFreeShipping,
-    load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry,
+    load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry, submitWhatsappInquiry,
   }
 }
