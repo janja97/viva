@@ -20,6 +20,7 @@ usePageSeo({
   title: article.meta_title || article.title,
   description: article.meta_description || article.excerpt || article.title,
   image: cover ?? undefined,
+  type: 'article',
 })
 
 useHead({

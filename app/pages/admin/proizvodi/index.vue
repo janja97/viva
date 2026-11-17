@@ -35,8 +35,14 @@ const filtersKey = computed(() => JSON.stringify(rpcFilters.value))
 const listKey = computed(() => JSON.stringify([filtersKey.value, filters.value.sort, page.value]))
 const optionsKey = computed(() => JSON.stringify([filters.value.archived, categoryIds.value, filters.value.sizeType]))
 
-const reload = () => load(rpcFilters.value, filters.value.sort, page.value)
-const reloadOptions = () => loadOptions({
+// Popis se učitava tek kad je odabrana glavna kategorija (ProductMainCategoryPicker).
+const mainCategoryId = computed(() => categoryPath(categories.value, filters.value.categoryId)[0]?.id ?? '')
+const hasCategory = computed(() => Boolean(mainCategoryId.value))
+const { apply } = useAdminProductFilters()
+const selectMainCategory = (id: string) => apply({ categoryId: id })
+
+const reload = () => hasCategory.value && load(rpcFilters.value, filters.value.sort, page.value)
+const reloadOptions = () => hasCategory.value && loadOptions({
   archived: filters.value.archived,
   category_ids: categoryIds.value,
   size_types: filters.value.sizeType ? [filters.value.sizeType] : [],
@@ -213,6 +219,13 @@ onMounted(async () => {
       Arhivirani proizvodi nisu na webu, ali ostaju u bazi za povijest i statistiku. Čuva se samo prva slika.
     </p>
 
+    <ProductMainCategoryPicker :categories="categories" :selected-id="mainCategoryId" @select="selectMainCategory" />
+
+    <p v-if="!isReady" class="text-sm text-stone-500">Učitavanje...</p>
+    <p v-else-if="!hasCategory" class="border border-dashed border-primary-300 bg-white px-4 py-12 text-center text-sm text-stone-500">
+      Odaberi glavnu kategoriju iznad, pa će se prikazati njezini proizvodi.
+    </p>
+    <template v-else>
     <ProductFilters :options="options" :categories="categories" :total="total" />
 
     <div v-if="loadError" class="space-y-3">
@@ -260,9 +273,10 @@ onMounted(async () => {
         <BaseButton variant="secondary" :loading="page >= pageCount - 1" @click="goToPage(page + 1)">Sljedeća</BaseButton>
       </nav>
     </template>
+    </template>
 
     <ProductBulkBar
-      v-if="canWrite && selected.length"
+      v-if="canWrite && hasCategory && selected.length"
       :count="selected.length"
       :archived="filters.archived"
       :loading="isWorking"

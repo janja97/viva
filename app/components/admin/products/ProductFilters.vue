@@ -16,7 +16,17 @@ const { filters, activeCount, apply, toggle, clear } = useAdminProductFilters()
 
 const isOpen = ref(false)
 
-const categorySelect = computed(() => [{ value: '', label: 'Sve kategorije' }, ...categoryOptions(props.categories)])
+// Podkategorija se bira samo unutar odabrane glavne kategorije (ProductMainCategoryPicker).
+const mainCategory = computed(() => categoryPath(props.categories, filters.value.categoryId)[0])
+const categorySelect = computed(() => {
+  const main = mainCategory.value
+  if (!main) return []
+  const allowed = new Set([main.id, ...descendantIds(props.categories, main.id)])
+  return categoryOptions(props.categories)
+    .filter((option) => allowed.has(option.value))
+    .map((option) => (option.value === main.id ? { ...option, label: `Sve: ${option.label}` } : option))
+})
+const clearFilters = () => clear(mainCategory.value?.id ?? '')
 const sizeTypeSelect = [{ value: '', label: 'Sve vrste' }, ...SIZE_TYPES]
 const brandSelect = computed(() => [
   { value: '', label: 'Svi brendovi' },
@@ -114,7 +124,7 @@ const chipClass = (active: boolean) => [
 
     <div v-if="activeCount" class="flex items-center gap-2 text-sm text-stone-500">
       <span>Aktivnih filtera: {{ activeCount }}</span>
-      <button type="button" class="inline-flex min-h-11 cursor-pointer items-center gap-1 font-medium text-primary-800 underline underline-offset-4 hover:text-primary-900 sm:min-h-8" @click="clear">
+      <button type="button" class="inline-flex min-h-11 cursor-pointer items-center gap-1 font-medium text-primary-800 underline underline-offset-4 hover:text-primary-900 sm:min-h-8" @click="clearFilters">
         <X class="size-4" stroke-width="1.75" />
         Očisti filtere
       </button>
@@ -122,7 +132,7 @@ const chipClass = (active: boolean) => [
 
     <BaseModal :open="isOpen" title="Filteri" wide @close="isOpen = false">
       <div class="grid gap-4 sm:grid-cols-2">
-        <BaseSelect v-model="category" label="Kategorija" :options="categorySelect" hint="Uključuje i sve podkategorije." />
+        <BaseSelect v-model="category" label="Podkategorija" :options="categorySelect" hint="Neobavezno. Uključuje i sve ispod nje." />
         <BaseSelect v-model="sizeType" label="Vrsta" :options="sizeTypeSelect" hint="Mijenja ponuđene veličine." />
         <BaseSelect v-model="brand" label="Brend" :options="brandSelect" />
 
@@ -188,7 +198,7 @@ const chipClass = (active: boolean) => [
       </div>
 
       <div class="sticky bottom-0 -mx-5 -mb-5 mt-6 flex flex-col-reverse gap-2 border-t border-primary-300 bg-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:flex-row sm:justify-between sm:px-6">
-        <BaseButton variant="secondary" :loading="!activeCount" @click="clear">Očisti filtere</BaseButton>
+        <BaseButton variant="secondary" :loading="!activeCount" @click="clearFilters">Očisti filtere</BaseButton>
         <BaseButton @click="isOpen = false">Prikaži rezultate ({{ total }})</BaseButton>
       </div>
     </BaseModal>

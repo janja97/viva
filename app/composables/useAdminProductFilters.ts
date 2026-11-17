@@ -79,11 +79,11 @@ export function useAdminProductFilters() {
 
   const page = computed(() => Math.max(0, Math.floor(Number(route.query.stranica) - 1) || 0))
 
-  // Arhiva, pretraga i redoslijed se ne broje kao filtri.
+  // Arhiva, pretraga, redoslijed i kategorija se ne broje kao filtri (glavna kategorija je obavezan odabir).
   const activeCount = computed(() => {
     const value = filters.value
     return [
-      value.categoryId, value.sizeType, value.brand, value.missingImages,
+      value.sizeType, value.brand, value.missingImages,
       value.minPrice !== null, value.maxPrice !== null, value.minQty !== null, value.maxQty !== null,
       value.visible !== null, value.storeOnly !== null, value.onSale !== null,
     ].filter(Boolean).length + value.colors.length + value.sizes.length
@@ -127,13 +127,19 @@ export function useAdminProductFilters() {
 
   const goToPage = (target: number) => navigateTo({ query: toQuery(filters.value, target) })
 
-  // Arhiva ima svoje filtre, pa prelazak briše postojeće.
-  const showArchived = (archived: boolean) => navigateTo({ query: archived ? { arhiva: '1' } : {} })
+  // Arhiva ima svoje filtre, pa prelazak briše postojeće, ali zadržava odabranu kategoriju.
+  const showArchived = (archived: boolean) => navigateTo({
+    query: {
+      ...(archived && { arhiva: '1' }),
+      ...(filters.value.categoryId && { kategorija: filters.value.categoryId }),
+    },
+  })
 
-  const clear = () => navigateTo({
+  // Glavna kategorija ostaje odabrana (mainCategoryId), a podkategorija se poništava.
+  const clear = (mainCategoryId = '') => navigateTo({
     query: toQuery({
       ...filters.value,
-      categoryId: '', sizeType: '', brand: '', colors: [], sizes: [],
+      categoryId: mainCategoryId, sizeType: '', brand: '', colors: [], sizes: [],
       minPrice: null, maxPrice: null, minQty: null, maxQty: null,
       visible: null, storeOnly: null, onSale: null, missingImages: false,
     }),

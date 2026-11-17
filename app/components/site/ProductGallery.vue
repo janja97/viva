@@ -97,7 +97,7 @@ onBeforeUnmount(() => clearInterval(timer))
           v-for="(image, index) in images"
           :key="image.id"
           type="button"
-          class="flex size-8 cursor-pointer items-center justify-center"
+          class="flex h-11 w-8 cursor-pointer items-center justify-center"
           :aria-label="`Slika ${index + 1} od ${images.length}`"
           :aria-current="index === active ? 'true' : undefined"
           @click="onDot(index)"
@@ -110,7 +110,8 @@ onBeforeUnmount(() => clearInterval(timer))
     <!-- Računalo i tablet: mreža -->
     <div class="hidden grid-cols-2 gap-2 md:grid">
       <div class="col-span-2 aspect-4/5 overflow-hidden">
-        <img v-if="main" :src="main.url" :alt="main.alt" width="1000" height="1250" loading="lazy" class="size-full object-contain">
+        <!-- Ista adresa kao prva slika vrtuljka, pa se preuzima samo jednom. Bez lazy, jer je to glavna slika stranice (LCP). -->
+        <img v-if="main" :src="main.url" :alt="main.alt" width="1000" height="1250" fetchpriority="high" class="size-full object-contain">
       </div>
       <div v-for="image in rest" :key="image.id" class="aspect-3/4 overflow-hidden">
         <img :src="image.url" :alt="image.alt" loading="lazy" width="600" height="800" class="size-full object-contain">

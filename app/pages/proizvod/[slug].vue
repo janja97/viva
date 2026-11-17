@@ -75,7 +75,14 @@ const title = productSeoTitle(seoInput)
 const description = productSeoDescription(seoInput)
 const url = `${origin}${PRODUCT_PATH}/${color.slug}`
 
-usePageSeo({ title, description, image: color.images[0]?.url })
+usePageSeo({
+  title,
+  description,
+  image: color.images[0]?.url,
+  imageAlt: color.images[0]?.alt || `${product.name} ${color.name}`,
+  type: 'product',
+  price: { amount: currentPrice, currency: CURRENCY_CODE },
+})
 
 // Poštarina u JSON-LD-u dolazi iz postavki trgovine.
 await storeSettings.ready()
@@ -94,6 +101,8 @@ useHead({
         '@type': 'Product',
         name: `${product.name} ${color.name}`,
         sku: product.sku,
+        // Sve boje istog proizvoda dijele šifru, pa Google zna da su varijante jednog modela.
+        productGroupID: product.sku,
         color: color.base_color ?? color.name,
         category: category.name,
         description,
@@ -107,6 +116,7 @@ useHead({
           priceCurrency: CURRENCY_CODE,
           availability: availability(),
           itemCondition: 'https://schema.org/NewCondition',
+          seller: { '@type': 'Organization', name: useRuntimeConfig().public.siteName },
           // Poštarina po istom pravilu kao u košarici. Proizvod samo za poslovnice se ne šalje.
           ...(!product.store_only && {
             shippingDetails: {
