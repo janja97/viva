@@ -1,7 +1,7 @@
 import type { ProductEventType } from '~/types/database'
 
 // Praćenje zanimanja za proizvode (migracija 0041): pregled, dodavanje u košaricu i narudžba preko WhatsAppa.
-// Radi samo u pregledniku i nikad ne javlja grešku kupcu. Baza sama preskače ponovljene preglede i članove tima.
+// Radi samo u pregledniku i nikad ne javlja grešku kupcu. Baza broji svako otvaranje, a osvježavanje unutar 10 s jednom (migracija 0042).
 export function useProductTracking() {
   const supabase = useSupabase()
   const { sessionId } = useShopSession()

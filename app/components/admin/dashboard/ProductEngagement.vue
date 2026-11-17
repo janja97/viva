@@ -56,7 +56,7 @@ const chipClass = (active: boolean) => [
     </div>
 
     <p class="text-xs text-stone-500">
-      Pregled se broji kad kupac otvori stranicu proizvoda (isti kupac najviše jednom u 30 minuta). Članovi tima prijavljeni u admin se ne broje.
+      Pregled se broji svaki put kad netko otvori stranicu proizvoda (osvježavanje unutar 10 sekundi broji se jednom), i kad je to član tima.
       WhatsApp znači da je kupac otvorio WhatsApp s narudžbom, ne nužno i poslao poruku.
     </p>
 
