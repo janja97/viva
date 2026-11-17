@@ -1,4 +1,4 @@
-import type { AnalyticsBucket, DashboardBasic, SalesAnalytics, StockBySizeRow } from '~/types/database'
+import type { AnalyticsBucket, DashboardBasic, ProductEngagement, SalesAnalytics, StockBySizeRow } from '~/types/database'
 
 export type AnalyticsPeriod = 'month' | '3m' | '6m' | '9m' | '12m' | 'all'
 
@@ -65,5 +65,14 @@ export function useDashboard() {
     return data
   }
 
-  return { fetchBasic, fetchAnalytics, fetchStockBySize }
+  // Pregledi, košarica i WhatsApp po proizvodu (migracija 0041). categoryIds uključuje i podkategorije.
+  async function fetchEngagement(period: AnalyticsPeriod, categoryIds: string[] | null): Promise<ProductEngagement> {
+    const option = ANALYTICS_PERIODS.find((item) => item.value === period)!
+    const from = periodStart(option.months)?.toISOString() ?? null
+    const { data, error } = await supabase.rpc('admin_product_engagement', { p_from: from, p_to: null, p_category_ids: categoryIds })
+    if (error) throw error
+    return data
+  }
+
+  return { fetchBasic, fetchAnalytics, fetchStockBySize, fetchEngagement }
 }

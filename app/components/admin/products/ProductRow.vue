@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Archive, ArchiveRestore, Eye, ImageOff, Pencil, Trash2 } from '@lucide/vue'
+import { Archive, ArchiveRestore, Eye, ImageOff, MessageCircle, Pencil, ShoppingBag, Trash2 } from '@lucide/vue'
 import type { ProductListRow } from '~/composables/useProducts'
 import { EXCLUSIVE_PROMO_PAGE } from '~/config/navigation'
 
@@ -42,6 +42,12 @@ const emit = defineEmits<{ archive: []; restore: []; delete: []; editStock: []; 
         <span class="line-clamp-2 text-sm font-medium text-stone-900 sm:line-clamp-1">{{ product.name }}</span>
         <span class="mt-0.5 block text-sm text-stone-700">Šifra: <span class="font-semibold">{{ product.sku }}</span></span>
         <span class="block truncate text-xs text-stone-500">{{ product.categoryName }}<template v-if="product.brand"> · {{ product.brand }}</template></span>
+        <!-- Ukupno pregleda, dodavanja u košaricu i WhatsApp narudžbi (migracija 0041). -->
+        <span class="mt-1 flex items-center gap-3 text-xs tabular-nums text-stone-500" :title="`${product.views} pregleda, ${product.cartAdds} u košaricu, ${product.whatsappOrders} preko WhatsAppa`">
+          <span class="inline-flex items-center gap-1"><Eye class="size-3.5" stroke-width="1.75" aria-hidden="true" />{{ product.views }}<span class="sr-only"> pregleda</span></span>
+          <span class="inline-flex items-center gap-1"><ShoppingBag class="size-3.5" stroke-width="1.75" aria-hidden="true" />{{ product.cartAdds }}<span class="sr-only"> u košaricu</span></span>
+          <span class="inline-flex items-center gap-1"><MessageCircle class="size-3.5" stroke-width="1.75" aria-hidden="true" />{{ product.whatsappOrders }}<span class="sr-only"> preko WhatsAppa</span></span>
+        </span>
         <span class="mt-1.5 flex flex-wrap items-center gap-1.5">
           <ColorSwatch v-for="color in product.colors" :key="color.id" class="size-4" :name="color.name" :hex="color.hex" />
           <span v-if="!product.isVisible && !archived" class="bg-stone-200 px-1.5 py-0.5 text-xs text-stone-700">Skriveno</span>

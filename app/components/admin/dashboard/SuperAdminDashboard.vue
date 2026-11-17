@@ -7,10 +7,11 @@ import type { DashboardBasic as DashboardBasicData, SalesAnalytics } from '~/typ
 // Statistika ima vlastiti izbor razdoblja.
 defineProps<{ basic: DashboardBasicData | null }>()
 
-type Tab = 'prodaja' | 'statistika' | 'zalihe'
+type Tab = 'prodaja' | 'statistika' | 'pregledi' | 'zalihe'
 const TABS: { value: Tab; label: string }[] = [
   { value: 'prodaja', label: 'Prodaja' },
   { value: 'statistika', label: 'Statistika' },
+  { value: 'pregledi', label: 'Pregledi' },
   { value: 'zalihe', label: 'Zalihe' },
 ]
 
@@ -69,7 +70,9 @@ watch(statsPeriod, () => stats.load())
       </button>
     </div>
 
-    <template v-if="tab === 'zalihe'">
+    <ProductEngagement v-if="tab === 'pregledi'" />
+
+    <template v-else-if="tab === 'zalihe'">
       <p v-if="!basic" class="text-sm text-stone-500">Učitavanje...</p>
       <DashboardBasic v-else :data="basic" />
     </template>

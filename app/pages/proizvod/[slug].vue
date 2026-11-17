@@ -84,6 +84,10 @@ usePageSeo({
   price: { amount: currentPrice, currency: CURRENCY_CODE },
 })
 
+// Pregled se bilježi samo u pregledniku, pa Google i drugi roboti ne ulaze u brojke (migracija 0041).
+const { track } = useProductTracking()
+onMounted(() => track(color.id, 'view'))
+
 // Poštarina u JSON-LD-u dolazi iz postavki trgovine.
 await storeSettings.ready()
 

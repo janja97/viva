@@ -5,6 +5,7 @@ const props = defineProps<{ phone: string }>()
 const emit = defineEmits<{ cancel: [] }>()
 
 const { items, promo } = useCart()
+const { track } = useProductTracking()
 const { siteUrl } = useRuntimeConfig().public
 
 const note = ref('')
@@ -20,6 +21,8 @@ const url = computed(() => whatsappUrl(props.phone, message.value))
 
 function open() {
   window.open(url.value, '_blank', 'noopener')
+  // Svaki proizvod iz košarice bilježi se kao narudžba preko WhatsAppa (migracija 0041).
+  for (const item of items.value) track(item.colorId, 'whatsapp_order', item.quantity)
   isOpened.value = true
 }
 

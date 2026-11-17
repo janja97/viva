@@ -238,6 +238,10 @@ export type ProductListRow = {
   colors: { id: string; name: string; hex: string }[]
   stock: number
   thumbnail: string | null
+  // Ukupno od početka praćenja (migracija 0041).
+  views: number
+  cartAdds: number
+  whatsappOrders: number
 }
 
 export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'campaign' | 'promo_on' | 'promo_off' | 'archive' | 'restore' | 'delete'
@@ -286,9 +290,24 @@ export function useProductList() {
         if (response.error) throw response.error
         data = response.data
       }
+      // Brojke pregleda nisu nužne za popis, pa njihova greška ne ruši stranicu.
+      const counts = result.ids.length
+        ? await supabase.rpc('admin_product_event_counts', { p_ids: result.ids }).then(({ data: rows, error: countError }) => {
+            if (countError) console.error(countError)
+            return new Map((rows ?? []).map((row) => [row.product_id, row]))
+          })
+        : new Map()
       if (current !== request) return
 
-      const byId = new Map(data.map((product) => [product.id, toRow(product)]))
+      const byId = new Map(data.map((product) => {
+        const count = counts.get(product.id)
+        return [product.id, {
+          ...toRow(product),
+          views: Number(count?.views ?? 0),
+          cartAdds: Number(count?.cart_adds ?? 0),
+          whatsappOrders: Number(count?.whatsapp_orders ?? 0),
+        }]
+      }))
       rows.value = result.ids.flatMap((id) => byId.get(id) ?? [])
       total.value = result.total
     } catch (error) {
@@ -333,6 +352,9 @@ export function useProductList() {
       colors: colors.map(({ id, name, hex }) => ({ id, name, hex })),
       stock: colors.flatMap((color) => color.product_sizes).reduce((sum, size) => sum + size.quantity, 0),
       thumbnail: firstImage ? storage.getPublicUrl(firstImage.path).data.publicUrl : null,
+      views: 0,
+      cartAdds: 0,
+      whatsappOrders: 0,
     }
   }
 

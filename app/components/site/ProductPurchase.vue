@@ -8,6 +8,7 @@ const props = defineProps<{
 }>()
 
 const { add, isDrawerOpen } = useCart()
+const { track } = useProductTracking()
 const { has, toggle, ensureLoaded } = useWishlist()
 
 const available = computed(() => props.sizes.filter((size) => size.quantity > 0))
@@ -39,6 +40,7 @@ async function addToCart() {
   isAdding.value = true
   try {
     await add(selected.value.id)
+    track(props.colorId, 'cart_add')
     // Brzi pregled potvrđuje dodavanje i nudi narudžbu ili nastavak kupnje.
     isDrawerOpen.value = true
   } catch (caught) {

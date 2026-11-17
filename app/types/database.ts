@@ -81,6 +81,17 @@ export type Countdown = {
 
 export type CountdownInput = Pick<Countdown, 'title' | 'message' | 'link' | 'starts_at' | 'ends_at' | 'is_enabled'>
 
+// Praćenje zanimanja za proizvode (migracija 0041).
+export type ProductEventType = 'view' | 'cart_add' | 'whatsapp_order'
+export type ProductEventCounts = { views: number; cart_adds: number; whatsapp_orders: number }
+export type ProductEngagement = {
+  totals: ProductEventCounts
+  // Po glavnoj kategoriji (Haljine, Obuća...), od najgledanije.
+  categories: (ProductEventCounts & { name: string })[]
+  // Po boji proizvoda, od najgledanije.
+  products: (ProductEventCounts & { product_id: string; name: string; sku: string; slug: string | null })[]
+}
+
 // Akcijska stranica, npr. /black-friday (migracije 0033 i 0034). Proizvode, postotke i datume daju njezine kampanje (promo_page_campaigns).
 export type PromoPage = {
   id: string
@@ -607,6 +618,9 @@ export type Database = {
       shop_wishlist_set: { Args: { p_session: string; p_color_id: string; p_on: boolean }; Returns: ShopWishlistRow[] }
       admin_stock_by_size: { Args: Record<string, never>; Returns: StockBySizeRow[] }
       admin_dashboard_basic: { Args: Record<string, never>; Returns: DashboardBasic }
+      shop_track_event: { Args: { p_session: string; p_color_id: string; p_event: ProductEventType; p_quantity?: number }; Returns: undefined }
+      admin_product_engagement: { Args: { p_from: string | null; p_to: string | null; p_category_ids?: string[] | null; p_limit?: number }; Returns: ProductEngagement }
+      admin_product_event_counts: { Args: { p_ids: string[] }; Returns: (ProductEventCounts & { product_id: string })[] }
       admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }
