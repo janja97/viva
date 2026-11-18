@@ -91,6 +91,7 @@ useHead({
       :to="`/${EXCLUSIVE_PROMO_PAGE.slug}`"
       :image="HOME_CLEARANCE.image"
       :image-alt="HOME_CLEARANCE.imageAlt"
+      :image-position="HOME_CLEARANCE.imagePosition"
       reverse
       dark
     />

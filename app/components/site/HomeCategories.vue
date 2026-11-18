@@ -7,7 +7,8 @@ const categoryLink = useCategoryLink()
 <template>
   <section class="mx-auto hidden max-w-7xl px-4 py-20 sm:block sm:px-6 lg:px-8 lg:py-28">
     <SectionHeading title="Kategorije" link-to="/proizvodi" link-label="Sve kategorije" />
-    <ul class="grid grid-cols-3 gap-4 lg:grid-cols-5">
+    <!-- Broj stupaca prati broj kategorija u HOME_CATEGORIES, da red uvijek bude pun. -->
+    <ul class="grid gap-4" :class="HOME_CATEGORIES.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-3 lg:grid-cols-5'">
       <li v-for="(category, index) in HOME_CATEGORIES" :key="category.slug">
         <NuxtLink :to="categoryLink(category.slug)" class="group block">
           <div class="aspect-3/4 overflow-hidden" :class="index % 2 ? 'bg-photo-dark' : 'bg-photo'">

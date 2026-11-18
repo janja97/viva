@@ -4,8 +4,9 @@ import { HOME_LOOKBOOK } from '~/config/home'
 const categoryLink = useCategoryLink()
 
 // Velike fotografije zauzimaju 2×2 polja na računalu i cijeli red na mobitelu.
-// Uz 15 fotografija ovaj raspored puni 6 redova po 4 polja bez praznina (lijevo, desno, lijevo).
-const LOOKBOOK_LARGE = new Set([0, 7, 10])
+// Uz 11 fotografija ovaj raspored puni 5 redova po 4 polja bez praznina (velike cik-cak: lijevo, desno, lijevo),
+// a na mobitelu su između velikih uvijek parovi. Promijeni li se broj fotografija, prilagodi ove indekse.
+const LOOKBOOK_LARGE = new Set([0, 3, 6])
 </script>
 
 <template>

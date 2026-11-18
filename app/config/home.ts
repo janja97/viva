@@ -9,8 +9,11 @@ export const HOME_HERO = {
   eyebrow: 'Jesen / Zima 2026',
   eyebrowExtra: ' · Svečana kolekcija',
   text: 'Za maturu, vjenčanje i svaku svečanu večer — haljine, kaputi, cipele i torbice birani s pažnjom u našem butiku u Mepas Mallu.',
-  image: '',
-  imageAlt: 'Model u dugoj večernjoj haljini',
+  // Original je public/header/viva header.jpg (kolaž 2000 × 1390). Računalo dobiva cijeli kolaž smanjen na 1600 px,
+  // a mobitel samo lijevu fotografiju, izrezanu 3 : 4 od vrha.
+  image: '/images/home/heroj.jpg',
+  imageMobile: '/images/home/heroj-mobitel.jpg',
+  imageAlt: 'Ružičasta duga haljina od čipke s biserima, dugim rukavima i prorezom',
   primary: { label: 'Svečane haljine', slug: 'svecane-haljine' },
   secondary: { label: 'Kaputi', slug: 'kaputi' },
 }
@@ -20,7 +23,8 @@ export const HOME_CATEGORIES = [
   { title: 'Ženska odijela', slug: 'zenska-odijela', image: '/images/home/kompleti-i-sakoi-kategorija.jpg', imageAlt: 'Ženski komplet od sakoa i hlača u bež boji, uz bijelu košulju s naglašenim ovratnikom i torbicu' },
   { title: 'Obuća', slug: 'obuca', image: '/images/home/obuca-kategorija.jpg', imageAlt: 'Bež čizme do koljena s ukrasnim vezicama i zlatnim gumbima' },
   { title: 'Torbice', slug: 'torbice', image: '/images/home/torbice-kategorija.jpg', imageAlt: 'Srebrna svjetlucava torbica s mašnom uz crnu satensku haljinu' },
-  { title: 'Modni dodaci', slug: 'dodaci', image: '/images/home/modni-dodaci-kategorija.jpg', imageAlt: 'Bež pismo torbica i cipele na petu uz smeđu satensku haljinu' },
+  // Modni dodaci su zasad maknuti s naslovne, jer ih još nema u ponudi. Za povratak samo makni komentar.
+  // { title: 'Modni dodaci', slug: 'dodaci', image: '/images/home/modni-dodaci-kategorija.jpg', imageAlt: 'Bež pismo torbica i cipele na petu uz smeđu satensku haljinu' },
 ]
 
 // Prva kartica je sezonska, druga stoji cijelu godinu.
@@ -88,15 +92,16 @@ export const HOME_NEW = {
 }
 
 // Najava stranice Čišćenje zaliha (HomeFeature), bez proizvoda. Prikazuje se samo dok je ta stranica uključena.
-// Fotografija je privremena, iz galerije haljina. Zamijeni je vlastitom (uspravna, najmanje 900 × 1200 px).
+// Fotografija je public/images/home/ciscenje-zaliha.jpg (900 × 1125). imagePosition čuva čizme i torbu u kadru.
 export const HOME_CLEARANCE = {
   eyebrow: 'Posebna ponuda',
   title: 'Čišćenje',
   accent: 'zaliha',
   text: 'Odabrani modeli po sniženim cijenama, izdvojeni na jednoj stranici.',
   link: 'Pogledaj ponudu',
-  image: '/images/home/galerija/svecana-haljina-14.jpg',
-  imageAlt: 'Crna duga haljina s crvenom podlogom, prorezom i svjetlucavim ukrasom',
+  image: '/images/home/ciscenje-zaliha.jpg',
+  imageAlt: 'Bijele čizme do koljena s kopčama i bijela torba uz tamnoljubičastu haljinu s čipkom',
+  imagePosition: 'object-[50%_65%]',
 }
 
 // Kratke prednosti trgovine (HomeHighlights). Samo tvrdnje koje je potvrdila vlasnica.
@@ -119,31 +124,41 @@ export const HOME_LOOKBOOK = {
   // Redoslijed je namjeran: slične haljine i fotografije iste haljine nisu jedna do druge.
   // Velike fotografije su u LOOKBOOK_LARGE (komponenta HomeLookbook).
   images: [
-    { src: '/images/home/galerija/svecana-haljina-01.jpg', alt: 'Maslinastozelena duga haljina s volanima i remenom' },
-    { src: '/images/home/galerija/svecana-haljina-02.jpg', alt: 'Crna duga haljina s otvorenim ramenima' },
-    { src: '/images/home/galerija/svecana-haljina-03.jpg', alt: 'Detalj ružičaste svjetlucave haljine sa šlepom i ukrasnom kopčom na remenu' },
-    { src: '/images/home/galerija/svecana-haljina-04.jpg', alt: 'Crvena kratka haljina bez naramenica s cvijetom oko vrata' },
-    { src: '/images/home/galerija/svecana-haljina-05.jpg', alt: 'Tamnosmeđa uska duga haljina na jedno rame s velikim cvijetom' },
+    { src: '/images/home/galerija/svecana-haljina-03.jpg', alt: 'Crna duga haljina s crvenom podlogom, prorezom i svjetlucavim ukrasom' },
+    { src: '/images/home/galerija/svecana-haljina-01.jpg', alt: 'Detalj ružičaste haljine sa šljokicama i biserima na jedno rame' },
     { src: '/images/home/galerija/svecana-haljina-06.jpg', alt: 'Detalj bež korzeta s čipkom i dugim rukavima' },
-    { src: '/images/home/galerija/svecana-haljina-07.jpg', alt: 'Bordo duga haljina na tanke naramenice s prorezom' },
-    { src: '/images/home/galerija/svecana-haljina-08.jpg', alt: 'Ružičasta svečana haljina na jedno rame, sa šljokicama, remenom i satenskim šlepom' },
-    { src: '/images/home/galerija/svecana-haljina-09.jpg', alt: 'Tamnosmeđa uska duga haljina s mašnom i volanima na ramenima' },
-    { src: '/images/home/galerija/svecana-haljina-10.jpg', alt: 'Crna čipkasta duga haljina s dugim rukavima i prorezom' },
-    { src: '/images/home/galerija/svecana-haljina-11.jpg', alt: 'Srebrnosiva duga haljina s perlicama i visokim ovratnikom' },
+    { src: '/images/home/galerija/svecana-haljina-14.jpg', alt: 'Crvena kratka haljina bez naramenica s cvijetom oko vrata' },
+    { src: '/images/home/galerija/svecana-haljina-09.jpg', alt: 'Crna duga haljina s volanima na ramenima' },
     { src: '/images/home/galerija/svecana-haljina-12.jpg', alt: 'Detalj srebrnosive haljine s perlicama i prozirnim rukavima' },
+    { src: '/images/home/galerija/svecana-haljina-02.jpg', alt: 'Ružičasta svjetlucava haljina s remenom, ukrasnom kopčom i satenskim šlepom' },
+    { src: '/images/home/galerija/svecana-haljina-10.jpg', alt: 'Crna čipkasta duga haljina s dugim rukavima i prorezom' },
     { src: '/images/home/galerija/svecana-haljina-13.jpg', alt: 'Detalj crvenog cvijeta oko vrata uz svečanu haljinu' },
-    { src: '/images/home/galerija/svecana-haljina-14.jpg', alt: 'Crna duga haljina s crvenom podlogom, prorezom i svjetlucavim ukrasom' },
-    { src: '/images/home/galerija/svecana-haljina-15.jpg', alt: 'Detalj ružičaste svjetlucave haljine na jedno rame' },
+    { src: '/images/home/galerija/svecana-haljina-05.jpg', alt: 'Tamnosmeđa uska duga haljina na jedno rame s velikim cvijetom' },
+    { src: '/images/home/galerija/svecana-haljina-07.jpg', alt: 'Bordo duga haljina na tanke naramenice s prorezom' },
   ],
 }
 
 // Video, npr. '/video/kolekcija.mp4' (MP4, H.264, bez zvuka, do ~10 MB). Poster je slika dok se video ne učita.
+// Dok nema videa, prikazuje se kolaž fotografija različitih veličina, spojenih bez razmaka kao jedna slika (HomeVideo).
+// Fotografije su 900 × 1125 (4 : 5) u public/images/home/kolekcija/.
 export const HOME_VIDEO = {
   eyebrow: 'Kolekcija u pokretu',
   title: 'Svečana kolekcija',
   src: '',
   poster: '',
   label: 'Video svečane kolekcije haljina',
+  link: { label: 'Pogledaj svečane haljine', slug: 'svecane-haljine' },
+  images: [
+    { src: '/images/home/kolekcija/svecana-kolekcija-1.jpg', alt: 'Bež duga haljina s kristalima i ljubičastim satenskim rukavima' },
+    { src: '/images/home/kolekcija/svecana-kolekcija-2.jpg', alt: 'Bež duga haljina s kristalima, pogled sa strane' },
+    { src: '/images/home/kolekcija/svecana-kolekcija-3.jpg', alt: 'Bež haljina s dubokim izrezom, kristalima i ljubičastim satenskim rukavima' },
+    { src: '/images/home/kolekcija/svecana-kolekcija-4.jpg', alt: 'Detalj izreza bež haljine s ljubičastim kristalima' },
+    { src: '/images/home/kolekcija/svecana-kolekcija-5.jpg', alt: 'Detalj korzeta bež haljine s perlicama i ljubičastim kristalima' },
+    { src: '/images/home/kolekcija/svecana-kolekcija-6.jpg', alt: 'Bež cipela na petu sa svjetlucavom petom uz rub bež haljine' },
+  ],
+  // Koja fotografija (indeks u images) ide na koje mjesto kolaža, redom: velika, visoka, visoka, mala, mala, široka.
+  // Za veliko i visoka mjesta najbolje su cijele figure, a za široko i mala detalji (vidi HomeVideo).
+  order: [2, 0, 1, 3, 5, 4],
 }
 
 export const HOME_SERVICES = [

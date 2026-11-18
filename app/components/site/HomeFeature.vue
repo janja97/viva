@@ -10,6 +10,8 @@ defineProps<{
   to: string
   image?: string
   imageAlt?: string
+  // Dio fotografije koji ostaje u kadru, npr. 'object-[50%_65%]'. Zadano je gornja četvrtina (lice).
+  imagePosition?: string
   // Fotografija desno umjesto lijevo (na računalu).
   reverse?: boolean
   // Tamna podloga za akcije, svijetla za kolekcije.
@@ -21,7 +23,7 @@ defineProps<{
   <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
     <div class="grid sm:grid-cols-2" :class="dark ? 'bg-graphite text-white' : 'bg-sand'">
       <div class="aspect-4/3 overflow-hidden bg-photo-dark sm:aspect-auto sm:min-h-[420px] lg:min-h-[520px]" :class="reverse && 'sm:order-last'">
-        <img v-if="image" :src="image" :alt="imageAlt ?? ''" loading="lazy" width="900" height="1200" class="size-full object-cover object-[50%_25%]">
+        <img v-if="image" :src="image" :alt="imageAlt ?? ''" loading="lazy" width="900" height="1200" class="size-full object-cover" :class="imagePosition ?? 'object-[50%_25%]'">
       </div>
       <div class="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-16">
         <p class="text-xs font-medium uppercase tracking-[0.24em]" :class="dark ? 'text-gold-light' : 'text-ink'">{{ eyebrow }}</p>
