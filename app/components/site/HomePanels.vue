@@ -14,7 +14,7 @@ const categoryLink = useCategoryLink()
     >
       <!-- Fotografija je pozadina, a tamni sloj preko nje čuva čitljivost svijetlog teksta. Lice je u gornjem dijelu kadra. -->
       <template v-if="panel.image">
-        <img :src="panel.image" :alt="panel.imageAlt" loading="lazy" width="1080" height="1440" class="absolute inset-0 -z-10 size-full object-cover object-[50%_25%]">
+        <img :src="panel.image" :alt="panel.imageAlt" loading="lazy" width="1080" height="1350" class="absolute inset-0 -z-10 size-full object-cover object-[50%_25%]">
         <span class="absolute inset-0 -z-10 bg-graphite/55" aria-hidden="true" />
       </template>
 

@@ -19,12 +19,16 @@ useHead({
   <div class="coming-soon relative grid min-h-dvh bg-graphite font-body text-white lg:grid-cols-2">
     <!-- Na mobitelu je fotografija preko cijelog ekrana, a na računalu desna polovica. -->
     <div class="absolute inset-0 overflow-hidden lg:relative lg:order-last">
+      <!-- Glavna slika stranice (LCP): mobitel dobiva 640 px, računalo 1080 px, umjesto originala od 800 KB. -->
       <img
-        src="/images/home/svecana-haljina-srebrna.jpg"
-        alt="Svečana srebrna haljina s biserima i kristalima"
+        src="/images/home/svecana-haljina-srebrna-1080.jpg"
+        srcset="/images/home/svecana-haljina-srebrna-640.jpg 640w, /images/home/svecana-haljina-srebrna-1080.jpg 1080w"
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        alt="Crni svečani korzet bez naramenica s ukrasima"
         width="1080"
-        height="1440"
+        height="1350"
         fetchpriority="high"
+        decoding="async"
         class="coming-soon__photo size-full object-cover object-top"
       >
       <div class="absolute inset-0 bg-graphite/60 lg:hidden" aria-hidden="true" />

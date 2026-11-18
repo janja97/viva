@@ -51,8 +51,9 @@ export const HOME_PANELS = [
     link: 'Istraži kolekciju',
     slug: 'svecane-haljine',
     tone: 'champagne',
-    image: '/images/home/svecana-haljina-srebrna.jpg',
-    imageAlt: 'Srebrnosiva duga haljina s perlicama i visokim ovratnikom',
+    // Smanjena kopija (1080 px) fotografije svecana-haljina-srebrna.jpg, koju koristi i stranica "Uskoro".
+    image: '/images/home/svecana-haljina-srebrna-1080.jpg',
+    imageAlt: 'Crni svečani korzet bez naramenica s ukrasima',
   },
 ]
 
