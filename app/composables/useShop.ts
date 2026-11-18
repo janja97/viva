@@ -19,6 +19,9 @@ export type ShopCard = {
   soldOut: boolean
   storeOnly: boolean
   colors: { id: string; name: string; hex: string }[]
+  // Samo iz fetchCards (za filtre akcijske stranice): glavna kategorija proizvoda i osnovna boja ("Crna" za "Crna pliš").
+  categoryId?: string
+  baseColor?: string
 }
 
 export type ShopSort = 'new' | 'price_asc' | 'price_desc' | 'name'
@@ -66,7 +69,7 @@ export function useShop() {
     let query = supabase
       .from('products')
       .select(
-        'id, name, price, sale_price, store_only, categories!products_category_id_fkey!inner(name, is_active), product_categories!inner(category_id), product_colors(id, name, hex, slug, sort_order, product_sizes(quantity), product_images(path, alt, sort_order))',
+        'id, name, price, sale_price, store_only, category_id, categories!products_category_id_fkey!inner(name, is_active), product_categories!inner(category_id), product_colors(id, name, base_color, hex, slug, sort_order, product_sizes(quantity), product_images(path, alt, sort_order))',
         { count: 'exact' },
       )
       .eq('is_visible', true)
@@ -99,6 +102,8 @@ export function useShop() {
           soldOut: color.product_sizes.every((size) => size.quantity === 0),
           storeOnly: product.store_only,
           colors: colors.map(({ id, name, hex }) => ({ id, name, hex })),
+          categoryId: product.category_id,
+          baseColor: color.base_color ?? color.name,
         }
       })
     })

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { SlidersHorizontal } from '@lucide/vue'
+import type { PromoCard } from '~/composables/usePromoFilters'
 // Akcijska stranica (npr. /ciscenje-zaliha,/admin/akcijske-stranice, migracije 0033 i 0034).
 // U tijeku: odjeljak za svaki postotak (od najvećeg) i odbrojavanje do kraja. Prije početka: odbrojavanje do početka.
 // Izvan akcije stranica ostaje, s tekstom i prijavom na newsletter, kako bi je Google zadržao.
@@ -29,6 +31,25 @@ const { data: sections } = await useAsyncData(`promo-cards-${props.slug}`, async
   return groups.filter((group) => group.cards.length)
 }, { watch: [page], default: () => [] })
 
+// FILTRI (kategorija, popust, boja, cijena), u pregledniku, nad svim proizvodima stranice.
+// Glavna kategorija kartice je najviša razina njezine kategorije (Haljine, Obuća...).
+const { data: siteCategories } = useSiteCategories()
+const { activeCount: promoFilterCount, isFiltered: promoIsFiltered, matches, sortCards, clear: clearPromoFilters } = usePromoFilters()
+const isFilterModalOpen = ref(false)
+const promoCards = computed<PromoCard[]>(() => sections.value.flatMap((section) => section.cards.map((card) => {
+  const main = card.categoryId ? categoryPath(siteCategories.value, card.categoryId)[0] : undefined
+  return { ...card, discount: section.percent, mainCategory: main ? { slug: main.slug, name: main.name } : null }
+})))
+// Jedan popis bez naslova po popustu: najprije veći popust (redoslijed odjeljaka iz baze), osim ako kupac odabere drugi poredak.
+const visibleCards = computed(() => sortCards(promoCards.value.filter(matches)))
+const visibleTotal = computed(() => visibleCards.value.length)
+const visibleTotalLabel = computed(() => `${visibleTotal.value} ${visibleTotal.value % 10 === 1 && visibleTotal.value % 100 !== 11 ? 'model' : 'modela'}`)
+// Panel (poredak i filtri) ima smisla čim je više od jednog proizvoda.
+const hasFilterOptions = computed(() => promoCards.value.length > 1)
+
+// Filtrirana stranica nije za Google (duplikat), kao i popisi trgovine.
+useSeoMeta({ robots: () => (promoIsFiltered.value ? 'noindex, follow' : 'index, follow, max-image-preview:large') })
+
 // "−30 %" za jedan popust, a "do −50 %" kad ih je više. Postotak 0 su proizvodi bez sniženja (Čišćenje zaliha).
 const headline = computed(() => {
   const percents = sections.value.map((section) => section.percent).filter(Boolean)
@@ -38,7 +59,6 @@ const headline = computed(() => {
 
 const faq = computed(() => page.value!.faq.map((item) => ({ question: fill(item.question), answer: fill(item.answer) })))
 const target = computed(() => (page.value?.state === 'upcoming' ? page.value.starts_at : page.value?.ends_at) ?? null)
-const sectionId = (percent: number) => (percent ? `popust-${percent}` : 'ostalo')
 const sectionLabel = (percent: number) => (percent ? `−${percent} %` : 'Ostali modeli')
 
 // Kad odbrojavanje dođe do nule, stanje se ponovno čita iz baze (početak ili kraj akcije).
@@ -65,12 +85,13 @@ async function onCountdownDone() {
         </div>
 
         <!-- Kratke poveznice na odjeljke kad je popusta više. -->
+        <!-- Gumbi popusta uključuju filtar tog popusta i vode do proizvoda. -->
         <nav v-if="sections.length > 1" aria-label="Popusti" class="mt-10">
           <ul class="flex flex-wrap justify-center gap-2">
             <li v-for="section in sections" :key="section.percent">
-              <a :href="`#${sectionId(section.percent)}`" class="inline-flex min-h-11 items-center border border-gold px-5 font-display text-xl text-gold-light transition-colors hover:bg-gold hover:text-graphite">
+              <NuxtLink :to="{ query: { popust: String(section.percent) }, hash: '#proizvodi' }" class="inline-flex min-h-11 items-center border border-gold px-5 font-display text-xl text-gold-light transition-colors hover:bg-gold hover:text-graphite">
                 {{ sectionLabel(section.percent) }}
-              </a>
+              </NuxtLink>
             </li>
           </ul>
         </nav>
@@ -78,21 +99,53 @@ async function onCountdownDone() {
     </section>
 
     <template v-if="page.state === 'live'">
-      <section
-        v-for="section in sections"
-        :id="sectionId(section.percent)"
-        :key="section.percent"
-        :aria-labelledby="`${sectionId(section.percent)}-naslov`"
-        class="mx-auto max-w-7xl scroll-mt-24 px-4 pt-12 sm:px-6 lg:px-8"
-      >
-        <h2 :id="`${sectionId(section.percent)}-naslov`" class="mb-6 flex items-baseline gap-3 border-b border-line pb-3 font-display text-4xl font-normal">
-          <span :class="section.percent ? 'text-red-700' : 'text-ink'">{{ sectionLabel(section.percent) }}</span>
-          <span class="font-body text-sm text-muted">{{ section.cards.length }} {{ section.cards.length % 10 === 1 && section.cards.length % 100 !== 11 ? 'model' : 'modela' }}</span>
-        </h2>
-        <ProductGrid :cards="section.cards" />
-      </section>
-
       <p v-if="!sections.length" class="py-16 text-center text-muted">Proizvodi na akciji stižu uskoro.</p>
+
+      <!-- Kao popisi trgovine: filtri sa strane (sticky) na računalu, a na mobitelu u prozoru. -->
+      <div v-else class="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12 lg:px-8 lg:pt-14" :class="!hasFilterOptions && 'lg:block'">
+        <aside v-if="hasFilterOptions" aria-label="Filteri" class="sticky top-24 hidden max-h-[calc(100dvh-7rem)] overflow-y-auto pb-4 pr-2 lg:block">
+          <button v-if="promoFilterCount" type="button" class="mb-5 inline-flex min-h-9 cursor-pointer items-center text-xs font-medium uppercase tracking-[0.16em] underline underline-offset-4" @click="clearPromoFilters">
+            Očisti filtere ({{ promoFilterCount }})
+          </button>
+          <PromoFilters :cards="promoCards" />
+        </aside>
+
+        <div id="proizvodi" class="min-w-0 scroll-mt-24">
+          <!-- Na mobitelu samo gumb za filtre i poredak, bez broja modela i naslova po popustu. -->
+          <div v-if="hasFilterOptions" class="mb-6 flex items-center justify-between gap-4 border-y border-line py-1 lg:hidden">
+            <button
+              type="button"
+              class="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]"
+              aria-haspopup="dialog"
+              @click="isFilterModalOpen = true"
+            >
+              <SlidersHorizontal class="size-4" stroke-width="1.25" />
+              Filteri i poredak<template v-if="promoFilterCount"> ({{ promoFilterCount }})</template>
+            </button>
+            <button v-if="promoFilterCount" type="button" class="inline-flex min-h-11 cursor-pointer items-center text-xs underline underline-offset-4" @click="clearPromoFilters">Očisti</button>
+          </div>
+
+          <ProductGrid v-if="visibleCards.length" :cards="visibleCards" :with-sidebar="hasFilterOptions" />
+          <div v-else class="py-16 text-center">
+            <p class="text-muted">Nema proizvoda za odabrane filtere.</p>
+            <button type="button" class="mt-3 inline-flex min-h-11 cursor-pointer items-center text-xs font-medium uppercase tracking-[0.16em] underline underline-offset-4" @click="clearPromoFilters">
+              Očisti filtere
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <BaseModal :open="isFilterModalOpen" title="Filteri i poredak" @close="isFilterModalOpen = false">
+        <PromoFilters :cards="promoCards" />
+        <div class="sticky bottom-0 -mx-5 -mb-5 mt-6 flex gap-2 border-t border-line bg-white p-4 font-body sm:-mx-6 sm:-mb-6 sm:px-6">
+          <button v-if="promoFilterCount" type="button" class="min-h-12 flex-none cursor-pointer border border-ink px-4 text-xs font-medium uppercase tracking-[0.16em]" @click="clearPromoFilters">
+            Očisti
+          </button>
+          <button type="button" class="min-h-12 flex-1 cursor-pointer bg-ink px-4 text-xs font-medium uppercase tracking-[0.16em] text-white" @click="isFilterModalOpen = false">
+            Prikaži {{ visibleTotalLabel }}
+          </button>
+        </div>
+      </BaseModal>
       <!-- Popust je zasad isključen (i u SHOP_NAV). Za povratak makni komentar.
       <div class="mx-auto max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
         <SiteLink to="/proizvodi?snizeno=1" variant="outline">
