@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { SlidersHorizontal } from '@lucide/vue'
 import { SHOP_SORTS } from '~/composables/useShopFilters'
 import type { ShopCard, ShopSort } from '~/composables/useShop'
 
@@ -95,17 +94,7 @@ useSeoMeta({
 
     <div class="min-w-0">
       <div class="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-y border-line py-2">
-        <button
-          type="button"
-          class="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] lg:hidden"
-          aria-haspopup="dialog"
-          @click="isModalOpen = true"
-        >
-          <SlidersHorizontal class="size-4" stroke-width="1.25" />
-          Filteri<template v-if="activeCount"> ({{ activeCount }})</template>
-        </button>
-
-        <p class="order-last w-full text-sm text-muted lg:order-none lg:w-auto" role="status">{{ totalLabel }}</p>
+        <p class="text-sm text-muted" role="status">{{ totalLabel }}</p>
 
         <label class="flex items-center gap-2 text-sm">
           <span class="text-muted">Poredaj</span>
@@ -150,8 +139,11 @@ useSeoMeta({
       </nav>
     </div>
 
+    <!-- Na mobitelu je gumb za filtre uvijek dostupan u donjem desnom kutu. -->
+    <FilterFloatingButton v-if="!isModalOpen" :count="activeCount" @open="isModalOpen = true" />
+
     <BaseModal :open="isModalOpen" title="Filteri" @close="isModalOpen = false">
-      <ShopFilterPanel :options="options ?? null" />
+      <ShopFilterPanel :options="options ?? null" compact />
       <div class="sticky bottom-0 -mx-5 -mb-5 mt-6 flex gap-2 border-t border-line bg-white p-4 font-body sm:-mx-6 sm:-mb-6 sm:px-6">
         <button v-if="activeCount" type="button" class="min-h-12 flex-none cursor-pointer border border-ink px-4 text-xs font-medium uppercase tracking-[0.16em]" @click="clear">
           Očisti

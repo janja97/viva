@@ -11,8 +11,15 @@ export function storeJsonLd(name: string, url: string, settings: StoreSettings) 
     url,
     logo: `${url}/logo/logo-square.png`,
     image: `${url}/logo/logo-square.png`,
-    description: `Luksuzna svečana moda u Mostaru, ${STORE.mall}.`,
+    description: `Butik svečane mode u Mostaru, ${STORE.mall}: svečane i maturalne haljine, haljine za svadbu, ženska odijela, štikle, čizme, torbe i nakit od nehrđajućeg čelika.`,
     currenciesAccepted: 'BAM',
+    paymentAccepted: 'Gotovina, kartica, plaćanje na rate',
+    // Kupci su iz Hercegovine i BiH te iz Dalmacije (Split, Dubrovnik), koji dolaze u trgovinu.
+    areaServed: [
+      { '@type': 'Country', name: 'Bosna i Hercegovina' },
+      { '@type': 'AdministrativeArea', name: 'Splitsko-dalmatinska županija' },
+      { '@type': 'AdministrativeArea', name: 'Dubrovačko-neretvanska županija' },
+    ],
     address: {
       '@type': 'PostalAddress',
       streetAddress: [STORE.mall, STORE.street].filter(Boolean).join(', '),

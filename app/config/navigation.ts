@@ -27,6 +27,8 @@ export const PUBLIC_NAV: NavLink[] = [
 export const INFO_NAV: NavLink[] = [
   { label: 'Dostava i plaćanje', to: '/dostava' },
   { label: 'Povrat i zamjena', to: '/povrat-i-zamjena' },
+  { label: 'Kupovina u Mostaru', to: '/kupovina-u-mostaru' },
+  { label: 'Poklon bon', to: '/poklon-bon' },
 ]
 
 export type ShopNavLink = {

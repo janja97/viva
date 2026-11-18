@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_COLORS } from '~/config/products'
 
+// Skupine se otvaraju i zatvaraju (FilterGroup). Na računalu su otvorene, a u prozoru na mobitelu (compact)
+// otvorene su samo skupine u kojima je nešto odabrano.
 const props = defineProps<{
+  compact?: boolean
   options: {
     colors: { name: string; hex: string }[]
     sizes: string[]
@@ -31,85 +34,52 @@ const heels = computed(() => HEEL_HEIGHTS.filter((item) =>
   props.options?.heels.includes(item.value) || filters.value.heels.includes(item.value)))
 const showSale = computed(() => props.options?.hasSale || filters.value.onSale)
 
-function onPrice(key: 'minPrice' | 'maxPrice', event: Event) {
-  const { value } = event.target as HTMLInputElement
-  const price = value === '' ? null : Number(value)
-  apply({ [key]: price !== null && Number.isFinite(price) && price >= 0 ? price : null })
-}
 
-const headingClass = 'mb-3 text-xs font-medium uppercase tracking-[0.2em] text-ink'
-const checkClass = 'flex min-h-11 cursor-pointer items-center gap-2.5 text-sm text-ink lg:min-h-9'
-const inputClass = 'size-4 flex-none accent-ink'
-const priceClass = 'min-h-11 w-full min-w-0 border border-line bg-white px-3 text-base text-ink focus:border-ink focus:outline-none lg:text-sm'
+const offerCount = computed(() => (filters.value.onSale ? 1 : 0) + (filters.value.inStock ? 1 : 0))
+const priceCount = computed(() => (filters.value.minPrice !== null ? 1 : 0) + (filters.value.maxPrice !== null ? 1 : 0))
+const isOpen = (active: boolean) => !props.compact || active
+
+const sizeClass = (active: boolean) => [
+  'inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center border px-2.5 text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold lg:min-h-10 lg:min-w-10',
+  active ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink hover:border-ink',
+]
 </script>
 
 <template>
-  <div class="space-y-7 font-body">
-    <fieldset class="min-w-0">
-      <legend :class="headingClass">Ponuda</legend>
-      <label v-if="showSale" :class="checkClass">
-        <input type="checkbox" :class="inputClass" :checked="filters.onSale" @change="apply({ onSale: !filters.onSale })">
-        Na sniženju
-      </label>
-      <label :class="checkClass">
-        <input type="checkbox" :class="inputClass" :checked="filters.inStock" @change="apply({ inStock: !filters.inStock })">
-        Samo dostupno
-      </label>
-    </fieldset>
+  <div class="border-t border-line font-body">
+    <!-- Ponuda (Na sniženju, Samo dostupno) zasad je isključena na zahtjev vlasnice. Za povratak makni komentar.
+    <FilterGroup title="Ponuda" :count="offerCount" :open="isOpen(offerCount > 0)">
+      <FilterOption v-if="showSale" :checked="filters.onSale" @change="apply({ onSale: !filters.onSale })">Na sniženju</FilterOption>
+      <FilterOption :checked="filters.inStock" @change="apply({ inStock: !filters.inStock })">Samo dostupno</FilterOption>
+    </FilterGroup>
+    -->
 
-    <fieldset v-if="sortedSizes.length" class="min-w-0">
-      <legend :class="headingClass">Veličina</legend>
+    <FilterGroup v-if="sortedSizes.length" title="Veličina" :count="filters.sizes.length" :open="isOpen(filters.sizes.length > 0)">
       <div class="flex flex-wrap gap-2">
-        <label
-          v-for="size in sortedSizes"
-          :key="size"
-          class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center border px-2.5 text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold"
-          :class="filters.sizes.includes(size) ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink hover:border-ink'"
-        >
+        <label v-for="size in sortedSizes" :key="size" :class="sizeClass(filters.sizes.includes(size))">
           <input type="checkbox" class="sr-only" :checked="filters.sizes.includes(size)" @change="toggle('sizes', size)">
           {{ size }}
         </label>
       </div>
-    </fieldset>
+    </FilterGroup>
 
-    <fieldset v-if="colors.length" class="min-w-0">
-      <legend :class="headingClass">Boja</legend>
-      <label v-for="color in colors" :key="color.name" :class="checkClass">
-        <input type="checkbox" :class="inputClass" :checked="filters.colors.includes(color.name)" @change="toggle('colors', color.name)">
+    <FilterGroup v-if="colors.length" title="Boja" :count="filters.colors.length" :open="isOpen(filters.colors.length > 0)">
+      <FilterOption v-for="color in colors" :key="color.name" :checked="filters.colors.includes(color.name)" @change="toggle('colors', color.name)">
         <ColorSwatch class="size-4 flex-none" :name="color.name" :hex="color.hex" />
         {{ color.name }}
-      </label>
-    </fieldset>
+      </FilterOption>
+    </FilterGroup>
 
-    <fieldset class="min-w-0">
-      <legend :class="headingClass">Cijena (KM)</legend>
-      <div class="flex items-center gap-2">
-        <label class="min-w-0 flex-1">
-          <span class="sr-only">Cijena od</span>
-          <input :class="priceClass" type="number" min="0" inputmode="numeric" :placeholder="options?.minPrice != null ? `Od ${Math.floor(options.minPrice)}` : 'Od'" :value="filters.minPrice ?? ''" @change="onPrice('minPrice', $event)">
-        </label>
-        <span aria-hidden="true" class="text-muted">–</span>
-        <label class="min-w-0 flex-1">
-          <span class="sr-only">Cijena do</span>
-          <input :class="priceClass" type="number" min="0" inputmode="numeric" :placeholder="options?.maxPrice != null ? `Do ${Math.ceil(options.maxPrice)}` : 'Do'" :value="filters.maxPrice ?? ''" @change="onPrice('maxPrice', $event)">
-        </label>
-      </div>
-    </fieldset>
+    <FilterGroup title="Cijena" :count="priceCount" :open="isOpen(priceCount > 0)">
+      <FilterPriceRange :min="filters.minPrice" :max="filters.maxPrice" :range-min="options?.minPrice" :range-max="options?.maxPrice" @change="(key, value) => apply({ [key]: value })" />
+    </FilterGroup>
 
-    <fieldset v-if="lengths.length" class="min-w-0">
-      <legend :class="headingClass">Duljina haljine</legend>
-      <label v-for="item in lengths" :key="item.value" :class="checkClass">
-        <input type="checkbox" :class="inputClass" :checked="filters.lengths.includes(item.value)" @change="toggle('lengths', item.value)">
-        {{ item.label }}
-      </label>
-    </fieldset>
+    <FilterGroup v-if="lengths.length" title="Duljina haljine" :count="filters.lengths.length" :open="isOpen(filters.lengths.length > 0)">
+      <FilterOption v-for="item in lengths" :key="item.value" :checked="filters.lengths.includes(item.value)" @change="toggle('lengths', item.value)">{{ item.label }}</FilterOption>
+    </FilterGroup>
 
-    <fieldset v-if="heels.length" class="min-w-0">
-      <legend :class="headingClass">Visina pete</legend>
-      <label v-for="item in heels" :key="item.value" :class="checkClass">
-        <input type="checkbox" :class="inputClass" :checked="filters.heels.includes(item.value)" @change="toggle('heels', item.value)">
-        {{ item.label }}
-      </label>
-    </fieldset>
+    <FilterGroup v-if="heels.length" title="Visina pete" :count="filters.heels.length" :open="isOpen(filters.heels.length > 0)">
+      <FilterOption v-for="item in heels" :key="item.value" :checked="filters.heels.includes(item.value)" @change="toggle('heels', item.value)">{{ item.label }}</FilterOption>
+    </FilterGroup>
   </div>
 </template>

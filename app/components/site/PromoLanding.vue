@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { SlidersHorizontal } from '@lucide/vue'
 import type { PromoCard } from '~/composables/usePromoFilters'
 // Akcijska stranica (npr. /ciscenje-zaliha,/admin/akcijske-stranice, migracije 0033 i 0034).
 // U tijeku: odjeljak za svaki postotak (od najvećeg) i odbrojavanje do kraja. Prije početka: odbrojavanje do početka.
@@ -111,20 +110,6 @@ async function onCountdownDone() {
         </aside>
 
         <div id="proizvodi" class="min-w-0 scroll-mt-24">
-          <!-- Na mobitelu samo gumb za filtre i poredak, bez broja modela i naslova po popustu. -->
-          <div v-if="hasFilterOptions" class="mb-6 flex items-center justify-between gap-4 border-y border-line py-1 lg:hidden">
-            <button
-              type="button"
-              class="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]"
-              aria-haspopup="dialog"
-              @click="isFilterModalOpen = true"
-            >
-              <SlidersHorizontal class="size-4" stroke-width="1.25" />
-              Filteri i poredak<template v-if="promoFilterCount"> ({{ promoFilterCount }})</template>
-            </button>
-            <button v-if="promoFilterCount" type="button" class="inline-flex min-h-11 cursor-pointer items-center text-xs underline underline-offset-4" @click="clearPromoFilters">Očisti</button>
-          </div>
-
           <ProductGrid v-if="visibleCards.length" :cards="visibleCards" :with-sidebar="hasFilterOptions" />
           <div v-else class="py-16 text-center">
             <p class="text-muted">Nema proizvoda za odabrane filtere.</p>
@@ -135,8 +120,11 @@ async function onCountdownDone() {
         </div>
       </div>
 
+      <!-- Na mobitelu je gumb za filtre i poredak uvijek dostupan u donjem desnom kutu. -->
+      <FilterFloatingButton v-if="hasFilterOptions && !isFilterModalOpen" :count="promoFilterCount" @open="isFilterModalOpen = true" />
+
       <BaseModal :open="isFilterModalOpen" title="Filteri i poredak" @close="isFilterModalOpen = false">
-        <PromoFilters :cards="promoCards" />
+        <PromoFilters :cards="promoCards" compact />
         <div class="sticky bottom-0 -mx-5 -mb-5 mt-6 flex gap-2 border-t border-line bg-white p-4 font-body sm:-mx-6 sm:-mb-6 sm:px-6">
           <button v-if="promoFilterCount" type="button" class="min-h-12 flex-none cursor-pointer border border-ink px-4 text-xs font-medium uppercase tracking-[0.16em]" @click="clearPromoFilters">
             Očisti
