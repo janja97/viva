@@ -1,4 +1,4 @@
-import { STORE } from '~/config/store'
+import { COMPANY, STORE } from '~/config/store'
 import type { StoreSettings } from '~/types/database'
 
 // Podaci o trgovini za Google. Telefon, e-mail i mreže ulaze tek kad su upisani u postavkama, a zatvoreni dani se izostavljaju.
@@ -14,12 +14,13 @@ export function storeJsonLd(name: string, url: string, settings: StoreSettings) 
     description: `Butik svečane mode u Mostaru, ${STORE.mall}: svečane i maturalne haljine, haljine za svadbu, ženska odijela, štikle, čizme, torbe i nakit od nehrđajućeg čelika.`,
     currenciesAccepted: 'BAM',
     paymentAccepted: 'Gotovina, kartica, plaćanje na rate',
-    // Kupci su iz Hercegovine i BiH te iz Dalmacije (Split, Dubrovnik), koji dolaze u trgovinu.
+    // Kupci su iz BiH i iz cijele Hrvatske (dolaze u trgovinu; online narudžbe idu samo u BiH).
     areaServed: [
       { '@type': 'Country', name: 'Bosna i Hercegovina' },
-      { '@type': 'AdministrativeArea', name: 'Splitsko-dalmatinska županija' },
-      { '@type': 'AdministrativeArea', name: 'Dubrovačko-neretvanska županija' },
+      { '@type': 'Country', name: 'Hrvatska' },
     ],
+    legalName: COMPANY.name,
+    ...(COMPANY.jib && { taxID: COMPANY.jib }),
     address: {
       '@type': 'PostalAddress',
       streetAddress: [STORE.mall, STORE.street].filter(Boolean).join(', '),

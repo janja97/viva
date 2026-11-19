@@ -37,22 +37,29 @@ export default defineEventHandler(async (event) => {
   const imageUrl = (path: string) => `${supabaseUrl}/storage/v1/object/public/${PRODUCT_IMAGES_BUCKET}/${path}`
   const supabase = createClient(supabaseUrl, supabasePublishableKey, { auth: { persistSession: false } })
 
-  const [productResult, categoryResult, settingsResult] = await Promise.all([
-    supabase
-      .from('products')
-      .select('id, name, description, material, price, sale_price, category_id, categories!products_category_id_fkey!inner(is_active), product_colors(name, base_color, slug, sort_order, product_sizes(id, size, quantity), product_images(path, sort_order))')
-      .eq('is_visible', true)
-      .eq('store_only', false)
-      .eq('categories.is_active', true),
-    supabase.from('categories').select('id, slug, name, parent_id').eq('is_active', true),
+  // Proizvodi i kategorije čitaju se u stranicama po 1000 (fetchAllRows), pa feed nema gornju granicu.
+  const productQuery = (from: number, to: number) => supabase
+    .from('products')
+    .select('id, name, description, material, price, sale_price, category_id, categories!products_category_id_fkey!inner(is_active), product_colors(name, base_color, slug, sort_order, product_sizes(id, size, quantity), product_images(path, sort_order))')
+    .eq('is_visible', true)
+    .eq('store_only', false)
+    .eq('categories.is_active', true)
+    .order('id')
+    .range(from, to)
+  type ProductRow = NonNullable<Awaited<ReturnType<typeof productQuery>>['data']>[number]
+
+  const [products, categories, settingsResult] = await Promise.all([
+    fetchAllRows<ProductRow>(productQuery).catch((error: unknown) => {
+      console.error(error)
+      return null
+    }),
+    fetchAllRows<CategoryRow>((from, to) => supabase.from('categories').select('id, slug, name, parent_id').eq('is_active', true).order('id').range(from, to)).catch(() => []),
     supabase.from('store_settings').select('shipping_price, free_shipping_above').maybeSingle(),
   ])
-  if (productResult.error) {
-    console.error(productResult.error)
-    throw createError({ statusCode: 500, statusMessage: 'Feed trenutno nije dostupan' })
+  if (!products) {
+    throw createError({ statusCode: 500, message: 'Feed trenutno nije dostupan' })
   }
 
-  const categories = (categoryResult.data ?? []) as CategoryRow[]
   const pathOf = (id: string) => {
     const path: CategoryRow[] = []
     let current = categories.find((item) => item.id === id)
@@ -67,7 +74,7 @@ export default defineEventHandler(async (event) => {
   const price = (value: number) => `${value.toFixed(2)} BAM`
 
   const items: string[] = []
-  for (const product of productResult.data) {
+  for (const product of products) {
     const path = pathOf(product.category_id)
     const googleCategory = [...path].reverse().map((item) => GOOGLE_CATEGORIES[item.slug]).find(Boolean)
     const current = Number(product.sale_price ?? product.price)

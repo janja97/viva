@@ -1,10 +1,11 @@
 import { PRODUCT_IMAGES_BUCKET } from '~/config/products'
+import type { DeliveryMethod } from '~/config/store'
 import type { InquiryCustomerInput, ShopCartItemRow } from '~/types/database'
 
 export type CartItem = ShopCartItemRow & { image: string | null }
 
-// Promo kod ne upisuje kupac u obrazac, nego ga dodaje košarica.
-export type InquiryCustomer = Omit<InquiryCustomerInput, 'promo_code'>
+// Promo kod i način preuzimanja ne upisuje kupac u obrazac, nego ih dodaje košarica.
+export type InquiryCustomer = Omit<InquiryCustomerInput, 'promo_code' | 'delivery_method'>
 
 // Košarica je zajednička za cijelu stranicu (zaglavlje, stranica proizvoda i košarica).
 // Podatke uvijek vraća baza, koja sama provjerava dostupnost i količine.
@@ -22,7 +23,9 @@ export function useCart() {
   const count = computed(() => items.value.reduce((sum, item) => sum + item.quantity, 0))
   const subtotal = computed(() => items.value.reduce((sum, item) => sum + item.price * item.quantity, 0))
   const savings = computed(() => items.value.reduce((sum, item) => sum + ((item.compareAtPrice ?? item.price) - item.price) * item.quantity, 0))
-  const shipping = computed(() => (items.value.length ? shippingFor(subtotal.value) : 0))
+  // Dostava ili preuzimanje u trgovini (migracija 0048). Kupac bira u košarici, a preuzimanje je bez poštarine.
+  const deliveryMethod = useState<DeliveryMethod>('cart-delivery', () => 'delivery')
+  const shipping = computed(() => (items.value.length && deliveryMethod.value === 'delivery' ? shippingFor(subtotal.value) : 0))
 
   // Promo kod iz košarice. Popust je na iznos proizvoda, a poštarina se računa prema iznosu prije popusta,
   // isto kao u shop_submit_inquiry.
@@ -30,7 +33,7 @@ export function useCart() {
   const promoDiscount = computed(() => (promo.value ? Math.round(subtotal.value * promo.value.percent) / 100 : 0))
   const total = computed(() => subtotal.value - promoDiscount.value + shipping.value)
   // Koliko još nedostaje do besplatne poštarine.
-  const missingForFreeShipping = computed(() => (shipping.value > 0 ? Math.max(0, Number(storeSettings.value.free_shipping_above) - subtotal.value) : 0))
+  const missingForFreeShipping = computed(() => (deliveryMethod.value === 'delivery' && shipping.value > 0 ? Math.max(0, Number(storeSettings.value.free_shipping_above) - subtotal.value) : 0))
 
   function setItems(rows: ShopCartItemRow[]) {
     items.value = rows.map((row) => ({
@@ -82,6 +85,7 @@ export function useCart() {
       p_session: sessionId(),
       p_note: note.trim() || null,
       p_promo_code: promo.value?.code ?? null,
+      p_delivery: deliveryMethod.value,
     })
     if (error) throw error
   }
@@ -89,7 +93,7 @@ export function useCart() {
   async function submitInquiry(customer: InquiryCustomer) {
     const { data, error } = await supabase.rpc('shop_submit_inquiry', {
       p_session: sessionId(),
-      p_customer: { ...customer, promo_code: promo.value?.code ?? null },
+      p_customer: { ...customer, promo_code: promo.value?.code ?? null, delivery_method: deliveryMethod.value },
     })
     if (error) throw error
     items.value = []
@@ -98,7 +102,7 @@ export function useCart() {
   }
 
   return {
-    items, isLoaded, isDrawerOpen, count, subtotal, savings, shipping, promo, promoDiscount, total, missingForFreeShipping,
+    items, isLoaded, isDrawerOpen, count, subtotal, savings, deliveryMethod, shipping, promo, promoDiscount, total, missingForFreeShipping,
     load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry, submitWhatsappInquiry,
   }
 }

@@ -9,7 +9,7 @@ const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
 
 const { data: post } = await useAsyncData(`blog-${slug}`, () => fetchPost(slug))
 if (!post.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Članak nije pronađen', fatal: true })
+  throw createError({ statusCode: 404, message: 'Članak nije pronađen', fatal: true })
 }
 
 const article = post.value

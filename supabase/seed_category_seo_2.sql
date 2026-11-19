@@ -1,9 +1,9 @@
 -- JEDNOKRATNO: SEO tekstovi za sve kategorije, nakon istraživanja ključnih riječi (studeni 2026.).
--- Zamjenjuje tekstove iz seed_category_seo.sql. Kupci su iz Mostara i okolice te iz Dalmacije (Split, Dubrovnik).
+-- Zamjenjuje tekstove iz seed_category_seo.sql. Kupci su iz Mostara i okolice te iz cijele Hrvatske (najviše Dalmacija).
 -- Ključne riječi su iz Googleovih prijedloga pretrage za BiH i Hrvatsku, bez brojeva pretraga.
 -- Upisuje samo u kategorije s tim slugom; ostale preskače. Sve se poslije može mijenjati u adminu.
 -- {godina} web mijenja u godinu sljedeće mature. Naslov za Google: web sam dodaje "| Viva" na kraj.
--- Samo potvrđene tvrdnje: veličine do 58 ovisno o modelu, isprobavanje u trgovini, dostava samo u BiH,
+-- Samo potvrđene tvrdnje: veličine od 36 do 58 ovisno o modelu, isprobavanje u trgovini, dostava samo u BiH,
 -- zamjena 15 dana, nakit od nehrđajućeg čelika, poklon bon u iznosu po izboru, plaćanje KM, karticom ili na rate.
 begin;
 
@@ -13,7 +13,7 @@ insert into seo values
 -- HALJINE
 ('haljine',
  'Svečane haljine Mostar | Za svadbu, maturu i kumu',
- 'Svečane, duge i elegantne haljine za svadbu, maturu, kumu i obiteljske proslave, u veličinama do 58. Isprobajte u Mepas Mallu u Mostaru ili naručite po BiH.',
+ 'Svečane, duge i elegantne haljine za svadbu, maturu, kumu i obiteljske proslave, u veličinama od 36 do 58. Isprobajte u Mepas Mallu u Mostaru ili naručite po BiH.',
  'Svečane, maturalne i elegantne haljine za svadbu, kumu, maturu i obiteljske proslave, te ležernije haljine za posao.',
  $t$## Svečane haljine u Mostaru
 Tražite haljinu za svadbu, maturu, krštenje ili večer koju ćete pamtiti? U našem butiku u Mepas Mallu u Mostaru čekaju vas duge svečane haljine, kraće koktel haljine i elegantne haljine za svaku priliku.
@@ -22,20 +22,20 @@ Tražite haljinu za svadbu, maturu, krštenje ili večer koju ćete pamtiti? U n
 Za vjenčanje kao gost, za vjenčanu, krsnu ili krizmanu kumu biramo haljine koje su elegantne, a ugodne za cijelu večer. Imamo i svečane haljine za mame, za pričest, krizmu, krštenje i vjenčanje djece.
 
 ## I u većim veličinama
-Veličine idu do 58, ovisno o modelu, pa elegantne haljine za svadbu pronađu i punije dame. Dostupne veličine vidite na stranici svakog proizvoda.
+Veličine idu od 36 do 58, ovisno o modelu, pa elegantne haljine za svadbu pronađu i punije dame. Dostupne veličine vidite na stranici svakog proizvoda.
 
-## Iz Splita, Dubrovnika i cijele Dalmacije
-Mnoge kupce iz Dalmacije rado dočekujemo u Mostaru, osobito u sezoni matura i vjenčanja. Haljine možete isprobati u trgovini, a za kupnju veću od 200 KM moguć je povrat PDV-a. Više na stranici [Kupovina u Mostaru](/kupovina-u-mostaru).$t$,
+## Kupci iz cijele Hrvatske
+Kupce iz cijele Hrvatske, od Zagreba do Splita i Dubrovnika, rado dočekujemo u Mostaru, osobito u sezoni matura i vjenčanja. Haljine možete isprobati u trgovini, a za kupnju veću od 200 KM moguć je povrat PDV-a. Više na stranici [Kupovina u Mostaru](/kupovina-u-mostaru).$t$,
  jsonb_build_array(
    jsonb_build_object('question', 'Mogu li haljinu isprobati prije kupnje?', 'answer', 'Da, u našoj trgovini u Mepas Mallu u Mostaru možete isprobati više modela prije kupnje.'),
-   jsonb_build_object('question', 'Koje veličine imate?', 'answer', 'Veličine idu do 58, ovisno o modelu. Dostupne veličine vidite na stranici svakog proizvoda.'),
+   jsonb_build_object('question', 'Koje veličine imate?', 'answer', 'Veličine idu od 36 do 58, ovisno o modelu. Dostupne veličine vidite na stranici svakog proizvoda.'),
    jsonb_build_object('question', 'Imate li haljine za kumu i za mame?', 'answer', 'Da, u ponudi su svečane haljine za kumu i za mame za pričest, krizmu, krštenje i vjenčanje.'),
    jsonb_build_object('question', 'Šaljete li haljine u Hrvatsku?', 'answer', 'Ne, online narudžbe zasad šaljemo samo na adrese u BiH. Iz Hrvatske nas posjetite u Mepas Mallu u Mostaru.'),
    jsonb_build_object('question', 'Mogu li zamijeniti haljinu?', 'answer', 'Da, u roku od 15 dana, ako haljina nema tragova nošenja.')
  )),
 ('svecane-haljine',
  'Svečane haljine Mostar | Duge i kratke večernje haljine',
- 'Duge i kratke svečane haljine, večernje i elegantne haljine za svadbu, kumu i proslave. Butik u Mepas Mallu u Mostaru, blizu Splita i Dubrovnika.',
+ 'Duge i kratke svečane haljine, večernje i elegantne haljine za svadbu, kumu i proslave. Butik u Mepas Mallu u Mostaru, za kupce iz BiH i Hrvatske.',
  'Duge i kratke svečane haljine za svadbu, kumu, gala večer i obiteljske proslave.',
  $t$## Duge svečane haljine
 Duga svečana haljina prvi je izbor za vjenčanje, gala večer ili maturu. U ponudi su modeli s dugim rukavima, s prorezom, sa šljokicama, perlicama i kristalima, u klasičnim i jačim bojama.
@@ -44,14 +44,14 @@ Duga svečana haljina prvi je izbor za vjenčanje, gala večer ili maturu. U pon
 Za manje proslave, krštenje ili svadbu ljeti mnoge biraju kratku svečanu haljinu do koljena. Uz nju idu sandale na petu i mala svečana torbica.
 
 ## Pogledajte i isprobajte u Mostaru
-Sve modele možete isprobati u našoj trgovini u Mepas Mallu u Mostaru. Veličine idu do 58, ovisno o modelu, a online narudžbe šaljemo na adrese u BiH.$t$,
+Sve modele možete isprobati u našoj trgovini u Mepas Mallu u Mostaru. Veličine idu od 36 do 58, ovisno o modelu, a online narudžbe šaljemo na adrese u BiH.$t$,
  jsonb_build_array(
    jsonb_build_object('question', 'Imate li duge svečane haljine s rukavima?', 'answer', 'Da, u ponudi su i duge svečane haljine s dugim rukavima. Dostupne modele vidite na ovoj stranici.'),
    jsonb_build_object('question', 'Radite li skraćivanje haljina?', 'answer', 'Ne, skraćivanje i prepravke ne radimo. Zato preporučujemo da u trgovini isprobate više modela.')
  )),
 ('maturalne-haljine',
  'Maturalne haljine {godina} | Velika i mala matura, Mostar',
- 'Maturalne haljine {godina} za veliku i malu maturu: duge i kratke modele isprobajte u Mepas Mallu u Mostaru. Kupci nam dolaze i iz Splita i Dubrovnika.',
+ 'Maturalne haljine {godina} za veliku i malu maturu: duge i kratke modele isprobajte u Mepas Mallu u Mostaru. Kupci nam dolaze iz BiH i cijele Hrvatske.',
  'Maturalne haljine {godina} za veliku i malu maturu, duge i kratke, uz cipele i torbicu.',
  $t$## Maturalne haljine {godina}
 Matura je jedna od najvažnijih večeri, zato u ponudi imamo haljine za veliku i malu maturu: duge haljine za svečanu večer i kraće modele za one koje žele nešto lakše. Nova kolekcija stiže često.
@@ -62,8 +62,8 @@ Za malu maturu (9. razred) birajte jednostavnije i kraće modele. Dostupne veli�
 ## Cipele i torbica uz haljinu
 Uz maturalnu haljinu kod nas možete odabrati cipele za maturu, salonke ili sandale na petu, i svečanu torbicu. Ponesite cipele ili ih odaberite kod nas, jer visina pete mijenja duljinu haljine.
 
-## Maturantice iz Dalmacije
-Maturalne haljine u Mostaru biraju i maturantice iz Splita, Dubrovnika i Makarske. Dođite isprobati više modela u Mepas Mall, a za kupnju veću od 200 KM moguć je povrat PDV-a. Više na stranici [Kupovina u Mostaru](/kupovina-u-mostaru).$t$,
+## Maturantice iz Hrvatske
+Maturalne haljine u Mostaru biraju i maturantice iz cijele Hrvatske, od Splita i Makarske do Dubrovnika. Dođite isprobati više modela u Mepas Mall, a za kupnju veću od 200 KM moguć je povrat PDV-a. Više na stranici [Kupovina u Mostaru](/kupovina-u-mostaru).$t$,
  jsonb_build_array(
    jsonb_build_object('question', 'Imate li haljine za malu maturu?', 'answer', 'Da, u ponudi su haljine za veliku i za malu maturu.'),
    jsonb_build_object('question', 'Mogu li isprobati maturalnu haljinu?', 'answer', 'Da, u našoj trgovini u Mepas Mallu u Mostaru možete isprobati više modela.'),
@@ -73,7 +73,7 @@ Maturalne haljine u Mostaru biraju i maturantice iz Splita, Dubrovnika i Makarsk
  )),
 ('haljine-za-svadbu',
  'Haljine za svadbu i haljina za kumu | Mostar',
- 'Elegantne haljine za svadbu kao gost, haljina za kumu i svečane haljine za mame, u veličinama do 58. Isprobajte u Mepas Mallu u Mostaru.',
+ 'Elegantne haljine za svadbu kao gost, haljina za kumu i svečane haljine za mame, u veličinama od 36 do 58. Isprobajte u Mepas Mallu u Mostaru.',
  'Elegantne haljine za vjenčanje kao gost, za kumu i za mame mladenaca.',
  $t$## Haljine za vjenčanje kao gost
 Za svadbu birajte haljinu koja je elegantna, a u kojoj se ugodno osjećate cijelu večer. U ponudi su duge i kratke haljine za svadbu, u nježnim i jačim bojama.
@@ -82,10 +82,10 @@ Za svadbu birajte haljinu koja je elegantna, a u kojoj se ugodno osjećate cijel
 Vjenčana, krsna ili krizmana kuma traži nešto posebno. Pogledajte elegantne haljine za kumu, a uz njih odaberite cipele na petu i svečanu torbicu.
 
 ## Haljine za svadbu za mame
-Imamo i svečane haljine za mame mladenaca, u veličinama do 58, ovisno o modelu.$t$,
+Imamo i svečane haljine za mame mladenaca, u veličinama od 36 do 58, ovisno o modelu.$t$,
  jsonb_build_array(
    jsonb_build_object('question', 'Imate li haljine za kumu?', 'answer', 'Da, u ponudi su elegantne haljine za vjenčanu, krsnu i krizmanu kumu.'),
-   jsonb_build_object('question', 'Imate li haljine za svadbu za punije dame?', 'answer', 'Da, veličine idu do 58, ovisno o modelu.')
+   jsonb_build_object('question', 'Imate li haljine za svadbu za punije dame?', 'answer', 'Da, veličine idu od 36 do 58, ovisno o modelu.')
  )),
 ('koktel-haljine',
  'Kratke svečane i koktel haljine | Mostar',

@@ -28,12 +28,12 @@ const faq = [
 
     <section>
       <h2>Nakit od nehrđajućeg čelika</h2>
-      <p>Ogrlice, naušnice i narukvice od nehrđajućeg čelika nose se svaki dan i uz svečanu haljinu. Idealan su poklon za rođendan, Božić ili Valentinovo. <NuxtLink to="/kategorija/nakit" class="underline underline-offset-4 hover:text-gold">Pogledajte nakit</NuxtLink>.</p>
+      <p>Ogrlice, naušnice i narukvice od nehrđajućeg čelika nose se svaki dan i uz svečanu haljinu. Idealan su poklon za rođendan, Božić ili Valentinovo. <SiteCategoryLink slug="nakit">Pogledajte nakit</SiteCategoryLink>.</p>
     </section>
 
     <section>
       <h2>Torba kao poklon</h2>
-      <p>Svečana clutch torbica ili torba za svaki dan, mala, srednja ili velika, jedan je od najdražih poklona za nju. <NuxtLink to="/kategorija/torbice" class="underline underline-offset-4 hover:text-gold">Pogledajte torbe</NuxtLink>.</p>
+      <p>Svečana clutch torbica ili torba za svaki dan, mala, srednja ili velika, jedan je od najdražih poklona za nju. <SiteCategoryLink slug="torbice">Pogledajte torbe</SiteCategoryLink>.</p>
     </section>
   </InfoPage>
 </template>

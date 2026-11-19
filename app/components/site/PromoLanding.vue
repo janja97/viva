@@ -9,7 +9,7 @@ const { fetchCards } = useShop()
 const { data: page, refresh } = await useShopPromoPage(props.slug)
 
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Stranica nije pronađena', fatal: true })
+  throw createError({ statusCode: 404, message: 'Stranica nije pronađena', fatal: true })
 }
 
 const fill = (text: string) => fillPromoYear(text, page.value)

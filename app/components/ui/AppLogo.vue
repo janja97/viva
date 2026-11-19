@@ -6,6 +6,6 @@ const { siteName } = useRuntimeConfig().public
 
 <template>
   <NuxtLink :to="to" class="inline-flex min-h-11 items-center">
-    <img src="/logo/logo-dark.png" :alt="siteName" width="400" height="214" class="h-10 w-auto">
+    <img src="/logo/logo-dark.webp" :alt="siteName" width="400" height="214" class="h-10 w-auto">
   </NuxtLink>
 </template>

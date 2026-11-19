@@ -1,3 +1,5 @@
+import type { DeliveryMethod } from '~/config/store'
+
 export type AppRole = 'super_admin' | 'admin' | 'viewer'
 export type SizeType = 'footwear' | 'clothing' | 'bags' | 'universal'
 
@@ -90,6 +92,24 @@ export type ProductEngagement = {
   categories: (ProductEventCounts & { name: string })[]
   // Po boji proizvoda, od najgledanije.
   products: (ProductEventCounts & { product_id: string; name: string; sku: string; slug: string | null })[]
+}
+
+// Posjete webu (migracija 0046): odakle kupci dolaze. Bez članova tima, koji su samo prebrojani (team).
+export type VisitMedium = 'organic' | 'social' | 'paid' | 'email' | 'referral' | 'direct'
+export type VisitRow = { name: string; visits: number }
+export type VisitAnalytics = {
+  from: string
+  to: string
+  bucket: AnalyticsBucket
+  totals: { visits: number; visitors: number; mobile: number; team: number }
+  series: { bucket: string; visits: number }[]
+  sources: (VisitRow & { medium: VisitMedium })[]
+  mediums: (VisitRow & { name: VisitMedium })[]
+  countries: VisitRow[]
+  cities: (VisitRow & { country: string | null })[]
+  devices: (VisitRow & { name: 'mobile' | 'tablet' | 'desktop' })[]
+  landings: VisitRow[]
+  campaigns: (VisitRow & { source: string })[]
 }
 
 // Akcijska stranica, npr. /black-friday (migracije 0033 i 0034). Proizvode, postotke i datume daju njezine kampanje (promo_page_campaigns).
@@ -277,6 +297,8 @@ export type InquiryCustomerInput = {
   note: string
   // Promo kod iz košarice. Baza ga ponovno provjerava pri slanju.
   promo_code: string | null
+  // Dostava ili preuzimanje u trgovini (migracija 0048). Kod preuzimanja adresa nije potrebna.
+  delivery_method: DeliveryMethod
 }
 
 export type NewsletterSubscriber = {
@@ -374,6 +396,8 @@ export type Inquiry = {
   status: InquiryStatus
   // whatsapp: kupac je otvorio WhatsApp s narudžbom (migracija 0043); ime i telefon su tada u poruci, ne ovdje.
   channel: 'web' | 'whatsapp'
+  // Dostava na adresu ili preuzimanje u trgovini, bez poštarine (migracija 0048).
+  delivery_method: DeliveryMethod
   customer_name: string | null
   phone: string | null
   email: string | null
@@ -622,8 +646,16 @@ export type Database = {
       admin_dashboard_basic: { Args: Record<string, never>; Returns: DashboardBasic }
       shop_track_event: { Args: { p_session: string; p_color_id: string; p_event: ProductEventType; p_quantity?: number }; Returns: undefined }
       admin_product_engagement: { Args: { p_from: string | null; p_to: string | null; p_category_ids?: string[] | null; p_limit?: number }; Returns: ProductEngagement }
+      shop_track_visit: {
+        Args: {
+          p_session: string; p_landing_path: string; p_referrer_host: string; p_source: string; p_medium: string
+          p_utm_source: string; p_utm_medium: string; p_utm_campaign: string; p_country: string; p_region: string; p_city: string; p_device: string
+        }
+        Returns: undefined
+      }
+      admin_visit_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket?: AnalyticsBucket }; Returns: VisitAnalytics }
       admin_product_event_counts: { Args: { p_ids: string[] }; Returns: (ProductEventCounts & { product_id: string })[] }
-      shop_submit_whatsapp_inquiry: { Args: { p_session: string; p_note: string | null; p_promo_code: string | null }; Returns: { number: number } }
+      shop_submit_whatsapp_inquiry: { Args: { p_session: string; p_note: string | null; p_promo_code: string | null; p_delivery?: DeliveryMethod }; Returns: { number: number } }
       admin_sales_analytics: { Args: { p_from: string | null; p_to: string | null; p_bucket: AnalyticsBucket }; Returns: SalesAnalytics }
       shop_check_promo: { Args: { p_code: string }; Returns: { code: string; percent: number } }
       newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }

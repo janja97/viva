@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Mail, MapPin, Phone } from '@lucide/vue'
+import { Mail, MapPin, Phone, Store } from '@lucide/vue'
+import { deliveryMethodLabel } from '~/config/store'
 import type { InquiryWithItems } from '~/composables/useInquiries'
 import type { InquiryAuditEntry, InquiryStatus } from '~/types/database'
 
@@ -52,7 +53,7 @@ watch(() => [props.inquiry?.id, props.inquiry?.status], async ([id]) => {
 
       <div class="space-y-1">
         <p v-if="inquiry.channel === 'whatsapp'" class="border-l-2 border-emerald-600 bg-emerald-50 px-3 py-2 text-emerald-900">
-          Narudžba preko WhatsAppa. Ime, telefon i adresu kupac je napisao u WhatsApp poruci, pa ih ovdje nema.
+          Narudžba preko WhatsAppa. Ime i telefon (i adresu, za dostavu) kupac je napisao u WhatsApp poruci, pa ih ovdje nema.
           Kupac je otvorio WhatsApp s narudžbom, ali je možda nije poslao.
         </p>
         <p v-if="inquiry.customer_name" class="font-medium text-stone-900">{{ inquiry.customer_name }}</p>
@@ -64,6 +65,10 @@ watch(() => [props.inquiry?.id, props.inquiry?.status], async ([id]) => {
           <Mail class="size-4 shrink-0" stroke-width="1.75" />
           {{ inquiry.email }}
         </a>
+        <p v-if="inquiry.delivery_method && inquiry.delivery_method !== 'delivery'" class="flex items-start gap-2 py-1 font-medium text-stone-900">
+          <Store class="mt-0.5 size-4 shrink-0" stroke-width="1.75" />
+          <span>{{ deliveryMethodLabel(inquiry.delivery_method) }} (bez poštarine)</span>
+        </p>
         <p v-if="inquiry.address" class="flex items-start gap-2 py-1 text-stone-700">
           <MapPin class="mt-0.5 size-4 shrink-0" stroke-width="1.75" />
           <span>{{ inquiry.address }}, {{ inquiry.postal_code }} {{ inquiry.city }}</span>

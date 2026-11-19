@@ -21,8 +21,8 @@ useHead({
     <div class="absolute inset-0 overflow-hidden lg:relative lg:order-last">
       <!-- Glavna slika stranice (LCP): mobitel dobiva 640 px, računalo 1080 px, umjesto originala od 800 KB. -->
       <img
-        src="/images/home/svecana-haljina-srebrna-1080.jpg"
-        srcset="/images/home/svecana-haljina-srebrna-640.jpg 640w, /images/home/svecana-haljina-srebrna-1080.jpg 1080w"
+        src="/images/home/svecana-haljina-srebrna-1080.webp"
+        srcset="/images/home/svecana-haljina-srebrna-640.webp 640w, /images/home/svecana-haljina-srebrna-1080.webp 1080w"
         sizes="(min-width: 1024px) 50vw, 100vw"
         alt="Crni svečani korzet bez naramenica s ukrasima"
         width="1080"
@@ -35,7 +35,7 @@ useHead({
     </div>
 
     <main class="coming-soon__content relative flex flex-col items-center justify-center px-6 py-16 text-center sm:px-10 lg:py-24">
-      <img src="/logo/logo-gold.png" :alt="siteName" width="400" height="214" class="h-20 w-auto sm:h-24">
+      <img src="/logo/logo-gold.webp" :alt="siteName" width="400" height="214" class="h-20 w-auto sm:h-24">
 
       <p class="mt-10 text-[11px] font-medium uppercase tracking-[0.4em] text-gold-light">Coming soon</p>
       <h1 class="mt-4 max-w-md font-display text-5xl font-normal leading-[1.05] sm:text-6xl">

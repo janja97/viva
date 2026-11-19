@@ -16,7 +16,7 @@ const storeSettings = useStoreSettings()
 const { data } = await useAsyncData(`product-${slug}`, () => fetchProduct(slug))
 
 if (!data.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Proizvod nije pronađen', fatal: true })
+  throw createError({ statusCode: 404, message: 'Proizvod nije pronađen', fatal: true })
 }
 
 const { product, colors, color } = data.value
@@ -70,6 +70,9 @@ const seoInput = {
   storeOnly: product.store_only,
   metaTitle: product.meta_title ?? '',
   metaDescription: product.meta_description ?? '',
+  sku: product.sku,
+  dressLength: product.dress_length,
+  heelHeight: product.heel_height,
 }
 const title = productSeoTitle(seoInput)
 const description = productSeoDescription(seoInput)
@@ -111,6 +114,8 @@ useHead({
         category: category.name,
         description,
         ...(product.material && { material: product.material }),
+        // Veličine koje su na stanju (Google ih koristi kod varijanti odjeće i obuće).
+        ...(color.sizes.some((size) => size.quantity > 0) && { size: color.sizes.filter((size) => size.quantity > 0).map((size) => size.size) }),
         image: color.images.map((image) => image.url),
         url,
         offers: {

@@ -31,6 +31,12 @@ export const INFO_NAV: NavLink[] = [
   { label: 'Poklon bon', to: '/poklon-bon' },
 ]
 
+// Pravne stranice, u dnu podnožja.
+export const LEGAL_NAV: NavLink[] = [
+  { label: 'Uvjeti kupnje', to: '/uvjeti-kupnje' },
+  { label: 'Politika privatnosti', to: '/politika-privatnosti' },
+]
+
 export type ShopNavLink = {
   label: string
   // Stalna putanja umjesto kategorije, npr. /ciscenje-zaliha dok je akcija u tijeku.

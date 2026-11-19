@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { PRODUCT_PATH } from '~/config/products'
 import type { ShopCard } from '~/composables/useShop'
+// Smanjene slike (utils/cardImage.ts). Povratak na original: CARD_IMAGE_RESIZE = false.
+import { CARD_IMAGE_SIZES } from '~/utils/cardImage'
 
 defineProps<{
   card: ShopCard
@@ -17,7 +19,9 @@ defineProps<{
       <div class="relative aspect-3/4 overflow-hidden">
         <img
           v-if="card.image"
-          :src="card.image"
+          :src="cardImageUrl(card.image, 600)"
+          :srcset="cardImageSrcset(card.image)"
+          :sizes="CARD_IMAGE_SIZES"
           :alt="card.alt"
           :loading="eager ? 'eager' : 'lazy'"
           width="600"

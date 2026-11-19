@@ -17,21 +17,36 @@ export function useNewsletter() {
   async function load() {
     isLoading.value = true
     loadError.value = ''
-    const [subscriberResult, orderResult] = await Promise.all([
-      supabase
-        .from('newsletter_subscribers')
-        .select('id, email, created_at, unsubscribed_at, promo_codes(*)')
-        .order('created_at', { ascending: false }),
-      supabase.from('inquiries').select('number, promo_code_id').not('promo_code_id', 'is', null),
-    ])
-    isLoading.value = false
-    if (subscriberResult.error || orderResult.error) {
-      loadError.value = productErrorMessage(subscriberResult.error ?? orderResult.error)
+    // Svi pretplatnici i narudžbe s kodom, u stranicama po 1000 (fetchAllRows), jer ih može biti više od 1000.
+    const subscriberQuery = (from: number, to: number) => supabase
+      .from('newsletter_subscribers')
+      .select('id, email, created_at, unsubscribed_at, promo_codes(*)')
+      .order('created_at', { ascending: false })
+      .order('id')
+      .range(from, to)
+    type SubscriberData = NonNullable<Awaited<ReturnType<typeof subscriberQuery>>['data']>[number]
+    let subscriberRows: SubscriberData[]
+    let orderRows: { number: number; promo_code_id: string | null }[]
+    try {
+      [subscriberRows, orderRows] = await Promise.all([
+        fetchAllRows<SubscriberData>(subscriberQuery),
+        fetchAllRows<{ number: number; promo_code_id: string | null }>((from, to) => supabase
+          .from('inquiries')
+          .select('number, promo_code_id')
+          .not('promo_code_id', 'is', null)
+          .order('id')
+          .range(from, to)),
+      ])
+    } catch (error) {
+      loadError.value = productErrorMessage(error)
       return
+    } finally {
+      isLoading.value = false
     }
+    const subscriberResult = { data: subscriberRows }
 
     const ordersByCode = new Map<string, number[]>()
-    for (const order of orderResult.data) {
+    for (const order of orderRows) {
       if (!order.promo_code_id) continue
       ordersByCode.set(order.promo_code_id, [...(ordersByCode.get(order.promo_code_id) ?? []), order.number])
     }

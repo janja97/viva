@@ -7,7 +7,7 @@ const origin = (siteUrl || useRequestURL().origin).replace(/\/$/, '')
 
 usePageSeo({
   title: 'Svečane i maturalne haljine Mostar | Mepas Mall',
-  description: 'Butik svečane mode u Mepas Mallu u Mostaru: svečane i maturalne haljine, haljine za svadbu, ženska odijela, štikle, čizme i torbe. Blizu Splita i Dubrovnika.',
+  description: 'Butik svečane mode u Mepas Mallu u Mostaru: svečane i maturalne haljine, haljine za svadbu, ženska odijela, štikle, čizme i torbe. Za kupce iz BiH i Hrvatske.',
 })
 
 const { fetchCards } = useShop()

@@ -41,7 +41,7 @@ const links = [
       <section>
         <h2>Uvijek nešto novo</h2>
         <p>
-          Nova kolekcija stiže nam često, po najnovijoj modi. Veličine idu do 58, ovisno o modelu, a dostupne veličine
+          Nova kolekcija stiže nam često, po najnovijoj modi. Veličine idu od 36 do 58, ovisno o modelu, a dostupne veličine
           vidite na stranici svakog proizvoda.
         </p>
       </section>

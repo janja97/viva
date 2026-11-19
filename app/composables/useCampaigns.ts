@@ -37,9 +37,16 @@ export function useCampaigns() {
   async function load() {
     isLoading.value = true
     loadError.value = ''
+    // Proizvodi s kampanjom čitaju se u stranicama po 1000 (fetchAllRows), da broj po kampanji bude točan.
     const [campaignResult, productResult] = await Promise.all([
       supabase.from('campaigns').select('*').order('created_at', { ascending: false }),
-      supabase.from('products').select('campaign_id').not('campaign_id', 'is', null).is('archived_at', null),
+      fetchAllRows<{ campaign_id: string | null }>((from, to) => supabase
+        .from('products')
+        .select('campaign_id')
+        .not('campaign_id', 'is', null)
+        .is('archived_at', null)
+        .order('id')
+        .range(from, to)).then((data) => ({ data, error: null }), (error: unknown) => ({ data: [], error })),
     ])
     isLoading.value = false
     if (campaignResult.error || productResult.error) {

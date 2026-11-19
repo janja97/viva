@@ -48,11 +48,36 @@ export default defineNuxtConfig({
       previewDeploy: ['branch-deploy', 'deploy-preview'].includes(NETLIFY_CONTEXT),
     },
   },
+  // Keširanje javnih stranica na Netlifyjevom CDN-u (isr = sekunde). Kupac dobiva gotovu stranicu odmah,
+  // a Netlify je u pozadini osvježava iz baze. Novi deploy briše sav keš. Adrese s parametrima (filtri) keširaju se zasebno.
+  // Košarica, lista želja, pretraga, odjava, /api i admin se ne keširaju, jer ovise o kupcu.
+  // Prijava člana tima i stranica "Uskoro" odlučuju se u pregledniku, pa keš ne miješa kupce i tim.
   routeRules: {
     // Admin radi samo u pregledniku i ne smije u Google.
     '/admin/**': {
       ssr: false,
       headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
+    // Proizvodi, cijene i zalihe: najviše 2 minute stari podaci.
+    '/': { isr: 120 },
+    '/proizvodi': { isr: 120 },
+    '/kategorija/**': { isr: 120 },
+    '/proizvod/**': { isr: 120 },
+    // Akcija ima odbrojavanje i stanje (uskoro, u tijeku), pa kraće.
+    '/ciscenje-zaliha': { isr: 60 },
+    // Tekstualne stranice (kontakt i radno vrijeme dolaze iz postavki): 10 minuta.
+    '/o-nama': { isr: 600 },
+    '/kontakt': { isr: 600 },
+    '/dostava': { isr: 600 },
+    '/povrat-i-zamjena': { isr: 600 },
+    '/kupovina-u-mostaru': { isr: 600 },
+    '/poklon-bon': { isr: 600 },
+    '/uvjeti-kupnje': { isr: 600 },
+    '/politika-privatnosti': { isr: 600 },
+    '/blog': { isr: 600 },
+    '/blog/**': { isr: 600 },
+    // Sitemap i Merchant feed čitaju cijelu bazu, a Google ih dohvaća rijetko: 1 sat.
+    '/sitemap.xml': { isr: 3600 },
+    '/merchant-feed.xml': { isr: 3600 },
   },
 })

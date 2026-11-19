@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { STORE } from '~/config/store'
 
-// Stranica za kupce iz Hrvatske (Split, Dubrovnik, Makarska, Dalmacija), koji dolaze u trgovinu u Mostaru.
+// Stranica za kupce iz cijele Hrvatske, koji dolaze u trgovinu u Mostaru. Gradovi (Split, Makarska, Dubrovnik) su samo ključne riječi u uvodu.
 // Online narudžbe idu samo u BiH, pa je cilj posjet trgovini. Samo potvrđene tvrdnje (vidi CLAUDE.md).
 // Povrat PDV-a: Instrukcija UIO-a, Službeni glasnik BiH 48/25. Provjeriti ako se propis promijeni.
 usePageSeo({
-  title: 'Kupovina u Mostaru za goste iz Splita i Dubrovnika',
-  description: 'Svečane i maturalne haljine, cipele i torbe u Mepas Mallu u Mostaru. Za goste iz Dalmacije: isprobavanje, plaćanje karticom i povrat PDV-a za kupnju veću od 200 KM.',
+  title: 'Kupovina u Mostaru za kupce iz Hrvatske',
+  description: 'Svečane i maturalne haljine, cipele i torbe u Mepas Mallu u Mostaru. Za kupce iz Hrvatske: isprobavanje, plaćanje karticom i povrat PDV-a iznad 200 KM.',
 })
 
 const { hoursText } = useStoreSettings()
@@ -25,7 +25,7 @@ const faq = [
 <template>
   <InfoPage
     title="Kupovina u Mostaru"
-    intro="Kupci iz Splita, Dubrovnika, Makarske i cijele Dalmacije često nam dolaze po haljinu za maturu, vjenčanje ili posebnu večer. Evo što je dobro znati prije dolaska."
+    intro="Kupci iz cijele Hrvatske često nam dolaze po haljinu za maturu, vjenčanje ili posebnu večer, osobito iz Dalmacije, od Splita i Makarske do Dubrovnika. Evo što je dobro znati prije dolaska."
     :faq="faq"
   >
     <section>
@@ -38,13 +38,13 @@ const faq = [
     <section>
       <h2>Što vas čeka</h2>
       <p>
-        <NuxtLink to="/kategorija/svecane-haljine" class="underline underline-offset-4 hover:text-gold">Svečane haljine</NuxtLink>,
-        <NuxtLink to="/kategorija/maturalne-haljine" class="underline underline-offset-4 hover:text-gold">maturalne haljine</NuxtLink> za veliku i malu maturu,
-        <NuxtLink to="/kategorija/haljine-za-svadbu" class="underline underline-offset-4 hover:text-gold">haljine za svadbu i za kumu</NuxtLink>,
-        <NuxtLink to="/kategorija/zenska-odijela" class="underline underline-offset-4 hover:text-gold">ženska odijela</NuxtLink>,
-        <NuxtLink to="/kategorija/obuca" class="underline underline-offset-4 hover:text-gold">štikle, salonke, sandale i čizme</NuxtLink>,
-        <NuxtLink to="/kategorija/torbice" class="underline underline-offset-4 hover:text-gold">torbe</NuxtLink>
-        i nakit od nehrđajućeg čelika. Veličine idu do 58, ovisno o modelu, a nova kolekcija stiže često.
+        <SiteCategoryLink slug="svecane-haljine">Svečane haljine</SiteCategoryLink>,
+        <SiteCategoryLink slug="maturalne-haljine">maturalne haljine</SiteCategoryLink> za veliku i malu maturu,
+        <SiteCategoryLink slug="haljine-za-svadbu">haljine za svadbu i za kumu</SiteCategoryLink>,
+        <SiteCategoryLink slug="zenska-odijela">ženska odijela</SiteCategoryLink>,
+        <SiteCategoryLink slug="obuca">štikle, salonke, sandale i čizme</SiteCategoryLink>,
+        <SiteCategoryLink slug="torbice">torbe</SiteCategoryLink>
+        i nakit od nehrđajućeg čelika. Veličine idu od 36 do 58, ovisno o modelu, a nova kolekcija stiže često.
       </p>
     </section>
 

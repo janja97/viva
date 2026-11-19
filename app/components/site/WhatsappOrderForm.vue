@@ -2,10 +2,12 @@
 // Narudžba preko WhatsAppa (Postavke > Narudžbe, migracija 0035). Otvara WhatsApp s gotovom porukom,
 // a kupac je pošalje sam. Narudžba se sprema i u admin (migracija 0043, bez imena i telefona),
 // a košarica ostaje, ako kupac poruku ipak ne pošalje.
+import { deliveryMethodLabel } from '~/config/store'
+
 const props = defineProps<{ phone: string }>()
 const emit = defineEmits<{ cancel: [] }>()
 
-const { items, promo, submitWhatsappInquiry } = useCart()
+const { items, promo, deliveryMethod, submitWhatsappInquiry } = useCart()
 const { track } = useProductTracking()
 const { siteUrl } = useRuntimeConfig().public
 
@@ -16,6 +18,7 @@ const message = computed(() => whatsappOrderMessage({
   items: items.value,
   promoCode: promo.value?.code ?? null,
   note: note.value,
+  delivery: deliveryMethod.value,
   origin: (siteUrl || window.location.origin).replace(/\/$/, ''),
 }))
 const url = computed(() => whatsappUrl(props.phone, message.value))
@@ -36,8 +39,8 @@ const buttonClass = 'inline-flex min-h-13 w-full items-center justify-center bor
 <template>
   <div class="space-y-5 font-body text-ink">
     <p class="text-sm leading-relaxed text-muted">
-      Otvorit će se WhatsApp s popisom odabranih proizvoda, veličina i poveznica. Poruku samo pošaljete, a mi vam odgovaramo
-      i dogovaramo dostavu ili preuzimanje.
+      Otvorit će se WhatsApp s popisom odabranih proizvoda, veličina i poveznica te odabranim načinom preuzimanja
+      ({{ deliveryMethodLabel(deliveryMethod).toLowerCase() }}). Poruku samo pošaljete, a mi vam odgovaramo.
     </p>
 
     <div>
@@ -49,7 +52,7 @@ const buttonClass = 'inline-flex min-h-13 w-full items-center justify-center bor
         v-model="note"
         rows="3"
         maxlength="1000"
-        placeholder="Npr. pitanje o veličini ili preuzimanje u trgovini"
+        placeholder="Npr. pitanje o veličini"
         class="block w-full border border-line bg-white px-3 py-2 text-base text-ink focus:border-ink focus:outline-none"
       />
     </div>

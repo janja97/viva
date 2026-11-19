@@ -40,7 +40,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
       />
 
       <NuxtLink to="/" class="inline-flex min-h-11 items-center justify-self-center lg:justify-self-start" :aria-label="`${siteName}, početna`">
-        <img src="/logo/logo-dark.png" :alt="siteName" width="400" height="214" class="h-13 w-auto lg:h-15">
+        <img src="/logo/logo-dark.webp" :alt="siteName" width="400" height="214" class="h-13 w-auto lg:h-15">
       </NuxtLink>
 
       <nav aria-label="Glavna navigacija" class="hidden lg:block">

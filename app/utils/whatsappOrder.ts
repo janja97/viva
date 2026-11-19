@@ -1,11 +1,14 @@
 import { PRODUCT_PATH } from '~/config/products'
+import { deliveryMethodLabel, type DeliveryMethod } from '~/config/store'
 
 type OrderLine = { productName: string; colorName: string; size: string; quantity: number; price: number; slug: string }
 
-// Tekst narudžbe za WhatsApp: proizvodi s crticom, bez iznosa (ukupno, poštarina i sveukupno se ne pišu).
+// Tekst narudžbe za WhatsApp: proizvodi s crticom, bez iznosa (ukupno, poštarina i sveukupno se ne pišu),
+// a zatim način preuzimanja (dostava ili preuzimanje u trgovini, migracija 0048).
 // Uz svaki proizvod ide poveznica, od koje WhatsApp sam napravi pregled sa slikom.
-export function whatsappOrderMessage({ items, promoCode, note, origin }: {
+export function whatsappOrderMessage({ items, promoCode, note, origin, delivery = 'delivery' }: {
   items: OrderLine[]
+  delivery?: DeliveryMethod
   promoCode: string | null
   note: string
   origin: string
@@ -19,6 +22,7 @@ export function whatsappOrderMessage({ items, promoCode, note, origin }: {
     'Pozdrav, želim naručiti:',
     '',
     lines.join('\n'),
+    delivery === 'delivery' ? '\nDostava na adresu (ime, adresu i telefon šaljem u nastavku).' : `\n${deliveryMethodLabel(delivery)}.`,
     promoCode ? `\nPromo kod: ${promoCode}` : '',
     note.trim() ? `\nNapomena: ${note.trim()}` : '',
   ].filter((line) => line !== '').join('\n')

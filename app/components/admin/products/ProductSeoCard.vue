@@ -35,6 +35,9 @@ const previews = computed(() =>
       storeOnly: props.form.store_only,
       metaTitle: props.form.meta_title,
       metaDescription: props.form.meta_description,
+      sku: props.form.sku,
+      dressLength: props.form.dress_length,
+      heelHeight: props.form.heel_height,
     }
     return {
       id: color.id,

@@ -21,7 +21,7 @@ const { data } = await useAsyncData(`category-${slug}`, async () => {
 })
 
 if (!data.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Kategorija nije pronađena', fatal: true })
+  throw createError({ statusCode: 404, message: 'Kategorija nije pronađena', fatal: true })
 }
 
 const { category, children, path, categoryIds } = data.value

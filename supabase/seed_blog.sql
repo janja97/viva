@@ -26,7 +26,7 @@ Duga haljina je klasičan izbor za maturalnu večer i djeluje svečano na fotogr
 Birajte boju koja vam ističe ten i u kojoj se osjećate sigurno. Ako ne možete odlučiti, neutralne boje poput crne, srebrne ili boje šampanjca uvijek djeluju elegantno, a uz njih je lako složiti dodatke.
 
 ## Veličina
-Veličine se razlikuju od modela do modela, pa se ne oslanjajte samo na broj. Kod nas veličine idu do 58, ovisno o modelu, a dostupne veličine vidite na stranici svakog proizvoda.
+Veličine se razlikuju od modela do modela, pa se ne oslanjajte samo na broj. Kod nas veličine idu od 36 do 58, ovisno o modelu, a dostupne veličine vidite na stranici svakog proizvoda.
 
 ## Cipele i torbica
 Cipele birajte zajedno s haljinom: salonke na petu izdužuju figuru, a sandale su ugodnije za cijelu noć. Mala svečana torbica zaokružuje izgled. Pogledajte [cipele](/kategorija/obuca) i [torbice](/kategorija/torbice) uz [maturalne haljine](/kategorija/maturalne-haljine).

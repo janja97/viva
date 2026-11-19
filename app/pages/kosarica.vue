@@ -3,7 +3,7 @@ import type { InquiryCustomer } from '~/composables/useCart'
 
 usePageSeo({ title: 'Košarica', noindex: true })
 
-const { items, isLoaded, load, setQuantity, remove, submitInquiry } = useCart()
+const { items, isLoaded, load, setQuantity, remove, submitInquiry, deliveryMethod } = useCart()
 
 // Postavke > Narudžbe (migracija 0035): WhatsApp poruka ili obrazac na webu. Bez WhatsApp broja uvijek obrazac.
 const { settings } = useStoreSettings()
@@ -81,6 +81,7 @@ onMounted(() => run(load))
 
       <aside class="-mx-4 bg-sand px-4 py-6 sm:mx-0 sm:p-6 lg:sticky lg:top-28 lg:self-start lg:p-8" aria-label="Sažetak">
         <h2 class="mb-4 font-display text-2xl font-normal">Sažetak</h2>
+        <CartDeliveryPicker class="mb-5" />
         <CartPromoCode class="mb-4" />
         <CartTotals />
         <button
@@ -95,7 +96,7 @@ onMounted(() => run(load))
       </aside>
     </div>
 
-    <BaseModal :open="isFormOpen" :title="viaWhatsapp ? 'Narudžba preko WhatsAppa' : 'Podaci za dostavu'" @close="isFormOpen = false">
+    <BaseModal :open="isFormOpen" :title="viaWhatsapp ? 'Narudžba preko WhatsAppa' : deliveryMethod === 'delivery' ? 'Podaci za dostavu' : 'Podaci za narudžbu'" @close="isFormOpen = false">
       <WhatsappOrderForm v-if="viaWhatsapp" :phone="settings.whatsapp" @cancel="isFormOpen = false" />
       <InquiryForm v-else :loading="isBusy" :error="formError" @submit="onSubmit" @cancel="isFormOpen = false" />
     </BaseModal>

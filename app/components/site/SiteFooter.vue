@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { INFO_NAV, PUBLIC_NAV } from '~/config/navigation'
-import { STORE } from '~/config/store'
+import { INFO_NAV, LEGAL_NAV, PUBLIC_NAV } from '~/config/navigation'
+import { COMPANY, STORE } from '~/config/store'
 
 const { siteName } = useRuntimeConfig().public
 const { settings, socialLinks } = useStoreSettings()
@@ -16,7 +16,7 @@ const headingClass = 'mb-2 text-xs font-medium uppercase tracking-[0.2em]'
   <footer class="bg-sand">
     <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-10 px-4 pb-10 pt-14 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] lg:px-8">
       <div class="col-span-2 md:col-span-1">
-        <img src="/logo/logo-dark.png" :alt="siteName" width="400" height="214" loading="lazy" class="h-14 w-auto">
+        <img src="/logo/logo-dark.webp" :alt="siteName" width="400" height="214" loading="lazy" class="h-14 w-auto">
         <p class="mt-3 max-w-xs text-sm leading-relaxed text-muted">Butik svečane mode.</p>
         <address class="mt-3 text-sm not-italic leading-relaxed text-muted">
           {{ STORE.mall }}, {{ STORE.street }}, {{ STORE.city }}
@@ -62,7 +62,14 @@ const headingClass = 'mb-2 text-xs font-medium uppercase tracking-[0.2em]'
       </nav>
     </div>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <p class="border-t border-line py-5 text-xs text-muted">© {{ year }} {{ siteName }}, {{ STORE.city }}</p>
+      <div class="flex flex-col gap-2 border-t border-line py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+        <p>© {{ year }} {{ siteName }} · {{ COMPANY.name }}, {{ STORE.city }}</p>
+        <ul class="flex flex-wrap gap-x-5">
+          <li v-for="link in LEGAL_NAV" :key="link.to">
+            <NuxtLink :to="link.to" class="inline-flex min-h-11 items-center hover:text-ink hover:underline sm:min-h-0">{{ link.label }}</NuxtLink>
+          </li>
+        </ul>
+      </div>
     </div>
   </footer>
 </template>

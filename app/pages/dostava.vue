@@ -19,7 +19,7 @@ const faq = computed(() => [
   { question: 'Koliko košta dostava?', answer: `Poštarina je ${shippingPrice.value}, a za narudžbe veće od ${freeAbove.value} dostava je besplatna.` },
   { question: 'Koliko traje dostava?', answer: `Dostava traje ${days}.` },
   { question: 'Šaljete li izvan Bosne i Hercegovine?', answer: 'Ne, zasad šaljemo samo na adrese u Bosni i Hercegovini.' },
-  { question: 'Mogu li narudžbu preuzeti u trgovini?', answer: 'Da, u našoj trgovini u Mostaru, a moguće i u Sarajevu. Napišite to u napomeni uz narudžbu.' },
+  { question: 'Mogu li narudžbu preuzeti u trgovini?', answer: 'Da, u našoj trgovini u Mepas Mallu u Mostaru ili u poslovnici u Sarajevu, bez poštarine. Preuzimanje odaberite u košarici.' },
 ])
 </script>
 
@@ -46,14 +46,14 @@ const faq = computed(() => [
 
     <section>
       <h2>Preuzimanje u trgovini</h2>
-      <p>Online narudžbu možete preuzeti i u našoj trgovini u Mepas Mallu u Mostaru, a moguće i u poslovnici u Sarajevu. Napišite to u napomeni uz narudžbu.</p>
+      <p>Online narudžbu možete preuzeti i u našoj trgovini u Mepas Mallu u Mostaru ili u poslovnici u Sarajevu. Tada nema poštarine, a narudžbu plaćate pri preuzimanju. Preuzimanje odaberite u košarici, a javit ćemo vam se kad narudžba bude spremna.</p>
     </section>
 
     <section>
       <h2>Kako naručiti</h2>
       <ul>
         <li>Odaberite boju i veličinu te dodajte proizvod u košaricu.</li>
-        <li>U košarici kliknite „Naruči” i upišite podatke za dostavu.</li>
+        <li>U košarici odaberite dostavu ili preuzimanje u trgovini, kliknite „Naruči” i upišite svoje podatke.</li>
         <li>Kliknite „Pošalji upit”.</li>
       </ul>
     </section>

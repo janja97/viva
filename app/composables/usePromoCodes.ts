@@ -32,14 +32,20 @@ export function usePromoCodes() {
   async function load() {
     isLoading.value = true
     loadError.value = ''
-    const { data, error } = await supabase
-      .from('promo_codes')
-      .select('*')
-      .eq('kind', 'manual')
-      .order('created_at', { ascending: false })
-    isLoading.value = false
-    if (error) loadError.value = productErrorMessage(error)
-    else codes.value = data
+    // U stranicama po 1000 (fetchAllRows), da se prikažu svi kodovi.
+    try {
+      codes.value = await fetchAllRows((from, to) => supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('kind', 'manual')
+        .order('created_at', { ascending: false })
+        .order('id')
+        .range(from, to))
+    } catch (error) {
+      loadError.value = productErrorMessage(error)
+    } finally {
+      isLoading.value = false
+    }
   }
 
   async function save(input: PromoCodeInput, id?: string) {

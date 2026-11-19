@@ -15,6 +15,16 @@ export const STORE = {
   mapEmbedUrl: 'https://www.google.com/maps?q=Mepas+Mall,+Kneza+Branimira+2b,+88000+Mostar&z=16&output=embed',
 }
 
+// Tvrtka koja vodi trgovinu (Politika privatnosti, Uvjeti kupnje, podnožje).
+// JIB i PDV broj još nisu upisani; prazna polja se ne prikazuju.
+export const COMPANY = {
+  name: 'Silver Trend d.o.o.',
+  seat: 'Mepas Mall, Kneza Branimira 2b, 88000 Mostar',
+  country: 'Bosna i Hercegovina',
+  jib: '',
+  vatNumber: '',
+}
+
 // Dostava i plaćanje (stranica /dostava i Product JSON-LD). Cijena poštarine je u postavkama trgovine.
 export const DELIVERY = {
   // Šalje se samo unutar BiH.
@@ -24,6 +34,17 @@ export const DELIVERY = {
   // Online plaćanja nema: kupac plaća kuriru pri preuzimanju (pouzećem).
   payment: 'pouzećem',
 }
+
+// Način preuzimanja online narudžbe (migracija 0048). Preuzimanje u trgovini je bez poštarine.
+// Vrijednosti moraju odgovarati provjeri inquiries.delivery_method u bazi. Sarajevo nema poznatu adresu,
+// pa se kupcu javljamo s adresom; za uklanjanje te mogućnosti makni redak (baza ga i dalje prihvaća).
+export type DeliveryMethod = 'delivery' | 'pickup_mostar' | 'pickup_sarajevo'
+export const DELIVERY_METHODS: { value: DeliveryMethod; label: string; hint: string }[] = [
+  { value: 'delivery', label: 'Dostava na adresu', hint: 'Po cijeloj BiH, plaćanje pouzećem' },
+  { value: 'pickup_mostar', label: 'Preuzimanje u Mostaru', hint: 'Mepas Mall, 3. kat, bez poštarine' },
+  { value: 'pickup_sarajevo', label: 'Preuzimanje u Sarajevu', hint: 'U našoj poslovnici, bez poštarine; adresu vam javljamo' },
+]
+export const deliveryMethodLabel = (value: DeliveryMethod | null | undefined) => DELIVERY_METHODS.find((item) => item.value === value)?.label ?? 'Dostava na adresu'
 
 // Zamjena (stranica /povrat-i-zamjena i Product JSON-LD). Povrata novca nema, samo zamjena.
 export const EXCHANGE = {

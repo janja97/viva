@@ -156,27 +156,42 @@ export function useProducts() {
   }
 
   // Vraćeni proizvod ostaje skriven dok mu se ne dodaju slike i ne uključi vidljivost.
+  // Id-evi idu u adresu zahtjeva, pa se velik odabir šalje u dijelovima (chunkList).
   async function restore(ids: string[]) {
-    const { data, error } = await supabase.from('products').update({ archived_at: null }).in('id', ids).select('id')
-    if (error) throw error
-    return data.length
+    let restored = 0
+    for (const part of chunkList(ids)) {
+      const { data, error } = await supabase.from('products').update({ archived_at: null }).in('id', part).select('id')
+      if (error) throw error
+      restored += data.length
+    }
+    return restored
   }
 
-  // Trajno brisanje dopušteno je samo za arhivirane proizvode.
+  // Trajno brisanje dopušteno je samo za arhivirane proizvode. Ide u dijelovima, kao i vraćanje.
   async function remove(ids: string[]) {
-    const { data: images } = await supabase
-      .from('product_images')
-      .select('path, product_colors!inner(product_id)')
-      .in('product_colors.product_id', ids)
+    let removed = 0
+    for (const part of chunkList(ids)) {
+      // Sve slike tih proizvoda, i kad ih je više od 1000 (fetchAllRows). Greška ovdje ne sprječava brisanje.
+      const images = await fetchAllRows((from, to) => supabase
+        .from('product_images')
+        .select('path, product_colors!inner(product_id)')
+        .in('product_colors.product_id', part)
+        .order('id')
+        .range(from, to)).catch((imageError: unknown) => {
+        console.error(imageError)
+        return []
+      })
 
-    const { data, error } = await supabase.from('products').delete().in('id', ids).select('id')
-    if (error) throw error
-    if (!data.length) throw Object.assign(new Error(''), { code: '42501' })
+      const { data, error } = await supabase.from('products').delete().in('id', part).select('id')
+      if (error) throw error
+      removed += data.length
 
-    const deleted = new Set(data.map((product) => product.id))
-    const paths = (images ?? []).filter((image) => deleted.has(image.product_colors.product_id)).map((image) => image.path)
-    if (paths.length) await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove(paths)
-    return data.length
+      const deleted = new Set(data.map((product) => product.id))
+      const paths = images.filter((image) => deleted.has(image.product_colors.product_id)).map((image) => image.path)
+      if (paths.length) await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove(paths)
+    }
+    if (!removed) throw Object.assign(new Error(''), { code: '42501' })
+    return removed
   }
 
   // Objava, skrivanje, "samo u trgovini" i kampanja (sniženje) za više proizvoda odjednom.
@@ -249,7 +264,7 @@ export type BulkAction = 'publish' | 'hide' | 'store_on' | 'store_off' | 'campai
 export type ProductFilterOptions = Database['public']['Functions']['admin_product_filter_options']['Returns']
 
 // Odabir "svih rezultata" ide do ove granice, kako jedna radnja ne bi zahvatila previše proizvoda.
-export const MAX_BULK_SELECTION = 1000
+export const MAX_BULK_SELECTION = 5000
 
 // Filtriranje i redoslijed radi baza (admin_products), a ovdje se dohvaćaju podaci za prikaz.
 export function useProductList() {

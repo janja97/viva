@@ -1,4 +1,4 @@
-import type { AnalyticsBucket, DashboardBasic, ProductEngagement, SalesAnalytics, StockBySizeRow } from '~/types/database'
+import type { AnalyticsBucket, DashboardBasic, ProductEngagement, SalesAnalytics, StockBySizeRow, VisitAnalytics } from '~/types/database'
 
 export type AnalyticsPeriod = 'month' | '3m' | '6m' | '9m' | '12m' | 'all'
 
@@ -74,5 +74,14 @@ export function useDashboard() {
     return data
   }
 
-  return { fetchBasic, fetchAnalytics, fetchStockBySize, fetchEngagement }
+  // Posjete webu (samo super admin, migracija 0046). Graf ima iste točke kao ostala analitika.
+  async function fetchVisits(period: AnalyticsPeriod): Promise<VisitAnalytics> {
+    const option = ANALYTICS_PERIODS.find((item) => item.value === period)!
+    const from = periodStart(option.months)?.toISOString() ?? null
+    const { data, error } = await supabase.rpc('admin_visit_analytics', { p_from: from, p_to: null, p_bucket: option.bucket })
+    if (error) throw error
+    return data
+  }
+
+  return { fetchBasic, fetchAnalytics, fetchStockBySize, fetchEngagement, fetchVisits }
 }

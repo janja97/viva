@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight } from '@lucide/vue'
+import { deliveryMethodLabel } from '~/config/store'
 import type { InquiryStatus } from '~/types/database'
 
 definePageMeta({ layout: 'admin' })
@@ -118,6 +119,7 @@ onMounted(load)
               <span class="flex flex-wrap items-center gap-2">
                 <span class="text-sm font-medium">#{{ inquiry.number }} · {{ inquiry.customer_name ?? 'Kupac s WhatsAppa' }}</span>
                 <span v-if="inquiry.channel === 'whatsapp'" class="bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-800">WhatsApp</span>
+                <span v-if="inquiry.delivery_method && inquiry.delivery_method !== 'delivery'" class="bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900">{{ deliveryMethodLabel(inquiry.delivery_method) }}</span>
                 <InquiryStatusBadge :status="inquiry.status" />
               </span>
               <span class="block truncate text-xs text-stone-500">

@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { InquiryCustomer } from '~/composables/useCart'
+import { deliveryMethodLabel } from '~/config/store'
 
 defineProps<{ loading?: boolean; error?: string }>()
 const emit = defineEmits<{ submit: [customer: InquiryCustomer]; cancel: [] }>()
 
 const form = reactive<InquiryCustomer>({ name: '', phone: '', address: '', postal_code: '', city: '', email: '', note: '' })
 const consent = ref(false)
+// Kod preuzimanja u trgovini (izbor u košarici) adresa nije potrebna.
+const { deliveryMethod } = useCart()
+const needsAddress = computed(() => deliveryMethod.value === 'delivery')
 
 const labelClass = 'mb-1.5 block text-xs font-medium uppercase tracking-[0.16em]'
 const optionalClass = 'font-normal normal-case tracking-normal text-muted'
@@ -22,11 +26,14 @@ const fieldClass = 'block min-h-12 w-full border border-line bg-white px-3 py-2 
       <label for="narudzba-telefon" :class="labelClass">Telefon</label>
       <input id="narudzba-telefon" v-model="form.phone" :class="fieldClass" type="tel" autocomplete="tel" inputmode="tel" minlength="6" maxlength="30" required>
     </div>
-    <div>
+    <p v-if="!needsAddress" class="border-l-2 border-gold pl-3 text-sm text-muted">
+      {{ deliveryMethodLabel(deliveryMethod) }}, bez poštarine. Javit ćemo vam se kad narudžba bude spremna.
+    </p>
+    <div v-if="needsAddress">
       <label for="narudzba-adresa" :class="labelClass">Adresa</label>
       <input id="narudzba-adresa" v-model="form.address" :class="fieldClass" autocomplete="street-address" minlength="3" maxlength="200" required>
     </div>
-    <div class="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-3">
+    <div v-if="needsAddress" class="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-3">
       <div>
         <label for="narudzba-postanski" :class="labelClass">Poštanski broj</label>
         <input id="narudzba-postanski" v-model="form.postal_code" :class="fieldClass" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required>
