@@ -5,9 +5,13 @@ const props = defineProps<{
   colorId: string
   sizes: { id: string; size: string; quantity: number }[]
   storeOnly: boolean
+  // Glavna slika boje, za animaciju leta u košaricu (useFlyToCart).
+  image?: string | null
 }>()
 
 const { add, isDrawerOpen } = useCart()
+const { fly } = useFlyToCart()
+const addButton = useTemplateRef<HTMLButtonElement>('addButton')
 const { has, toggle, ensureLoaded } = useWishlist()
 
 const available = computed(() => props.sizes.filter((size) => size.quantity > 0))
@@ -39,7 +43,8 @@ async function addToCart() {
   isAdding.value = true
   try {
     await add(selected.value.id)
-    // Brzi pregled potvrđuje dodavanje i nudi narudžbu ili nastavak kupnje.
+    // Slika odleti u košaricu (FLY_TO_CART), a zatim se otvori brzi pregled s narudžbom ili nastavkom kupnje.
+    await fly(props.image ?? null, addButton.value)
     isDrawerOpen.value = true
   } catch (caught) {
     error.value = shopErrorMessage(caught)
@@ -88,6 +93,7 @@ const buttonClass = 'inline-flex min-h-13 items-center justify-center gap-2 bord
       <div class="flex gap-2">
         <button
           v-if="canOrder"
+          ref="addButton"
           type="button"
           :disabled="isAdding"
           :class="[buttonClass, 'flex-1 border-ink bg-ink text-white hover:bg-transparent hover:text-ink disabled:cursor-wait disabled:opacity-70']"

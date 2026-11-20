@@ -69,6 +69,7 @@ const linkClass ='inline-flex min-h-11 items-center text-xs font-medium uppercas
           aria-haspopup="dialog"
           :class="iconClass"
           :aria-label="`Košarica${cartCount ? `, ${cartCount} kom` : ''}`"
+          data-cart-target
           @click="isDrawerOpen = true"
         >
           <ShoppingBag class="size-5" stroke-width="1.25" />

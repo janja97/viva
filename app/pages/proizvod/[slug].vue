@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { COMPLETE_LOOK, CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
+import { COLOR_PICKER, COMPLETE_LOOK, CURRENCY_CODE, DRESS_LENGTHS, HEEL_HEIGHTS, PRODUCT_PATH } from '~/config/products'
 import { DELIVERY, EXCHANGE, STORE } from '~/config/store'
 
 // Svaka boja ima svoj URL, pa se stranica učitava iznova pri promjeni boje.
@@ -27,6 +27,26 @@ const { data: allCategories } = await useAsyncData('shop-categories', fetchCateg
 const parents = categoryPath(allCategories.value ?? [], product.category_id).slice(0, -1)
 
 const soldOut = color.sizes.every((size) => size.quantity === 0)
+
+// Sličice boja (ProductColorPicker): glavna slika svake boje. Prelazak mišem preko sličice
+// privremeno pokazuje tu boju u galeriji, a odlazak vraća odabranu.
+const colorChoices = colors.map((item) => ({
+  id: item.id,
+  name: item.name,
+  slug: item.slug,
+  hex: item.hex,
+  image: item.images[0]?.url ?? null,
+  soldOut: item.sizes.every((size) => size.quantity === 0),
+}))
+// '3 boje', '5 boja', '21 boja' (hrvatska množina).
+const colorCountLabel = (() => {
+  const count = colorChoices.length
+  const fewForm = count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 12 || count % 100 > 14)
+  return `${count} ${fewForm ? 'boje' : 'boja'}`
+})()
+const previewColorId = ref<string | null>(null)
+const previewColor = computed(() => colors.find((item) => item.id === previewColorId.value && item.id !== color.id && item.images.length))
+const galleryImages = computed(() => previewColor.value?.images ?? color.images)
 
 const regularPrice = Number(product.price)
 const isOnSale = product.sale_price !== null && product.sale_price !== undefined
@@ -177,7 +197,7 @@ useHead({
     />
 
     <article class="grid grid-cols-[minmax(0,1fr)] gap-10 pb-20 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-20">
-      <ProductGallery :images="color.images" />
+      <ProductGallery :images="galleryImages" />
 
       <div class="md:sticky md:top-28 md:self-start">
         <p class="text-xs font-medium uppercase tracking-[0.24em] text-gold">{{ category.name }}</p>
@@ -190,8 +210,19 @@ useHead({
         <div v-if="product.description" class="mt-5 whitespace-pre-line font-light leading-relaxed text-muted">{{ product.description }}</div>
 
         <div class="mt-7">
-          <p class="text-xs font-medium uppercase tracking-[0.2em]">Boja: <span class="font-normal text-muted">{{ color.name }}</span></p>
-          <ul class="mt-3 flex flex-wrap gap-2">
+          <p class="text-xs font-medium uppercase tracking-[0.2em]">
+            Boja: <span class="font-normal text-muted">{{ previewColor?.name ?? color.name }}</span>
+            <span v-if="colorChoices.length > 1" class="ml-1 font-normal normal-case tracking-normal text-muted">· {{ colorCountLabel }}</span>
+          </p>
+          <!-- Sličice boja (COLOR_PICKER u config/products.ts; 'swatches' vraća stare okrugle uzorke ispod). -->
+          <ProductColorPicker
+            v-if="COLOR_PICKER === 'images' && colorChoices.length > 1"
+            class="mt-3"
+            :colors="colorChoices"
+            :current-id="color.id"
+            @preview="previewColorId = $event"
+          />
+          <ul v-else-if="COLOR_PICKER === 'swatches'" class="mt-3 flex flex-wrap gap-2">
             <li v-for="item in colors" :key="item.id">
               <NuxtLink
                 :to="`${PRODUCT_PATH}/${item.slug}`"
@@ -206,7 +237,7 @@ useHead({
           </ul>
         </div>
 
-        <ProductPurchase :color-id="color.id" :sizes="color.sizes" :store-only="product.store_only" />
+        <ProductPurchase :color-id="color.id" :sizes="color.sizes" :store-only="product.store_only" :image="color.images[0]?.url ?? null" />
 
         <ul class="mt-7 space-y-2 border-y border-line py-4 text-sm text-muted">
           <li>Dostupno u butiku · {{ STORE.mall }}, {{ STORE.city }}</li>

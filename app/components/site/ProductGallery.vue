@@ -87,6 +87,7 @@ onBeforeUnmount(() => clearInterval(timer))
             :loading="index === 0 ? 'eager' : 'lazy'"
             :fetchpriority="index === 0 ? 'high' : undefined"
             draggable="false"
+            data-fly-source
             class="size-full object-contain"
           >
         </li>
@@ -111,7 +112,7 @@ onBeforeUnmount(() => clearInterval(timer))
     <div class="hidden grid-cols-2 gap-2 md:grid">
       <div class="col-span-2 aspect-4/5 overflow-hidden">
         <!-- Ista adresa kao prva slika vrtuljka, pa se preuzima samo jednom. Bez lazy, jer je to glavna slika stranice (LCP). -->
-        <img v-if="main" :src="main.url" :alt="main.alt" width="1000" height="1250" fetchpriority="high" class="size-full object-contain">
+        <img v-if="main" :key="main.id" :src="main.url" :alt="main.alt" width="1000" height="1250" fetchpriority="high" data-fly-source class="size-full animate-[fade-in_300ms_ease-out] object-contain">
       </div>
       <div v-for="image in rest" :key="image.id" class="aspect-3/4 overflow-hidden">
         <img :src="image.url" :alt="image.alt" loading="lazy" width="600" height="800" class="size-full object-contain">

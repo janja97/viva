@@ -105,3 +105,9 @@ export const COMPLETE_LOOK: Record<string, string[]> = {
   torbice: ['obuca', 'dodaci', 'haljine'],
   dodaci: ['torbice', 'obuca', 'haljine'],
 }
+
+// Stranica proizvoda, PROBNO (studeni 2026.). Za povratak na staro samo promijeni vrijednost:
+// - COLOR_PICKER: 'images' su sličice glavne slike svake boje (s pregledom na prelazak mišem), 'swatches' stari okrugli uzorci.
+// - FLY_TO_CART: slika proizvoda "odleti" u košaricu pri dodavanju (false = bez animacije, brzi pregled se otvara odmah).
+export const COLOR_PICKER: 'images' | 'swatches' = 'images'
+export const FLY_TO_CART = true
