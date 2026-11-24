@@ -9,6 +9,8 @@ usePageSeo({ title: 'Kategorije', noindex: true })
 const { can } = usePermissions()
 const { categories, tree, isLoading, loadError, load, save, remove, move } = useCategories()
 
+const { counts, loadCounts } = useCategoryArticleCounts(categories)
+
 const canWrite = computed(() => can('write'))
 const actionError = ref('')
 
@@ -59,7 +61,10 @@ async function onMove(category: Category, direction: -1 | 1) {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadCounts()
+})
 </script>
 
 <template>
@@ -85,6 +90,7 @@ onMounted(load)
       v-else
       :tree="tree"
       :can-write="canWrite"
+      :counts="counts"
       @add-child="openForm(null, $event.id)"
       @edit="openForm($event)"
       @delete="askDelete"

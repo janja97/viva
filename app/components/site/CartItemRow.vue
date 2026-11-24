@@ -9,6 +9,14 @@ const emit = defineEmits<{ quantity: [quantity: number]; remove: [] }>()
 const maxQuantity = computed(() => Math.min(props.item.stock, 20))
 const overStock = computed(() => props.item.quantity > props.item.stock)
 
+// Popust na artiklu: sniženje (kampanja ili akcija) ili promo kod. Promo kod vrijedi samo za nesnižene artikle (migracija 0049).
+const { promo } = useCart()
+const isOnSale = computed(() => props.item.compareAtPrice !== null && props.item.compareAtPrice > props.item.price)
+const salePercent = computed(() => (isOnSale.value ? Math.round((1 - props.item.price / props.item.compareAtPrice!) * 100) : 0))
+const promoAmount = computed(() => (promo.value && !isOnSale.value
+  ? Math.round(props.item.price * props.item.quantity * promo.value.percent) / 100
+  : 0))
+
 const stepClass = 'inline-flex size-11 items-center justify-center transition-colors hover:text-gold disabled:cursor-not-allowed disabled:opacity-40'
 </script>
 
@@ -28,6 +36,14 @@ const stepClass = 'inline-flex size-11 items-center justify-center transition-co
           </h2>
           <p class="mt-1 wrap-break-word text-sm text-muted">{{ item.colorName }} · Veličina {{ item.size }}</p>
           <p class="text-xs text-muted">Šifra: {{ item.sku }}</p>
+          <p v-if="isOnSale" class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+            <span class="bg-red-700 px-1.5 py-0.5 font-medium text-white">-{{ salePercent }} %</span>
+            <span class="text-muted">Sniženo, ušteda {{ formatPrice((item.compareAtPrice! - item.price) * item.quantity) }}<template v-if="promo">, promo kod ne vrijedi</template></span>
+          </p>
+          <p v-else-if="promoAmount > 0" class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+            <span class="border border-gold px-1.5 py-0.5 font-medium text-ink">-{{ promo!.percent }} %</span>
+            <span class="text-muted">Promo kod {{ promo!.code }}: -{{ formatPrice(promoAmount) }}</span>
+          </p>
         </div>
         <button
           type="button"

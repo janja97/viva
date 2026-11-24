@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { X } from '@lucide/vue'
 
-const { promo, applyPromo, clearPromo } = useCart()
+const { promo, promoBase, subtotal, applyPromo, clearPromo } = useCart()
 
 const id = useId()
 const code = ref('')
@@ -36,6 +36,13 @@ async function onApply() {
         <X class="size-4" stroke-width="1.5" />
       </button>
     </div>
+    <!-- Promo kod ne vrijedi za već snižene artikle (migracija 0049). -->
+    <p v-if="promo && !promoBase" class="text-sm text-muted">
+      Promo kod ne vrijedi za već snižene artikle, a svi artikli u košarici su sniženi.
+    </p>
+    <p v-else-if="promo && promoBase < subtotal" class="text-sm text-muted">
+      Popust vrijedi samo za artikle koji nisu već sniženi.
+    </p>
     <form v-else class="flex gap-2" @submit.prevent="onApply">
       <label :for="id" class="sr-only">Promo kod</label>
       <input

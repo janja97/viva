@@ -12,7 +12,7 @@ const { subtotal, savings, shipping, deliveryMethod, promo, promoDiscount, total
       <dt class="text-muted">Ušteda</dt>
       <dd>{{ formatPrice(savings) }}</dd>
     </div>
-    <div v-if="promo" class="flex justify-between gap-3">
+    <div v-if="promo && promoDiscount > 0" class="flex justify-between gap-3">
       <dt class="text-muted">Promo kod ({{ promo.code }})</dt>
       <dd>-{{ formatPrice(promoDiscount) }}</dd>
     </div>

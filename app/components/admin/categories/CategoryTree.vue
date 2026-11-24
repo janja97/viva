@@ -4,6 +4,8 @@ import type { Category } from '~/types/database'
 defineProps<{
   tree: (Category & { children: (Category & { children: Category[] })[] })[]
   canWrite: boolean
+  // Broj artikala (boja) po kategoriji, s podkategorijama. Dok se ne učita, broj se ne prikazuje.
+  counts: Map<string, number>
 }>()
 
 const emit = defineEmits<{
@@ -19,6 +21,7 @@ const emit = defineEmits<{
     <li v-for="(main, mainIndex) in tree" :key="main.id" class="overflow-hidden rounded-xl border border-primary-300 bg-white shadow-sm">
       <CategoryRow
         :category="main"
+        :count="counts.get(main.id)"
         :is-first="mainIndex === 0"
         :is-last="mainIndex === tree.length - 1"
         :can-write="canWrite"
@@ -33,6 +36,7 @@ const emit = defineEmits<{
         <li v-for="(child, childIndex) in main.children" :key="child.id">
           <CategoryRow
             :category="child"
+            :count="counts.get(child.id)"
             :is-first="childIndex === 0"
             :is-last="childIndex === main.children.length - 1"
             :can-write="canWrite"
@@ -46,6 +50,7 @@ const emit = defineEmits<{
             <li v-for="(grandchild, grandchildIndex) in child.children" :key="grandchild.id">
               <CategoryRow
                 :category="grandchild"
+                :count="counts.get(grandchild.id)"
                 :is-first="grandchildIndex === 0"
                 :is-last="grandchildIndex === child.children.length - 1"
                 :can-write="canWrite"

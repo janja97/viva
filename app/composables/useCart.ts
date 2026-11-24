@@ -27,10 +27,15 @@ export function useCart() {
   const deliveryMethod = useState<DeliveryMethod>('cart-delivery', () => 'delivery')
   const shipping = computed(() => (items.value.length && deliveryMethod.value === 'delivery' ? shippingFor(subtotal.value) : 0))
 
-  // Promo kod iz košarice. Popust je na iznos proizvoda, a poštarina se računa prema iznosu prije popusta,
-  // isto kao u shop_submit_inquiry.
+  // Promo kod iz košarice. Popust je samo na iznos artikala koji nisu već sniženi (migracija 0049),
+  // a poštarina se računa prema iznosu prije popusta, isto kao u shop_submit_inquiry.
   const promo = useState<{ code: string; percent: number } | null>('cart-promo', () => null)
-  const promoDiscount = computed(() => (promo.value ? Math.round(subtotal.value * promo.value.percent) / 100 : 0))
+  const promoBase = computed(() => items.value
+    .filter((item) => item.compareAtPrice === null || item.compareAtPrice <= item.price)
+    .reduce((sum, item) => sum + item.price * item.quantity, 0))
+  const promoDiscount = computed(() => (promo.value ? Math.round(promoBase.value * promo.value.percent) / 100 : 0))
+  // Kod se šalje samo kad stvarno daje popust, inače bi se potrošio bez koristi.
+  const promoCodeToSend = computed(() => (promoDiscount.value > 0 ? promo.value?.code ?? null : null))
   const total = computed(() => subtotal.value - promoDiscount.value + shipping.value)
 
   function setItems(rows: ShopCartItemRow[]) {
@@ -82,7 +87,7 @@ export function useCart() {
     const { error } = await supabase.rpc('shop_submit_whatsapp_inquiry', {
       p_session: sessionId(),
       p_note: note.trim() || null,
-      p_promo_code: promo.value?.code ?? null,
+      p_promo_code: promoCodeToSend.value,
       p_delivery: deliveryMethod.value,
     })
     if (error) throw error
@@ -91,7 +96,7 @@ export function useCart() {
   async function submitInquiry(customer: InquiryCustomer) {
     const { data, error } = await supabase.rpc('shop_submit_inquiry', {
       p_session: sessionId(),
-      p_customer: { ...customer, promo_code: promo.value?.code ?? null, delivery_method: deliveryMethod.value },
+      p_customer: { ...customer, promo_code: promoCodeToSend.value, delivery_method: deliveryMethod.value },
     })
     if (error) throw error
     items.value = []
@@ -100,7 +105,7 @@ export function useCart() {
   }
 
   return {
-    items, isLoaded, isDrawerOpen, count, subtotal, savings, deliveryMethod, shipping, promo, promoDiscount, total,
+    items, isLoaded, isDrawerOpen, count, subtotal, savings, deliveryMethod, shipping, promo, promoBase, promoDiscount, promoCodeToSend, total,
     load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry, submitWhatsappInquiry,
   }
 }

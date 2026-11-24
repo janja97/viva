@@ -13,7 +13,7 @@ const { settings } = storeSettings
 const shippingPrice = computed(() => formatPrice(Number(settings.value.shipping_price)))
 const freeAbove = computed(() => formatPrice(Number(settings.value.free_shipping_above)))
 // Datum zadnje izmjene teksta. Promijeni ga uz svaku izmjenu ove stranice.
-const UPDATED = '19. 11. 2026.'
+const UPDATED = '24. 11. 2026.'
 </script>
 
 <template>
@@ -57,7 +57,7 @@ const UPDATED = '19. 11. 2026.'
 
     <section>
       <h2>Promo kodovi</h2>
-      <p>Promo kod upisujete u košarici, a popust vrijedi za iznos proizvoda, bez poštarine. Na jednu narudžbu može se iskoristiti jedan kod. Kod s ograničenim brojem upotreba troši se slanjem narudžbe, i ako se ona kasnije otkaže. Promo kod se ne može zamijeniti za novac.</p>
+      <p>Promo kod upisujete u košarici, a popust vrijedi za iznos proizvoda koji nisu već sniženi, bez poštarine. Na već snižene proizvode promo kod se ne primjenjuje. Na jednu narudžbu može se iskoristiti jedan kod. Kod s ograničenim brojem upotreba troši se slanjem narudžbe, i ako se ona kasnije otkaže. Promo kod se ne može zamijeniti za novac.</p>
     </section>
 
     <section>

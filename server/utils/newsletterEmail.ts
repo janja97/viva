@@ -10,7 +10,7 @@ function codeEmailHtml({ code, percent, expires_at: expiresAt }: NewsletterCode,
   <h2 style="font-weight: normal;">Hvala na prijavi</h2>
   <p>Drago nam je što ste s nama. Za vašu prvu kupnju poklanjamo vam ${percent} % popusta.</p>
   <p style="font-size: 24px; letter-spacing: 3px; border: 1px solid #c99a45; padding: 12px; text-align: center;">${escapeHtml(code)}</p>
-  <p>Kod upišite u košarici prije slanja narudžbe. Vrijedi za jednu narudžbu, do ${until}.</p>
+  <p>Kod upišite u košarici prije slanja narudžbe. Vrijedi za jednu narudžbu, do ${until}, za proizvode koji nisu već sniženi.</p>
   ${siteUrl ? `<p><a href="${escapeHtml(siteUrl)}/proizvodi" style="display: inline-block; background: #1c1915; color: #ffffff; padding: 12px 24px; text-decoration: none;">Pogledaj kolekciju</a></p>` : ''}
   <p style="color: #6b6358; font-size: 14px;">${escapeHtml(siteName)}, Mepas Mall, Mostar</p>
   <p style="color: #6b6358; font-size: 12px;">Ovaj e-mail ste dobili jer ste se prijavili na naš newsletter. <a href="${escapeHtml(unsubscribeUrl)}" style="color: #6b6358;">Odjava</a></p>

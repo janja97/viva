@@ -7,7 +7,7 @@ import { deliveryMethodLabel } from '~/config/store'
 const props = defineProps<{ phone: string }>()
 const emit = defineEmits<{ cancel: [] }>()
 
-const { items, promo, deliveryMethod, submitWhatsappInquiry } = useCart()
+const { items, promoCodeToSend, deliveryMethod, submitWhatsappInquiry } = useCart()
 const { track } = useProductTracking()
 const { siteUrl } = useRuntimeConfig().public
 
@@ -16,7 +16,7 @@ const isOpened = ref(false)
 
 const message = computed(() => whatsappOrderMessage({
   items: items.value,
-  promoCode: promo.value?.code ?? null,
+  promoCode: promoCodeToSend.value,
   note: note.value,
   delivery: deliveryMethod.value,
   origin: (siteUrl || window.location.origin).replace(/\/$/, ''),
