@@ -79,5 +79,7 @@ export default defineNuxtConfig({
     // Sitemap i Merchant feed čitaju cijelu bazu, a Google ih dohvaća rijetko: 1 sat.
     '/sitemap.xml': { isr: 3600 },
     '/merchant-feed.xml': { isr: 3600 },
+    // Sažetak trgovine za AI asistente (server/routes/llms.txt.ts).
+    '/llms.txt': { isr: 3600 },
   },
 })

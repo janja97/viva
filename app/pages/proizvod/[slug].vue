@@ -114,9 +114,63 @@ onMounted(() => track(color.id, 'view'))
 // Poštarina u JSON-LD-u dolazi iz postavki trgovine.
 await storeSettings.ready()
 
-function availability() {
-  if (soldOut) return 'https://schema.org/OutOfStock'
+type ProductColor = (typeof colors)[number]
+
+function availability(item: ProductColor) {
+  if (item.sizes.every((size) => size.quantity === 0)) return 'https://schema.org/OutOfStock'
   return product.store_only ? 'https://schema.org/InStoreOnly' : 'https://schema.org/InStock'
+}
+
+// Model je ProductGroup, a svaka boja (sa svojim URL-om) njegova varijanta, po Googleovom pravilu za varijante na više stranica.
+// Svaka stranica boje nosi cijelu grupu; Google iz url-a zna koja je varijanta ova stranica. Boje bez slike se preskaču.
+const variants = colors.filter((item) => item.id === color.id || item.images.length)
+
+function variantJsonLd(item: ProductColor) {
+  const variantUrl = `${origin}${PRODUCT_PATH}/${item.slug}`
+  const inStock = item.sizes.filter((size) => size.quantity > 0).map((size) => size.size)
+  return {
+    '@type': 'Product',
+    '@id': `${variantUrl}#product`,
+    name: `${product.name} ${item.name}`,
+    color: item.base_color ?? item.name,
+    // Veličine koje su na stanju (Google ih koristi kod varijanti odjeće i obuće).
+    ...(inStock.length && { size: inStock }),
+    image: item.images.map((image) => image.url),
+    url: variantUrl,
+    offers: offerJsonLd(item, variantUrl),
+  }
+}
+
+function offerJsonLd(item: ProductColor, offerUrl: string) {
+  return {
+    '@type': 'Offer',
+    url: offerUrl,
+    price: currentPrice.toFixed(2),
+    priceCurrency: CURRENCY_CODE,
+    availability: availability(item),
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: { '@type': 'ClothingStore', '@id': storeJsonLdId(origin), name: useRuntimeConfig().public.siteName },
+    // Poštarina po istom pravilu kao u košarici. Proizvod samo za poslovnice se ne šalje.
+    ...(!product.store_only && {
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: { '@type': 'MonetaryAmount', value: storeSettings.shippingFor(currentPrice).toFixed(2), currency: CURRENCY_CODE },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: DELIVERY.countryCode },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          transitTime: { '@type': 'QuantitativeValue', minValue: DELIVERY.minDays, maxValue: DELIVERY.maxDays, unitCode: 'DAY' },
+        },
+      },
+      // Samo zamjena (bez povrata novca), u roku od EXCHANGE.days dana.
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: DELIVERY.countryCode,
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: EXCHANGE.days,
+        refundType: 'https://schema.org/ExchangeRefund',
+      },
+    }),
+  }
 }
 
 useHead({
@@ -125,48 +179,17 @@ useHead({
       type: 'application/ld+json',
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: `${product.name} ${color.name}`,
-        sku: product.sku,
+        '@type': 'ProductGroup',
+        name: product.name,
         // Sve boje istog proizvoda dijele šifru, pa Google zna da su varijante jednog modela.
         productGroupID: product.sku,
-        color: color.base_color ?? color.name,
         category: category.name,
         description,
         ...(product.material && { material: product.material }),
-        // Veličine koje su na stanju (Google ih koristi kod varijanti odjeće i obuće).
-        ...(color.sizes.some((size) => size.quantity > 0) && { size: color.sizes.filter((size) => size.quantity > 0).map((size) => size.size) }),
-        image: color.images.map((image) => image.url),
-        url,
-        offers: {
-          '@type': 'Offer',
-          url,
-          price: currentPrice.toFixed(2),
-          priceCurrency: CURRENCY_CODE,
-          availability: availability(),
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: { '@type': 'Organization', name: useRuntimeConfig().public.siteName },
-          // Poštarina po istom pravilu kao u košarici. Proizvod samo za poslovnice se ne šalje.
-          ...(!product.store_only && {
-            shippingDetails: {
-              '@type': 'OfferShippingDetails',
-              shippingRate: { '@type': 'MonetaryAmount', value: storeSettings.shippingFor(currentPrice).toFixed(2), currency: CURRENCY_CODE },
-              shippingDestination: { '@type': 'DefinedRegion', addressCountry: DELIVERY.countryCode },
-              deliveryTime: {
-                '@type': 'ShippingDeliveryTime',
-                transitTime: { '@type': 'QuantitativeValue', minValue: DELIVERY.minDays, maxValue: DELIVERY.maxDays, unitCode: 'DAY' },
-              },
-            },
-            // Samo zamjena (bez povrata novca), u roku od EXCHANGE.days dana.
-            hasMerchantReturnPolicy: {
-              '@type': 'MerchantReturnPolicy',
-              applicableCountry: DELIVERY.countryCode,
-              returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-              merchantReturnDays: EXCHANGE.days,
-              refundType: 'https://schema.org/ExchangeRefund',
-            },
-          }),
-        },
+        // Ponuda je samo za žene (isto kao gender u Merchant feedu).
+        audience: { '@type': 'PeopleAudience', suggestedGender: 'female' },
+        variesBy: ['https://schema.org/color'],
+        hasVariant: variants.map(variantJsonLd),
       }),
     },
     {

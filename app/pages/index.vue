@@ -28,15 +28,10 @@ const { data } = await useAsyncData('home', async () => {
 const { data: clearance } = await useShopPromoPage(EXCLUSIVE_PROMO_PAGE.slug)
 const categoryLink = useCategoryLink()
 
-const storeSettings = useStoreSettings()
-await storeSettings.ready()
+await useStoreJsonLd()
 
 useHead({
   script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(storeJsonLd(siteName, origin, storeSettings.settings.value)),
-    },
     {
       type: 'application/ld+json',
       innerHTML: JSON.stringify({
@@ -45,6 +40,7 @@ useHead({
         name: siteName,
         url: origin,
         inLanguage: 'hr-BA',
+        publisher: { '@id': storeJsonLdId(origin) },
       }),
     },
     {

@@ -78,7 +78,9 @@
 - Pretraga: `/pretraga?q=`, `useShop().searchCards` traži po slugu pa radi i bez naših slova. Stranica ima noindex.
 - Stalni podaci o trgovini (adresa, kat `STORE.floor` = 3. kat, karta) su u `STORE` u `config/store.ts`. Telefon, WhatsApp, Viber, e-mail, mreže (Instagram i Facebook; TikToka nema, stupac `tiktok_url` se ne koristi), radno vrijeme po danima, poštarina i obavijest na vrhu weba su u tablici `store_settings` (jedan redak, migracija `0029`). Čitaju se kroz `useStoreSettings` (`settings`, `hoursText`, `socialLinks`, `shippingFor`), a zadane vrijednosti su u `DEFAULT_STORE_SETTINGS`. Prazna polja se ne prikazuju. Ne izmišljaj telefon, radno vrijeme ni tvrdnje o proizvodima. Stranice koje ih koriste u JSON-LD-u prije `useHead` pozivaju `await ready()`.
 - `usePageSeo` prima i `type` (`product` daje `og:type` product i `product:price:*`, `article` za blog), `imageAlt` i `price`. Na Netlifyjevom pregledu grane (`previewDeploy`) sve stranice imaju noindex, a `robots.txt` zabranjuje sve. Inače `robots.txt` zabranjuje samo `/api/`. `app.vue` otvara vezu prema Supabaseu (`preconnect`) zbog bržih slika. Product JSON-LD ima `productGroupID` (šifra, zajednička svim bojama) i `seller`.
+- JSON-LD (studeni 2026.): ClothingStore (`storeJsonLd`, `useStoreJsonLd`, s `@id` `/#store`) je na naslovnoj, `/kontakt` i `/kupovina-u-mostaru`, uz `containedInPlace` Mepas Mall, `audience` žene i `priceRange` iz `STORE` (20–600 KM, potvrdila vlasnica). `STORE.geo` i `STORE.photo` su prazni dok ih vlasnica ne da (koordinate iz Google karte, fotografija trgovine), pa se ne šalju. Proizvod je `ProductGroup` (`productGroupID` = šifra, `variesBy` boja), a svaka boja sa slikom je varijanta u `hasVariant` sa svojim URL-om i ponudom; `seller` upućuje na `/#store`. WebSite ima `publisher` na isti `@id`.
 - Canonical (`usePageSeo`) je putanja bez parametara, osim `?stranica=N` na popisima. Product JSON-LD ima `shippingDetails` po pravilu `shippingFor`, osim za `store_only`. Putanja (breadcrumbs) na stranici proizvoda ista je kao u JSON-LD-u.
+- Stranica `/kontakt`: uvod, adresa s gumbom "Upute do butika", radno vrijeme po danima (`ContactHours`, današnji dan se ističe tek u pregledniku zbog keša), načini kontakta iz postavki (`ContactChannels`: telefon, WhatsApp, Viber, e-mail), mreže, karta (na računalu sticky desno) i traka "Dobro je znati" (lokacija, parking, isprobavanje, plaćanje) s poveznicom na `/kupovina-u-mostaru`.
 - Sekcija "Posjetite nas" (`HomeVisit`) prikazuje Google kartu (`STORE.mapEmbedUrl`, bez API ključa, prigušene boje), na računalu lijevo od adrese, a na mobitelu ispod nje.
 
 ## Gdje je što
@@ -90,7 +92,7 @@
 - `app/layouts/`: `default` (javni), `admin`, `auth` (prijava).
 - `app/components/`: `ui/`, `site/`, `auth/`, `admin/` (s podmapama `categories/`, `users/`, `account/`). Komponente se koriste samo po imenu datoteke.
 - `app/types/database.ts`: tipovi baze, proširi ih uz svaku novu tablicu. Koristi `type`, ne `interface`, inače Supabase tipovi postanu `never`.
-- `server/routes/`: `sitemap.xml`, `robots.txt`. `server/api/admin/`: rute s tajnim ključem.
+- `server/routes/`: `sitemap.xml`, `robots.txt`, `llms.txt` (sažetak trgovine za AI asistente: opis, kategorije iz baze, kontakt i radno vrijeme iz postavki, pravila kupnje, `HOME_FAQ`; samo potvrđene tvrdnje). `server/api/admin/`: rute s tajnim ključem.
 - `supabase/`: SQL migracije i `seed_super_admin.sql`.
 
 ## Pravila za novu stranicu

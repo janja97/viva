@@ -13,6 +13,13 @@ export const STORE = {
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mepas+Mall+Mostar',
   // Karta u sekciji "Posjetite nas". Ne treba API ključ.
   mapEmbedUrl: 'https://www.google.com/maps?q=Mepas+Mall,+Kneza+Branimira+2b,+88000+Mostar&z=16&output=embed',
+  // Za Google (ClothingStore JSON-LD). Prazno se ne šalje. Ne izmišljati: koordinate se kopiraju iz Google karte
+  // (desni klik na trgovinu), raspon cijena i fotografiju potvrđuje vlasnica.
+  geo: null as { latitude: number; longitude: number } | null,
+  // Potvrdila vlasnica (studeni 2026.).
+  priceRange: '20–600 KM',
+  // Fotografija trgovine ili izloga u public/, npr. '/images/trgovina.webp'. Bez nje se šalje logo.
+  photo: '',
 }
 
 // Tvrtka koja vodi trgovinu (Politika privatnosti, Uvjeti kupnje, podnožje).

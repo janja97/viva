@@ -9,6 +9,8 @@ usePageSeo({
   description: 'Svečane i maturalne haljine, cipele i torbe u Mepas Mallu u Mostaru. Za kupce iz Hrvatske: isprobavanje, plaćanje karticom i povrat PDV-a iznad 200 KM.',
 })
 
+await useStoreJsonLd()
+
 const { hoursText } = useStoreSettings()
 const place = `${STORE.mall}, ${STORE.street}, ${STORE.city}`
 
