@@ -16,7 +16,7 @@ const place = `${STORE.mall}, ${STORE.street}, ${STORE.city}`
 
 const faq = [
   { question: 'Gdje se nalazi trgovina?', answer: `U ${STORE.mall}u u Mostaru, ${STORE.street}, na ${STORE.floor}u. Parking je u garaži ${STORE.mall}a i naplaćuje se.` },
-  { question: 'Mogu li kao kupac iz Hrvatske dobiti povrat PDV-a?', answer: 'Da, kupci bez prebivališta u BiH mogu ostvariti povrat PDV-a za kupnju veću od 200 KM. Na blagajni zatražite obrazac PDV-SL-2, ovjerite ga na granici pri izlasku iz BiH u roku od 3 mjeseca, a ovjereni obrazac vratite nama. PDV vraćamo u KM, gotovinom ili na vaš račun.' },
+  { question: 'Mogu li kao kupac iz Hrvatske dobiti povrat PDV-a?', answer: 'Da, kupci bez prebivališta u BiH mogu ostvariti povrat PDV-a za kupnju veću od 200 KM. Na blagajni zatražite obrazac PDV-SL-2, ovjerite ga na granici pri izlasku iz BiH u roku od 3 mjeseca, a ovjereni obrazac vratite nama. PDV vraćamo gotovinom u KM.' },
   { question: 'Kako se plaća u trgovini?', answer: 'Gotovinom u KM ili karticom, a moguće je i plaćanje na rate.' },
   { question: 'Šaljete li narudžbe u Hrvatsku?', answer: 'Ne, online narudžbe zasad šaljemo samo na adrese u Bosni i Hercegovini. Iz Hrvatske nas posjetite u trgovini u Mostaru.' },
   { question: 'Mogu li isprobati više haljina?', answer: 'Da, u trgovini možete isprobati više modela prije nego što se odlučite. Rezervacija termina nije potrebna.' },
@@ -62,7 +62,7 @@ const faq = [
       <ul>
         <li>na blagajni zatražite obrazac PDV-SL-2,</li>
         <li>ovjerite ga na granici pri izlasku iz BiH, u roku od 3 mjeseca,</li>
-        <li>ovjereni obrazac vratite nama, a PDV vraćamo u KM, gotovinom ili na vaš račun.</li>
+        <li>ovjereni obrazac vratite nama, a PDV vraćamo gotovinom u KM.</li>
       </ul>
     </section>
 

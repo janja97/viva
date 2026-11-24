@@ -230,6 +230,6 @@ export const HOME_FAQ = [
   {
     // Prag i postupak su iz Instrukcije UIO-a (Službeni glasnik BiH 48/25, od 6. 8. 2025.). Provjeriti ako se propis promijeni.
     question: 'Dolazite iz Hrvatske? Možete li dobiti povrat PDV-a?',
-    answer: 'Kupce iz cijele Hrvatske rado dočekujemo u Mepas Mallu, osobito u sezoni matura i vjenčanja. Kupci bez prebivališta u BiH mogu ostvariti povrat PDV-a za kupnju veću od 200 KM: na blagajni zatražite obrazac PDV-SL-2, ovjerite ga na granici pri izlasku iz BiH u roku od 3 mjeseca, a ovjereni obrazac vratite nama. PDV vraćamo u KM, gotovinom ili na vaš račun.',
+    answer: 'Kupce iz cijele Hrvatske rado dočekujemo u Mepas Mallu, osobito u sezoni matura i vjenčanja. Kupci bez prebivališta u BiH mogu ostvariti povrat PDV-a za kupnju veću od 200 KM: na blagajni zatražite obrazac PDV-SL-2, ovjerite ga na granici pri izlasku iz BiH u roku od 3 mjeseca, a ovjereni obrazac vratite nama. PDV vraćamo gotovinom u KM.',
   },
 ]
