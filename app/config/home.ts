@@ -173,7 +173,7 @@ export const HOME_SERVICES = [
 export const HOME_FAQ = [
   {
     question: 'Gdje se nalazi trgovina Viva?',
-    answer: 'U Mepas Mallu u Mostaru, Kneza Branimira 2b. Imamo i poslovnicu u Sarajevu. Parking je u garaži Mepas Malla i naplaćuje se.',
+    answer: 'U Mepas Mallu u Mostaru, Kardinala Stepinca bb . Imamo i poslovnicu u Sarajevu. Parking je u garaži Mepas Malla i naplaćuje se.',
   },
   {
     question: 'Imate li maturalne haljine?',

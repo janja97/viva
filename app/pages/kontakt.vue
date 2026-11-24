@@ -4,7 +4,7 @@ import { STORE } from '~/config/store'
 
 usePageSeo({
   title: 'Kontakt i lokacija: Mepas Mall Mostar',
-  description: 'Posjetite butik svečane mode u Mepas Mallu u Mostaru, Kneza Branimira 2b. Adresa, radno vrijeme, karta i kontakt. Imamo i poslovnicu u Sarajevu.',
+  description: 'Posjetite butik svečane mode u Mepas Mallu u Mostaru, Kardinala Stepinca bb. Adresa, radno vrijeme, karta i kontakt. Imamo i poslovnicu u Sarajevu.',
 })
 
 await useStoreJsonLd()

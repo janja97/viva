@@ -5,7 +5,7 @@ import type { StoreSettings, WeekDay } from '~/types/database'
 export const STORE = {
   mall: 'Mepas Mall',
   floor: '3. kat',
-  street: 'Kneza Branimira 2b',
+  street: 'Kardinala Stepinca bb',
   postalCode: '88000',
   city: 'Mostar',
   countryCode: 'BA',
@@ -26,7 +26,7 @@ export const STORE = {
 // JIB i PDV broj još nisu upisani; prazna polja se ne prikazuju.
 export const COMPANY = {
   name: 'Silver Trend d.o.o.',
-  seat: 'Mepas Mall, Kneza Branimira 2b, 88000 Mostar',
+  seat: 'Mepas Mall, Kardinala Stepinca bb, 88000 Mostar',
   country: 'Bosna i Hercegovina',
   jib: '',
   vatNumber: '',
