@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { subtotal, savings, shipping, deliveryMethod, promo, promoDiscount, total, missingForFreeShipping } = useCart()
+const { subtotal, savings, shipping, deliveryMethod, promo, promoDiscount, total } = useCart()
 </script>
 
 <template>
@@ -20,9 +20,7 @@ const { subtotal, savings, shipping, deliveryMethod, promo, promoDiscount, total
       <dt class="text-muted">Poštarina</dt>
       <dd>{{ deliveryMethod !== 'delivery' ? 'Bez poštarine' : shipping ? formatPrice(shipping) : 'Besplatna' }}</dd>
     </div>
-    <p v-if="missingForFreeShipping > 0" class="text-xs text-muted">
-      Još {{ formatPrice(missingForFreeShipping) }} do besplatne poštarine.
-    </p>
+    <CartFreeShippingProgress class="pb-1 pt-1" />
     <div class="flex justify-between gap-3 border-t border-line pt-3 text-base">
       <dt>Sveukupno</dt>
       <dd class="font-medium text-gold">{{ formatPrice(total) }}</dd>

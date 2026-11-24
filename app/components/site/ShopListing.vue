@@ -87,8 +87,20 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
-    <aside aria-label="Filteri" class="sticky top-24 hidden max-h-[calc(100dvh-7rem)] overflow-y-auto pb-4 pr-2 lg:block">
+  <div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-14">
+    <!-- Računalo: filteri sa strane, sticky. Mobitel ih otvara gumbom (FilterFloatingButton) u prozoru niže. -->
+    <aside aria-label="Filteri" class="sticky top-24 hidden max-h-[calc(100dvh-7rem)] overflow-y-auto pb-4 pr-3 [scrollbar-width:thin] lg:block">
+      <div class="mb-4 flex items-end justify-between gap-3">
+        <h2 class="font-display text-2xl font-normal leading-none">Filtriraj</h2>
+        <button
+          v-if="activeCount"
+          type="button"
+          class="cursor-pointer text-[11px] font-medium uppercase tracking-[0.16em] text-muted underline underline-offset-4 transition-colors hover:text-ink"
+          @click="clear"
+        >
+          Očisti ({{ activeCount }})
+        </button>
+      </div>
       <ShopFilterPanel :options="options ?? null" />
     </aside>
 

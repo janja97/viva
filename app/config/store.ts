@@ -43,15 +43,21 @@ export const DELIVERY = {
 }
 
 // Način preuzimanja online narudžbe (migracija 0048). Preuzimanje u trgovini je bez poštarine.
-// Vrijednosti moraju odgovarati provjeri inquiries.delivery_method u bazi. Sarajevo nema poznatu adresu,
-// pa se kupcu javljamo s adresom; za uklanjanje te mogućnosti makni redak (baza ga i dalje prihvaća).
+// Vrijednosti moraju odgovarati provjeri inquiries.delivery_method u bazi.
+// Preuzimanje u Sarajevu je maknuto iz košarice (studeni 2026., na zahtjev vlasnice), ali stare narudžbe ga mogu imati,
+// pa naziv ostaje u DELIVERY_METHOD_LABELS. Za povratak dodaj redak u DELIVERY_METHODS (baza ga i dalje prihvaća).
 export type DeliveryMethod = 'delivery' | 'pickup_mostar' | 'pickup_sarajevo'
+const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
+  delivery: 'Dostava na adresu',
+  pickup_mostar: 'Preuzimanje u Mostaru',
+  pickup_sarajevo: 'Preuzimanje u Sarajevu',
+}
+// Opis dostave na adresu ovisi o poštarini, pa ga slaže CartDeliveryPicker.
 export const DELIVERY_METHODS: { value: DeliveryMethod; label: string; hint: string }[] = [
-  { value: 'delivery', label: 'Dostava na adresu', hint: 'Po cijeloj BiH, plaćanje pouzećem' },
-  { value: 'pickup_mostar', label: 'Preuzimanje u Mostaru', hint: 'Mepas Mall, 3. kat, bez poštarine' },
-  { value: 'pickup_sarajevo', label: 'Preuzimanje u Sarajevu', hint: 'U našoj poslovnici, bez poštarine; adresu vam javljamo' },
+  { value: 'delivery', label: DELIVERY_METHOD_LABELS.delivery, hint: 'Po cijeloj BiH, plaćanje pouzećem' },
+  { value: 'pickup_mostar', label: DELIVERY_METHOD_LABELS.pickup_mostar, hint: 'Mepas Mall, 3. kat, bez poštarine' },
 ]
-export const deliveryMethodLabel = (value: DeliveryMethod | null | undefined) => DELIVERY_METHODS.find((item) => item.value === value)?.label ?? 'Dostava na adresu'
+export const deliveryMethodLabel = (value: DeliveryMethod | null | undefined) => DELIVERY_METHOD_LABELS[value ?? 'delivery'] ?? DELIVERY_METHOD_LABELS.delivery
 
 // Zamjena (stranica /povrat-i-zamjena i Product JSON-LD). Povrata novca nema, samo zamjena.
 export const EXCHANGE = {

@@ -165,7 +165,7 @@ export const HOME_VIDEO = {
 export const HOME_SERVICES = [
   // {prag} zamjenjuje iznos iz postavki trgovine (besplatna poštarina).
   { title: 'Besplatna dostava', text: 'Za narudžbe veće od {prag} poštarina je besplatna.' },
-  { title: 'Preuzimanje u trgovini', text: 'Naručite online i preuzmite bez poštarine, u našoj trgovini u Mostaru ili u Sarajevu.' },
+  { title: 'Preuzimanje u trgovini', text: 'Naručite online i preuzmite bez poštarine u našoj trgovini u Mepas Mallu u Mostaru.' },
   { title: 'Dostava po BiH', text: 'Dostava na vašu adresu za 3 do 5 dana, plaćanje pouzećem i zamjena u 15 dana.' },
 ]
 
@@ -201,7 +201,7 @@ export const HOME_FAQ = [
   },
   {
     question: 'Mogu li online narudžbu preuzeti u trgovini?',
-    answer: 'Da, online narudžbu možete preuzeti bez poštarine, u našoj trgovini u Mostaru ili u poslovnici u Sarajevu. Preuzimanje odaberite u košarici.',
+    answer: 'Da, online narudžbu možete bez poštarine preuzeti u našoj trgovini u Mepas Mallu u Mostaru. Preuzimanje odaberite u košarici.',
   },
   {
     question: 'Radite li skraćivanje ili prepravke haljina?',

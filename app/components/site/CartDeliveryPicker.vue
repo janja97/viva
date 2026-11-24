@@ -3,7 +3,17 @@ import { DELIVERY_METHODS } from '~/config/store'
 
 // Dostava na adresu ili preuzimanje u trgovini (migracija 0048). Preuzimanje je bez poštarine,
 // pa se iznosi u CartTotals odmah mijenjaju. Izbor ide uz narudžbu (obrazac i WhatsApp).
-const { deliveryMethod } = useCart()
+const { deliveryMethod, shipping, items } = useCart()
+const { settings } = useStoreSettings()
+
+// Kod dostave piše kolika je poštarina i od kojeg iznosa je besplatna, jer nije uvijek naplaćena.
+const deliveryHint = computed(() => {
+  const price = Number(settings.value.shipping_price)
+  const threshold = Number(settings.value.free_shipping_above)
+  if (!price) return 'Po cijeloj BiH, plaćanje pouzećem, bez poštarine'
+  if (items.value.length && !shipping.value) return 'Po cijeloj BiH, plaćanje pouzećem, besplatna poštarina'
+  return `Po cijeloj BiH, plaćanje pouzećem. Poštarina ${formatPrice(price)}, besplatna iznad ${formatPrice(threshold)}`
+})
 </script>
 
 <template>
@@ -24,7 +34,7 @@ const { deliveryMethod } = useCart()
         >
         <span class="text-sm leading-snug">
           {{ option.label }}
-          <span class="block text-xs text-muted">{{ option.hint }}</span>
+          <span class="block text-xs text-muted">{{ option.value === 'delivery' ? deliveryHint : option.hint }}</span>
         </span>
       </label>
     </div>

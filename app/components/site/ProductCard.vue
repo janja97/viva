@@ -15,8 +15,10 @@ defineProps<{
 <template>
   <article class="group">
     <NuxtLink :to="`${PRODUCT_PATH}/${card.slug}`" class="block">
-      <!-- Slika se prikazuje cijela (object-contain), da se proizvod ne odreže sa strane. Okvir nema vlastitu boju, pa se prazan rub stapa s podlogom stranice. -->
-      <div class="relative aspect-3/4 overflow-hidden">
+      <!-- Slika se prikazuje cijela (object-contain), da se proizvod ne odreže sa strane. Okvir nema vlastitu boju, pa se prazan rub stapa s podlogom stranice.
+           Okvir je 4 : 5, kao preporučene slike (RECOMMENDED_IMAGE 1200 × 1500) i galerija proizvoda, pa su takve slike na svim karticama iste veličine,
+           a nešto uže slike (3 : 4) jednako visoke, uz uzak rub sa strane. -->
+      <div class="relative aspect-4/5 overflow-hidden">
         <img
           v-if="card.image"
           :src="cardImageUrl(card.image, 600)"
@@ -25,7 +27,7 @@ defineProps<{
           :alt="card.alt"
           :loading="eager ? 'eager' : 'lazy'"
           width="600"
-          height="800"
+          height="750"
           class="size-full object-contain transition-transform duration-700 group-hover:scale-105"
         >
         <!-- Sniženje je crveno, a novo zeleno. Rasprodano se na kartici ne ističe. -->

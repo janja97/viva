@@ -12,7 +12,7 @@ export type InquiryCustomer = Omit<InquiryCustomerInput, 'promo_code' | 'deliver
 export function useCart() {
   const supabase = useSupabase()
   const { sessionId } = useShopSession()
-  const { settings: storeSettings, shippingFor } = useStoreSettings()
+  const { shippingFor } = useStoreSettings()
 
   const items = useState<CartItem[]>('cart-items', () => [])
   const isLoaded = useState('cart-loaded', () => false)
@@ -32,8 +32,6 @@ export function useCart() {
   const promo = useState<{ code: string; percent: number } | null>('cart-promo', () => null)
   const promoDiscount = computed(() => (promo.value ? Math.round(subtotal.value * promo.value.percent) / 100 : 0))
   const total = computed(() => subtotal.value - promoDiscount.value + shipping.value)
-  // Koliko još nedostaje do besplatne poštarine.
-  const missingForFreeShipping = computed(() => (deliveryMethod.value === 'delivery' && shipping.value > 0 ? Math.max(0, Number(storeSettings.value.free_shipping_above) - subtotal.value) : 0))
 
   function setItems(rows: ShopCartItemRow[]) {
     items.value = rows.map((row) => ({
@@ -102,7 +100,7 @@ export function useCart() {
   }
 
   return {
-    items, isLoaded, isDrawerOpen, count, subtotal, savings, deliveryMethod, shipping, promo, promoDiscount, total, missingForFreeShipping,
+    items, isLoaded, isDrawerOpen, count, subtotal, savings, deliveryMethod, shipping, promo, promoDiscount, total,
     load, ensureLoaded, add, setQuantity, remove, applyPromo, clearPromo, submitInquiry, submitWhatsappInquiry,
   }
 }

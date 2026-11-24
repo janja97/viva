@@ -1,13 +1,25 @@
 <script setup lang="ts">
-// Slike proizvoda. Na mobitelu (ispod md) vrtuljak: sam se okreće, a kupac ga može povući prstom ili točkicama.
-// Od md je mreža kao prije: prva slika velika, ostale dvije u redu.
+import { ChevronLeft, ChevronRight } from '@lucide/vue'
+
+// Slike proizvoda. Na mobitelu (ispod md) vrtuljak: sam se okreće, a kupac ga može povući prstom ili crticama.
+// Od md je velika slika sa strelicama i male sličice ispod: klik na sličicu je prikaže kao veliku.
 // Slike se prikazuju cijele (object-contain), da se proizvod ne odreže sa strane.
 const props = defineProps<{
   images: { id: string; url: string; alt: string }[]
 }>()
 
-const main = computed(() => props.images[0])
-const rest = computed(() => props.images.slice(1))
+const ARROWS = [
+  { step: -1, label: 'Prethodna slika', icon: ChevronLeft },
+  { step: 1, label: 'Sljedeća slika', icon: ChevronRight },
+]
+
+// Velika slika na računalu.
+const selected = ref(0)
+const main = computed(() => props.images[selected.value] ?? props.images[0])
+function select(index: number) {
+  if (!props.images.length) return
+  selected.value = (index + props.images.length) % props.images.length
+}
 
 const AUTOPLAY_MS = 4000
 const track = useTemplateRef<HTMLElement>('track')
@@ -42,6 +54,7 @@ function onDot(index: number) {
 // Druga boja ima druge slike, pa vrtuljak kreće od prve.
 watch(() => props.images.map((image) => image.id).join(), () => {
   active.value = 0
+  selected.value = 0
   nextTick(() => goTo(0, false))
 })
 
@@ -108,15 +121,52 @@ onBeforeUnmount(() => clearInterval(timer))
       </div>
     </div>
 
-    <!-- Računalo i tablet: mreža -->
-    <div class="hidden grid-cols-2 gap-2 md:grid">
-      <div class="col-span-2 aspect-4/5 overflow-hidden">
-        <!-- Ista adresa kao prva slika vrtuljka, pa se preuzima samo jednom. Bez lazy, jer je to glavna slika stranice (LCP). -->
-        <img v-if="main" :key="main.id" :src="main.url" :alt="main.alt" width="1000" height="1250" fetchpriority="high" data-fly-source class="size-full animate-[fade-in_300ms_ease-out] object-contain">
+    <!-- Računalo i tablet: velika slika sa strelicama i male sličice ispod; klik na sličicu je prikaže kao veliku. -->
+    <div v-if="main" class="hidden md:block" aria-roledescription="galerija" aria-label="Slike proizvoda">
+      <div class="group relative aspect-4/5 overflow-hidden">
+        <!-- Prva slika ima istu adresu kao prva slika vrtuljka, pa se preuzima samo jednom. Bez lazy, jer je to glavna slika stranice (LCP). -->
+        <img
+          :key="main.id"
+          :src="main.url"
+          :alt="main.alt"
+          width="1000"
+          height="1250"
+          :fetchpriority="selected === 0 ? 'high' : undefined"
+          data-fly-source
+          class="size-full animate-[fade-in_300ms_ease-out] object-contain"
+        >
+        <template v-if="images.length > 1">
+          <button
+            v-for="arrow in ARROWS"
+            :key="arrow.step"
+            type="button"
+            class="absolute top-1/2 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-line bg-ivory/90 text-ink opacity-0 transition-opacity hover:border-ink focus-visible:opacity-100 group-hover:opacity-100"
+            :class="arrow.step < 0 ? 'left-3' : 'right-3'"
+            :aria-label="arrow.label"
+            @click="select(selected + arrow.step)"
+          >
+            <component :is="arrow.icon" class="size-4" stroke-width="1.5" />
+          </button>
+          <span class="absolute bottom-3 right-3 bg-ivory/90 px-2 py-1 text-[11px] tabular-nums tracking-[0.14em] text-muted">
+            {{ selected + 1 }} / {{ images.length }}
+          </span>
+        </template>
       </div>
-      <div v-for="image in rest" :key="image.id" class="aspect-3/4 overflow-hidden">
-        <img :src="image.url" :alt="image.alt" loading="lazy" width="600" height="800" class="size-full object-contain">
-      </div>
+
+      <ul v-if="images.length > 1" class="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+        <li v-for="(image, index) in images" :key="image.id" class="flex-none">
+          <button
+            type="button"
+            class="block aspect-4/5 w-16 cursor-pointer overflow-hidden border transition-colors lg:w-20"
+            :class="index === selected ? 'border-ink' : 'border-transparent opacity-70 hover:opacity-100'"
+            :aria-label="`Prikaži sliku ${index + 1} od ${images.length}`"
+            :aria-current="index === selected ? 'true' : undefined"
+            @click="select(index)"
+          >
+            <img :src="cardImageUrl(image.url, 200)" :alt="''" loading="lazy" width="80" height="100" class="size-full object-contain">
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
