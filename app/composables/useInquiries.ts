@@ -29,7 +29,12 @@ export function useNewInquiries() {
     return total ?? 0
   }
 
+  const { user } = useAuth()
+
   async function refresh() {
+    // Bez prijave (npr. istekla sesija na mobitelu) upit bi samo završio s 401 u logovima Supabasea,
+    // a admin ionako vodi na prijavu.
+    if (!user.value) return
     try {
       ;[count.value, inProgressCount.value] = await Promise.all([countByStatus('new'), countByStatus('in_progress')])
     } catch (error) {
