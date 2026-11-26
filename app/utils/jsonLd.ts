@@ -58,7 +58,8 @@ export function storeJsonLd(name: string, url: string, settings: StoreSettings) 
     })),
     ...(settings.phone && { telephone: settings.phone }),
     ...(settings.email && { email: settings.email }),
-    ...(social.length && { sameAs: social }),
+    // Mreže i Google profil trgovine, da Google poveže web s profilom.
+    sameAs: [...social, STORE.businessProfileUrl],
   }
 }
 

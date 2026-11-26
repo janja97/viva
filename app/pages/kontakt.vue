@@ -82,15 +82,7 @@ const notes = [
 
       <!-- Karta: na mobitelu ispod podataka, na računalu desno i uz pomicanje ostaje na mjestu. -->
       <div class="md:sticky md:top-28 md:self-start">
-        <div class="aspect-4/3 overflow-hidden border border-line bg-photo md:aspect-4/5">
-          <iframe
-            :src="STORE.mapEmbedUrl"
-            :title="`Karta: ${STORE.mall}, ${STORE.street}, ${STORE.city}`"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            class="size-full border-0 [filter:grayscale(0.6)_sepia(0.15)]"
-          />
-        </div>
+        <StoreMap class="aspect-4/3 md:aspect-4/5" />
       </div>
     </section>
 

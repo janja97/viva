@@ -11,6 +11,9 @@ export const STORE = {
   countryCode: 'BA',
   country: 'Bosna i Hercegovina',
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mepas+Mall+Mostar',
+  // Google profil tvrtke (Google Business Profile, oznaka /g/11f5v9ncbl iz Googleove pretrage "viva mostar").
+  // Otvara se klikom na kartu (StoreMap) i ide u JSON-LD kao sameAs.
+  businessProfileUrl: 'https://www.google.com/search?kgmid=/g/11f5v9ncbl',
   // Karta u sekciji "Posjetite nas". Ne treba API ključ.
   mapEmbedUrl: 'https://www.google.com/maps?q=Mepas+Mall,+Kneza+Branimira+2b,+88000+Mostar&z=16&output=embed',
   // Za Google (ClothingStore JSON-LD). Prazno se ne šalje. Ne izmišljati: koordinate se kopiraju iz Google karte
