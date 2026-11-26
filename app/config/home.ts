@@ -51,7 +51,7 @@ export const HOME_PANELS = [
     link: 'Istraži kolekciju',
     slug: 'svecane-haljine',
     tone: 'champagne',
-    // Smanjena kopija (1080 px) fotografije originals/svecana-haljina-srebrna.jpg, koju koristi i stranica "Uskoro".
+    // Smanjena kopija (1080 px) fotografije originals/svecana-haljina-srebrna.jpg.
     image: '/images/home/svecana-haljina-srebrna-1080.webp',
     imageAlt: 'Crni svečani korzet bez naramenica s ukrasima',
   },

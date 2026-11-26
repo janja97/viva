@@ -40,18 +40,15 @@ export default defineNuxtConfig({
       supabasePublishableKey: '',
       siteUrl: '',
       siteName: 'Viva',
-      // NUXT_PUBLIC_COMING_SOON=true: javni web prikazuje samo stranicu "Uskoro" (ComingSoon).
-      // Admin radi, a prijavljeni članovi tima vide pravi web. Lokalno i nakon otvaranja ostaje false.
-      comingSoon: false,
-      // Netlifyjev pregled grane ili PR-a (ne produkcija): stranica "Uskoro" se tada ne prikazuje,
-      // da tim može pregledati trgovinu prije otvaranja. Netlify sam postavlja CONTEXT pri izgradnji.
+      // Netlifyjev pregled grane ili PR-a (ne produkcija): stranice tada imaju noindex, a robots.txt zabranjuje sve.
+      // Netlify sam postavlja CONTEXT pri izgradnji.
       previewDeploy: ['branch-deploy', 'deploy-preview'].includes(NETLIFY_CONTEXT),
     },
   },
   // Keširanje javnih stranica na Netlifyjevom CDN-u (isr = sekunde). Kupac dobiva gotovu stranicu odmah,
   // a Netlify je u pozadini osvježava iz baze. Novi deploy briše sav keš. Adrese s parametrima (filtri) keširaju se zasebno.
   // Košarica, lista želja, pretraga, odjava, /api i admin se ne keširaju, jer ovise o kupcu.
-  // Prijava člana tima i stranica "Uskoro" odlučuju se u pregledniku, pa keš ne miješa kupce i tim.
+  // Prijava člana tima odlučuje se u pregledniku, pa keš ne miješa kupce i tim.
   routeRules: {
     // Admin radi samo u pregledniku i ne smije u Google.
     '/admin/**': {
