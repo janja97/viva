@@ -6,13 +6,25 @@ const website = ref('')
 const message = ref('')
 const isError = ref(false)
 const isSending = ref(false)
+// Od prikaza forme do slanja; server odbija prebrza slanja (botovi).
+let shownAt = 0
+onMounted(() => { shownAt = Date.now() })
 
 async function onSubmit() {
-  isSending.value = true
   message.value = ''
   isError.value = false
+  const check = checkNewsletterEmail(email.value)
+  if (!check.ok) {
+    isError.value = true
+    message.value = check.message
+    return
+  }
+  isSending.value = true
   try {
-    await $fetch('/api/newsletter', { method: 'POST', body: { email: email.value, website: website.value } })
+    await $fetch('/api/newsletter', {
+      method: 'POST',
+      body: { email: check.email, website: website.value, elapsed: shownAt ? Date.now() - shownAt : 0 },
+    })
     message.value = 'Hvala na prijavi! Ako je ovo vaša prva prijava, kod za popust stiže na vaš e-mail za nekoliko minuta.'
     email.value = ''
   } catch (error) {
@@ -41,7 +53,8 @@ async function onSubmit() {
         placeholder="Vaša e-mail adresa"
         class="min-h-13 min-w-0 flex-1 border border-ink bg-ivory px-4 placeholder:text-muted"
       >
-      <input v-model="website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden">
+      <!-- Van ekrana, a ne display:none, jer neki botovi preskaču skrivena polja. -->
+      <input v-model="website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="absolute -left-[10000px] size-px overflow-hidden opacity-0">
       <button
         type="submit"
         :disabled="isSending"

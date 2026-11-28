@@ -8,9 +8,9 @@ const categoryLink = useCategoryLink()
 useHead({
   link: [
     ...(HOME_HERO.imageMobile
-      ? [{ rel: 'preload', as: 'image' as const, href: HOME_HERO.imageMobile, type: 'image/webp', media: '(max-width: 767px)', fetchpriority: 'high' as const, tagPriority: 'critical' as const }]
+      ? [{ rel: 'preload' as const, as: 'image' as const, href: HOME_HERO.imageMobile, type: 'image/webp', media: '(max-width: 767px)', fetchpriority: 'high' as const, tagPriority: 'critical' as const }]
       : []),
-    { rel: 'preload', as: 'image' as const, href: HOME_HERO.image, type: 'image/webp', media: HOME_HERO.imageMobile ? '(min-width: 768px)' : undefined, fetchpriority: 'high' as const, tagPriority: 'critical' as const },
+    { rel: 'preload' as const, as: 'image' as const, href: HOME_HERO.image, type: 'image/webp', media: HOME_HERO.imageMobile ? '(min-width: 768px)' : undefined, fetchpriority: 'high' as const, tagPriority: 'critical' as const },
   ],
 })
 </script>
