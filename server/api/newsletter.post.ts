@@ -13,8 +13,18 @@ export default defineEventHandler(async (event) => {
   if (!check.ok) throw createError({ statusCode: 400, message: check.message })
   const email = check.email
 
+  // Najviše 5 prijava s iste IP adrese na sat (obitelj ili ured na istoj mreži stane u to).
+  const ip = clientIp(event)
+  if (ip && !allowRequest(`newsletter:${ip}`, 5, 60 * 60 * 1000)) {
+    throw createError({ statusCode: 429, message: 'Previše prijava s ove mreže. Pokušajte ponovno za sat vremena.' })
+  }
+
   const supabase = useSupabaseAdmin(event)
   const { data, error } = await supabase.rpc('newsletter_subscribe', { p_email: email })
+  // Ukupna granica za cijelu trgovinu (migracija 0051).
+  if (error?.code === 'P0001') {
+    throw createError({ statusCode: 429, message: error.message })
+  }
   if (error) {
     console.error(error)
     throw createError({ statusCode: 500, message: 'Prijava trenutno nije moguća. Pokušajte ponovno kasnije.' })
