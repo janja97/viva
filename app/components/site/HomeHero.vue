@@ -2,6 +2,17 @@
 import { HOME_HERO } from '~/config/home'
 
 const categoryLink = useCategoryLink()
+
+// Fotografija heroja je najveći element naslovne (LCP). Najavljuje se u <head>, da je preglednik krene
+// učitavati odmah, prije CSS-a i JavaScripta. Mobitel i računalo dobivaju samo svoju verziju (media).
+useHead({
+  link: [
+    ...(HOME_HERO.imageMobile
+      ? [{ rel: 'preload', as: 'image' as const, href: HOME_HERO.imageMobile, type: 'image/webp', media: '(max-width: 767px)', fetchpriority: 'high' as const, tagPriority: 'critical' as const }]
+      : []),
+    { rel: 'preload', as: 'image' as const, href: HOME_HERO.image, type: 'image/webp', media: HOME_HERO.imageMobile ? '(min-width: 768px)' : undefined, fetchpriority: 'high' as const, tagPriority: 'critical' as const },
+  ],
+})
 </script>
 
 <template>
